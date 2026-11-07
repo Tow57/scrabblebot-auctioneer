@@ -44,6 +44,8 @@ The server retains private bids after disconnect. The client now keeps a bounded
 
 Recovery makes one best-effort zero request even before clock calibration, then waits for acknowledgment or auction advance before normal cashout or bidding. The server may reject that request if the replay closes in transit. Further retries and every positive bid require a calibrated deadline and the usual margin. Final `bagTotal === 0` cashout proceeds immediately because currency has no terminal score. Synchronous bid and word transport exceptions use the normal recovery path. Actual server-reducer proofs and 56 bot tests cover these contracts; live recovery verification is recorded separately.
 
+Release verification passed a clean archived-source install/build and **56 tests** in another Windows directory containing spaces and `#`. Live checks deliberately closed this bot's socket after an accepted positive bid, observed suspended actions/subscription replay and resumed bids/words, then restarted the process during match 42799 with 39 tiles remaining. The replacement acknowledged recovery zero before subsequent bids and words. A normal-process soak completed five full matches (42785, 42788, 42790, 42793, 42796): zero worker timeouts, fallbacks, rejected actions or deadline skips, maximum decision round trip 76.63 ms. See `live-reconnect-validation.json`. The normal process has no reconnect test preload.
+
 Team **Tow57**, bot **Tow57-Auctioneer**, bot ID **164**, on the organizer's production service. Credentials stay local in an ignored token file.
 
 - Accepted live bids and words.
@@ -78,3 +80,5 @@ A later same-family review reproduced the obsolete-bid issue described above and
 The reconnect refinement received another independent same-family review. It caught and resolved missing-cache expiry handling and a pre-existing synchronous word-send failure. Ten focused recovery regressions passed independently; the full bot build and 56-test suite passed. This was not cross-family review.
 
 Live network observations and offline timings do not prove every future request will meet a deadline or predict tournament wins. The upcoming event ID, cutoff, live registration confirmation, and organizer's repository-submission channel remain unverified. The locked upstream server test dependencies are retained; no development HTTP server is started by these checks.
+
+Fresh bot installation reports one low-severity [esbuild Windows development-server advisory](https://github.com/advisories/GHSA-g7r4-m6w7-qqqr). The supported bot commands use TypeScript transformation and start no esbuild HTTP development server. The requested locked dependency tree is retained.

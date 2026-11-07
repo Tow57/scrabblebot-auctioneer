@@ -1,0 +1,401 @@
+{
+  "generatedAt": "2026-11-07T22:14:30.643Z",
+  "sourceCommit": "469c0ed638c832ef12665e5c1664be87080cbbd2",
+  "botId": 164,
+  "cleanInstall": {
+    "source": "git archive 469c0ed",
+    "windowsPathIncludesSpacesAndHash": true,
+    "buildPassed": true,
+    "botTestsPassed": 56
+  },
+  "controlledReconnect": {
+    "closedAfterPositiveBidAckAuction": "2796650",
+    "actionsSuspended": true,
+    "subscriptionReplayObserved": true,
+    "firstPostReplayAcceptedBidAuction": "2796653",
+    "postReplayAcceptedWord": "INVITED",
+    "completedMatch": "42776",
+    "scope": "The live auction advanced during reconnection. Same-auction bid retention and cancellation were separately exercised with actual in-memory server reducers."
+  },
+  "coldRestart": {
+    "matchId": "42799",
+    "bagTotalBeforeStop": 39,
+    "auctionDurationMs": 1000,
+    "firstAcceptedRecoveryZeroAuction": "2798346",
+    "resumedWords": [
+      "BIOTITE",
+      "IS",
+      "TO"
+    ],
+    "source": "Authoritative public match state before shutdown, terminal old host, then fresh accepted actions from the single replacement process."
+  },
+  "fiveCompleteMatchSoak": {
+    "generatedAt": "2026-11-07T22:13:17.459Z",
+    "botId": 164,
+    "phase": "ledger-normal-soak",
+    "sourceCommit": "469c0ed638c832ef12665e5c1664be87080cbbd2",
+    "policy": "Unchanged capital-v1 strategy; reviewed cashout/cancellation client refinement",
+    "firstIntervalPolicy": "Exclude the first post-restart metric interval as potentially partial; all subsequent intervals count.",
+    "fullMatches": 5,
+    "meanScore": 81.6,
+    "meanPlace": 3.4,
+    "winRate": 0.2,
+    "totals": {
+      "evaluations": 359,
+      "fallbacks": 0,
+      "staleResults": 0,
+      "acceptedBids": 329,
+      "rejectedBids": 0,
+      "deadlineSkips": 0,
+      "uncalibratedSkips": 0,
+      "acceptedWords": 19,
+      "rejectedWords": 0
+    },
+    "workerTimeouts": 0,
+    "decisionRoundTripMaxMs": 76.62839999998687,
+    "matches": [
+      {
+        "matchId": "42782",
+        "score": 70,
+        "balance": 24,
+        "place": 5,
+        "excludedFromFullSoak": true,
+        "words": [
+          {
+            "word": "ORANGY",
+            "reward": 25
+          },
+          {
+            "word": "BOUNDER",
+            "reward": 30
+          },
+          {
+            "word": "INTORT",
+            "reward": 15
+          }
+        ],
+        "health": {
+          "matchId": "42782",
+          "controller": {
+            "evaluations": 71,
+            "fallbacks": 0,
+            "staleResults": 0,
+            "acceptedBids": 65,
+            "rejectedBids": 0,
+            "deadlineSkips": 0,
+            "uncalibratedSkips": 1,
+            "acceptedWords": 3,
+            "rejectedWords": 0,
+            "roundTripTotalMs": 1625.9084999999614,
+            "roundTripMaxMs": 71.19139999999607,
+            "computeTotalMs": 1593.69829999998
+          },
+          "worker": {
+            "requested": 71,
+            "completed": 71,
+            "activeTimeouts": 0,
+            "queuedTimeouts": 0,
+            "superseded": 0,
+            "starts": 0,
+            "errors": 0,
+            "roundTripTotalMs": 1621.5810000000492,
+            "computeTotalMs": 1593.69829999998
+          },
+          "eventLoopDelayMs": {
+            "mean": 30.908160655849702,
+            "p95": 32.096255,
+            "max": 100.728831
+          }
+        }
+      },
+      {
+        "matchId": "42785",
+        "score": 78,
+        "balance": 16,
+        "place": 4,
+        "excludedFromFullSoak": false,
+        "words": [
+          {
+            "word": "OUTPACE",
+            "reward": 33
+          },
+          {
+            "word": "FROWSTS",
+            "reward": 39
+          },
+          {
+            "word": "IOTA",
+            "reward": 6
+          }
+        ],
+        "health": {
+          "matchId": "42785",
+          "controller": {
+            "evaluations": 71,
+            "fallbacks": 0,
+            "staleResults": 0,
+            "acceptedBids": 66,
+            "rejectedBids": 0,
+            "deadlineSkips": 0,
+            "uncalibratedSkips": 0,
+            "acceptedWords": 3,
+            "rejectedWords": 0,
+            "roundTripTotalMs": 1134.1387000000686,
+            "roundTripMaxMs": 55.381200000003446,
+            "computeTotalMs": 1100.7815999999875
+          },
+          "worker": {
+            "requested": 71,
+            "completed": 71,
+            "activeTimeouts": 0,
+            "queuedTimeouts": 0,
+            "superseded": 0,
+            "starts": 0,
+            "errors": 0,
+            "roundTripTotalMs": 1130.793800000014,
+            "computeTotalMs": 1100.7815999999875
+          },
+          "eventLoopDelayMs": {
+            "mean": 31.015974477575757,
+            "p95": 32.145407,
+            "max": 306.184191
+          }
+        }
+      },
+      {
+        "matchId": "42788",
+        "score": 60,
+        "balance": 17,
+        "place": 6,
+        "excludedFromFullSoak": false,
+        "words": [
+          {
+            "word": "LIBERATE",
+            "reward": 30
+          },
+          {
+            "word": "OUABAIN",
+            "reward": 27
+          },
+          {
+            "word": "ORE",
+            "reward": 3
+          }
+        ],
+        "health": {
+          "matchId": "42788",
+          "controller": {
+            "evaluations": 71,
+            "fallbacks": 0,
+            "staleResults": 0,
+            "acceptedBids": 66,
+            "rejectedBids": 0,
+            "deadlineSkips": 0,
+            "uncalibratedSkips": 0,
+            "acceptedWords": 3,
+            "rejectedWords": 0,
+            "roundTripTotalMs": 403.04329999996116,
+            "roundTripMaxMs": 43.80859999998938,
+            "computeTotalMs": 328.85700000001816
+          },
+          "worker": {
+            "requested": 71,
+            "completed": 71,
+            "activeTimeouts": 0,
+            "queuedTimeouts": 0,
+            "superseded": 0,
+            "starts": 0,
+            "errors": 0,
+            "roundTripTotalMs": 400.40050000004703,
+            "computeTotalMs": 328.85700000001816
+          },
+          "eventLoopDelayMs": {
+            "mean": 30.94715282400358,
+            "p95": 32.194559,
+            "max": 63.406079
+          }
+        }
+      },
+      {
+        "matchId": "42790",
+        "score": 113,
+        "balance": 8,
+        "place": 3,
+        "excludedFromFullSoak": false,
+        "words": [
+          {
+            "word": "CHIMLAS",
+            "reward": 42
+          },
+          {
+            "word": "JARGOON",
+            "reward": 45
+          },
+          {
+            "word": "RAWEST",
+            "reward": 22
+          },
+          {
+            "word": "UT",
+            "reward": 2
+          },
+          {
+            "word": "AE",
+            "reward": 2
+          }
+        ],
+        "health": {
+          "matchId": "42790",
+          "controller": {
+            "evaluations": 73,
+            "fallbacks": 0,
+            "staleResults": 0,
+            "acceptedBids": 67,
+            "rejectedBids": 0,
+            "deadlineSkips": 0,
+            "uncalibratedSkips": 0,
+            "acceptedWords": 5,
+            "rejectedWords": 0,
+            "roundTripTotalMs": 954.2452999999514,
+            "roundTripMaxMs": 40.87879999994766,
+            "computeTotalMs": 927.2757000005222
+          },
+          "worker": {
+            "requested": 73,
+            "completed": 73,
+            "activeTimeouts": 0,
+            "queuedTimeouts": 0,
+            "superseded": 0,
+            "starts": 0,
+            "errors": 0,
+            "roundTripTotalMs": 951.2227000002167,
+            "computeTotalMs": 927.2757000005222
+          },
+          "eventLoopDelayMs": {
+            "mean": 30.653865564365258,
+            "p95": 32.096255,
+            "max": 94.240767
+          }
+        }
+      },
+      {
+        "matchId": "42793",
+        "score": 61,
+        "balance": 5,
+        "place": 3,
+        "excludedFromFullSoak": false,
+        "words": [
+          {
+            "word": "THOUING",
+            "reward": 33
+          },
+          {
+            "word": "OORALIS",
+            "reward": 21
+          },
+          {
+            "word": "EL",
+            "reward": 2
+          },
+          {
+            "word": "OE",
+            "reward": 2
+          },
+          {
+            "word": "AD",
+            "reward": 3
+          }
+        ],
+        "health": {
+          "matchId": "42793",
+          "controller": {
+            "evaluations": 73,
+            "fallbacks": 0,
+            "staleResults": 0,
+            "acceptedBids": 65,
+            "rejectedBids": 0,
+            "deadlineSkips": 0,
+            "uncalibratedSkips": 0,
+            "acceptedWords": 5,
+            "rejectedWords": 0,
+            "roundTripTotalMs": 386.48669999989215,
+            "roundTripMaxMs": 35.74640000000363,
+            "computeTotalMs": 359.20960000006016
+          },
+          "worker": {
+            "requested": 73,
+            "completed": 73,
+            "activeTimeouts": 0,
+            "queuedTimeouts": 0,
+            "superseded": 0,
+            "starts": 0,
+            "errors": 0,
+            "roundTripTotalMs": 383.6535999997286,
+            "computeTotalMs": 359.20960000006016
+          },
+          "eventLoopDelayMs": {
+            "mean": 27.893393341935486,
+            "p95": 32.030719,
+            "max": 79.888383
+          }
+        }
+      },
+      {
+        "matchId": "42796",
+        "score": 96,
+        "balance": 19,
+        "place": 1,
+        "excludedFromFullSoak": false,
+        "words": [
+          {
+            "word": "JERBOAS",
+            "reward": 48
+          },
+          {
+            "word": "FIGURINE",
+            "reward": 36
+          },
+          {
+            "word": "OUTGO",
+            "reward": 12
+          }
+        ],
+        "health": {
+          "matchId": "42796",
+          "controller": {
+            "evaluations": 71,
+            "fallbacks": 0,
+            "staleResults": 0,
+            "acceptedBids": 65,
+            "rejectedBids": 0,
+            "deadlineSkips": 0,
+            "uncalibratedSkips": 0,
+            "acceptedWords": 3,
+            "rejectedWords": 0,
+            "roundTripTotalMs": 1347.238599999866,
+            "roundTripMaxMs": 76.62839999998687,
+            "computeTotalMs": 1312.6820000002626
+          },
+          "worker": {
+            "requested": 71,
+            "completed": 71,
+            "activeTimeouts": 0,
+            "queuedTimeouts": 0,
+            "superseded": 0,
+            "starts": 0,
+            "errors": 0,
+            "roundTripTotalMs": 1343.3631999999052,
+            "computeTotalMs": 1312.6820000002626
+          },
+          "eventLoopDelayMs": {
+            "mean": 23.317692939865065,
+            "p95": 31.490047,
+            "max": 87.293951
+          }
+        }
+      }
+    ],
+    "limitation": "Observational live opponents vary; this proves operation, not causal score improvement or a tournament win."
+  },
+  "limits": "Operational proof and controlled recovery cases do not establish tournament dominance; upcoming-event registration is still unverified."
+}
