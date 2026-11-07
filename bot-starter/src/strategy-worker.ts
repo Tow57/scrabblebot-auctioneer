@@ -5,8 +5,16 @@ import { loadDictionary } from "./dictionary.js";
 import type { MatchSnapshot } from "./client.js";
 
 if (!parentPort) throw new Error("Strategy worker requires a parent port");
+const configuredWeight = process.env.BOT_HEADS_UP_FACE_WEIGHT;
+const headsUpFaceBidWeight = configuredWeight === undefined ? 0.3
+  : configuredWeight.trim() === "" ? NaN : Number(configuredWeight);
+if (!Number.isFinite(headsUpFaceBidWeight) || headsUpFaceBidWeight < 0 || headsUpFaceBidWeight > 0.5) {
+  throw new Error("BOT_HEADS_UP_FACE_WEIGHT must be a finite number between 0 and 0.5");
+}
+const capitalAllowance = process.env.BOT_CAPITAL_ALLOWANCE !== "0";
 const engine = new StrategyEngine(loadDictionary(workerData?.dictionaryPath), {
-  capitalAllowance: process.env.BOT_CAPITAL_ALLOWANCE !== "0",
+  capitalAllowance,
+  headsUpFaceBidWeight: capitalAllowance ? headsUpFaceBidWeight : 0,
 });
 parentPort.on("message", (request: { id: number; snapshot: MatchSnapshot }) => {
   try {

@@ -160,6 +160,50 @@ test("bids use first-price shading, public price pacing, and terminal currency g
   }
 });
 
+test("heads-up face weight changes only eligible two-player Vickrey bids", () => {
+  const index = new DictionaryIndex(["AT", "CAT", "HAT", "KITE", "QUA", "ZOO"]);
+  const original = new StrategyEngine(index, { capitalAllowance: true });
+  const configured = new StrategyEngine(index, { capitalAllowance: true, headsUpFaceBidWeight: 0.3 });
+  const disabled = new StrategyEngine(index, { capitalAllowance: true, headsUpFaceBidWeight: 0 });
+  for (const participantCount of [1, 2, 3, 6, NaN]) {
+    for (const auctionType of ["Vickrey", "FirstPrice"] as const) {
+      for (const bagTotal of [60, 1, 0]) {
+        const snapshot = context("UA", { letter: "Q", participantCount, auctionType, bagTotal });
+        const base = original.decide(snapshot);
+        const result = configured.decide(snapshot);
+        const expected = participantCount === 2 && auctionType === "Vickrey" && bagTotal > 1 && base.bid > 0
+          ? Math.min(100, Math.ceil(base.bid * (1 + 0.3 * 9))) : base.bid;
+        assert.equal(result.bid, expected);
+        assert.equal(disabled.decide(snapshot).bid, base.bid);
+        assert.equal(result.word, base.word);
+        assert.deepEqual(result.plan, base.plan);
+        assert.equal(result.cashout, base.cashout);
+        assert.equal(result.exact, base.exact);
+      }
+    }
+  }
+});
+
+test("heads-up weighting retains affordability, one-point bids, no-junk gating, and validated options", () => {
+  const index = new DictionaryIndex(["AT", "CAT", "HAT", "KITE", "QUA", "ZOO"]);
+  const original = new StrategyEngine(index, { capitalAllowance: true });
+  const configured = new StrategyEngine(index, { capitalAllowance: true, headsUpFaceBidWeight: 0.5 });
+  for (const myBalance of [100, 2.9, 0, -1, NaN]) {
+    const snapshot = context("UA", { letter: "Q", participantCount: 2, myBalance });
+    const result = configured.decide(snapshot);
+    const limit = Number.isFinite(myBalance) ? Math.max(0, Math.floor(myBalance)) : 0;
+    assert.ok(Number.isInteger(result.bid) && result.bid >= 0 && result.bid <= limit);
+  }
+  const onePoint = context("CT", { letter: "A", participantCount: 2 });
+  assert.equal(configured.decide(onePoint).bid, original.decide(onePoint).bid);
+  for (const letter of ["X", "?", "q"]) {
+    assert.equal(configured.decide(context("A", { letter, participantCount: 2 })).bid, 0);
+  }
+  for (const weight of [-1, -0.01, 0.5001, NaN, Infinity, -Infinity]) {
+    assert.throws(() => new StrategyEngine(index, { headsUpFaceBidWeight: weight }), /finite number between 0 and 0.5/);
+  }
+});
+
 test("extra search progress without the offered tile never triggers a terminal all-in", () => {
   const engine = new StrategyEngine(["AXE", "AX", "EL"]);
   let calls = 0;

@@ -1,4 +1,4 @@
-import { DictionaryIndex, loadDictionary, rackToCounts, scoreWord } from "./dictionary.js";
+import { DictionaryIndex, LETTER_VALUE, loadDictionary, rackToCounts, scoreWord } from "./dictionary.js";
 import { RackOptimizer, type SearchBudget } from "./optimizer.js";
 
 export { canSpell, LETTER_VALUE, loadDictionary, rackToCounts, scoreWord } from "./dictionary.js";
@@ -45,14 +45,22 @@ export interface StrategyDecision {
 export interface StrategyOptions {
   /** Opt-in at the library level; the tournament worker enables this measured policy. */
   capitalAllowance?: boolean;
+  /** Only two-player Vickrey matches; zero preserves the original policy. */
+  headsUpFaceBidWeight?: number;
 }
 
 /** Stateful only for dictionary/search caches; decisions use this snapshot alone. */
 export class StrategyEngine {
   readonly dictionary: DictionaryIndex;
   readonly optimizer: RackOptimizer;
+  private readonly headsUpFaceBidWeight: number;
 
   constructor(words: readonly string[] | DictionaryIndex, private readonly options: StrategyOptions = {}) {
+    const weight = options.headsUpFaceBidWeight ?? 0;
+    if (!Number.isFinite(weight) || weight < 0 || weight > 0.5) {
+      throw new Error("Heads-up face bid weight must be a finite number between 0 and 0.5");
+    }
+    this.headsUpFaceBidWeight = weight;
     this.dictionary = words instanceof DictionaryIndex ? words : new DictionaryIndex(words);
     this.optimizer = new RackOptimizer(this.dictionary);
   }
@@ -105,6 +113,10 @@ export class StrategyEngine {
           if (ctx.auctionType === "FirstPrice") bid = Math.max(1, Math.floor(bid * 0.8));
         }
       }
+    }
+    if (this.headsUpFaceBidWeight > 0 && ctx.participantCount === 2 && ctx.auctionType === "Vickrey"
+      && bagTotal > 1 && bid > 0 && /^[A-Z]$/.test(ctx.letter)) {
+      bid = Math.min(balance, Math.ceil(bid * (1 + this.headsUpFaceBidWeight * (LETTER_VALUE[ctx.letter] - 1))));
     }
     return { bid, word, plan, cashout: current.score, exact: current.exact, elapsedMs: performance.now() - start };
   }

@@ -1,0 +1,19 @@
+{
+  "preregisteredAt": "2026-11-07T22:07:37.955Z",
+  "selected": "face-0.3",
+  "pilotReportSha256": "42bf8c04eae8f333635c13aede90f8f203711d5138e313352e88fc15d74f1f33",
+  "pilotSpecificationSha256": "201975d3846a20aa266fb669c6328f0e63c506582126e1a614c0288b7ca61bd0",
+  "sourceFingerprintSha256": "179ba0d6db32ff04967045973aa939a742dd16118230024cb3eae8c1941a9394",
+  "series": 30,
+  "seedOffset": 400,
+  "criteria": {
+    "series": 30,
+    "seedOffset": 400,
+    "requiredCandidateCrownRate": 0.6,
+    "requiredCrownRateGainOverControl": 0.1,
+    "requiredOwnAggregateScoreGain": 0.05,
+    "pairedAggregateMarginInterval": "95% two-sided t interval over 30 independent seed-paired margin differences, df29, t=2.045; lower bound must exceed zero",
+    "decisionBudget": "No additional measured >100ms decision wall overruns compared with control",
+    "deploymentScope": "Only participantCount===2; six-player policy remains unchanged after failing its locked holdout. Confirmation plus worker/live validation and independent review are required."
+  }
+}

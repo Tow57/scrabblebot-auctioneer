@@ -50,6 +50,7 @@ If registration is not yet open, wait for the organizer to open it and restart w
 - Auction deadlines use a monotonic clock calibrated from fresh live auction events, so laptop/server wall-clock differences cannot suppress bids. A cold process may wait for the next auction to calibrate; reconnects retain the existing calibration.
 - A memory-only ledger preserves possible bids across reconnects. Cold recovery may send one zero cancellation before clock calibration; the server can reject it if the auction closes in transit. Purchases still require calibration and the 150 ms margin. Normal cashout waits for recovery acknowledgment or auction advance; final-tile cashout has priority.
 - The tournament worker enables the tested capital allowance so useful letters receive some buying power from the initial bank. `BOT_CAPITAL_ALLOWANCE=0` selects the previous bidding policy for comparisons.
+- Two-player Vickrey matches additionally favor useful high-value letters with the validated 0.3 face-weight adjustment. It preserves terminal bids, words, and search. `BOT_HEADS_UP_FACE_WEIGHT=0` disables this adjustment; values must be finite from 0 to 0.5. `BOT_CAPITAL_ALLOWANCE=0` disables both adjustments. Larger tables and FirstPrice use the existing policy.
 
 The current server discards unsold tiles and randomizes tied bids. Opponents' starting racks are private, and live top bids are unavailable to bots. Some older guide text describes these differently.
 

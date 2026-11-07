@@ -1,0 +1,64 @@
+{
+  "candidate": "face-0.3",
+  "candidateSummary": {
+    "series": 30,
+    "games": 90,
+    "threeGameAggregateWinRate": 1,
+    "strictAggregateWinRate": 1,
+    "aggregateTieRate": 0,
+    "meanThreeGameScore": 1000.3,
+    "meanOpponentThreeGameScore": 409,
+    "meanAggregateMargin": 591.3,
+    "meanFinalPlace": 1,
+    "meanGamePlace": 1.0222222222222221,
+    "meanFirstCashoutSeconds": 7.022222222222222,
+    "noCashoutRate": 0,
+    "decisionBudgetOverruns": 0,
+    "decisions": 8827,
+    "latencyMs": {
+      "mean": 13.358059238699536,
+      "p95": 44.06580000001122,
+      "p99": 61.8181999999797,
+      "max": 95.34210000000894
+    }
+  },
+  "baselineSummary": {
+    "series": 30,
+    "games": 90,
+    "threeGameAggregateWinRate": 0.5333333333333333,
+    "strictAggregateWinRate": 0.5333333333333333,
+    "aggregateTieRate": 0,
+    "meanThreeGameScore": 790.2,
+    "meanOpponentThreeGameScore": 702.6666666666666,
+    "meanAggregateMargin": 87.53333333333333,
+    "meanFinalPlace": 1.4666666666666666,
+    "meanGamePlace": 1.4222222222222223,
+    "meanFirstCashoutSeconds": 7.622222222222222,
+    "noCashoutRate": 0,
+    "decisionBudgetOverruns": 0,
+    "decisions": 8652,
+    "latencyMs": {
+      "mean": 12.460684292649207,
+      "p95": 44.031300000002375,
+      "p99": 60.87150000000838,
+      "max": 88.96299999998882
+    }
+  },
+  "pairedMarginInterval95": {
+    "n": 30,
+    "mean": 503.76666666666665,
+    "standardError": 54.59680179537557,
+    "lower": 392.1162069951236,
+    "upper": 615.4171263382096
+  },
+  "checks": {
+    "minimumCrownRate": true,
+    "crownRateGain": true,
+    "aggregateScoreGain": true,
+    "pairedMarginIntervalPositive": true,
+    "noAdditionalBudgetOverruns": true
+  },
+  "qualifiedForN2Integration": true,
+  "deploymentScope": "Only participantCount===2; six-player policy remains unchanged after failing its locked holdout. Confirmation plus worker/live validation and independent review are required.",
+  "productionPromotionAuthorized": false
+}

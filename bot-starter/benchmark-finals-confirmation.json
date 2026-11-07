@@ -1,0 +1,2737 @@
+{
+  "generatedAt": "2026-11-07T22:14:45.587Z",
+  "moduleCommit": "b5ccb36aa238ad16692f8d6af54da15ef9f11324",
+  "baselineCommit": "f4569e067a1d6fafcdc773d525268856f6d1542a",
+  "sourceFiles": [
+    "tournament-bot-benchmark.test.ts",
+    "fixtures/v1/strategy.ts",
+    "fixtures/v1/dictionary.ts",
+    "fixtures/v1/optimizer.ts",
+    "fixtures/opponent-policies.ts",
+    "fixtures/face-bid-ablation.ts",
+    "fixtures/quality-face-ablation.ts",
+    "harness.ts",
+    "../index.ts",
+    "../game.ts",
+    "../tournament.ts",
+    "../schema.ts",
+    "../letters.ts",
+    "../dictionary.ts"
+  ],
+  "sourceFingerprintSha256": "179ba0d6db32ff04967045973aa939a742dd16118230024cb3eae8c1941a9394",
+  "dictionarySha256": "b819e7b67f8f2c80640ae76f0edbe59a4a1befb6de0f348463642ad49bdd2ad3",
+  "methodology": {
+    "stage": "Final",
+    "players": 2,
+    "gamesPerSeries": 3,
+    "auctionType": "Vickrey",
+    "startingBalancePerGame": 100,
+    "startingRackPerPlayer": 5,
+    "auctionWindowsPerGame": 88,
+    "seedOffset": 400,
+    "seeds": [
+      3177601,
+      3185520,
+      3193439,
+      3201358,
+      3209277,
+      3217196,
+      3225115,
+      3233034,
+      3240953,
+      3248872,
+      3256791,
+      3264710,
+      3272629,
+      3280548,
+      3288467,
+      3296386,
+      3304305,
+      3312224,
+      3320143,
+      3328062,
+      3335981,
+      3343900,
+      3351819,
+      3359738,
+      3367657,
+      3375576,
+      3383495,
+      3391414,
+      3399333,
+      3407252
+    ],
+    "seatRotation": "Candidate alternates between the two seats across series; its seat remains fixed across its three games",
+    "setup": "Actual team creation and registration reducers; fixture only the post-Swiss Final status with equal prior totals; actual admin start, auction, word, end and crown reducers thereafter",
+    "control": "Frozen capital-enabled v1 versus frozen capital-enabled v1, paired by seed and measured seat",
+    "inputs": "Each policy receives only its authenticated own rack and public balance/auction/history; participantCount is 2",
+    "driver": "Both sides cash words before bidding, use confirmed in-memory transactions, and receive no post-final-auction cashout",
+    "victory": "Actual server crown after three aggregate scores; final ties use equal whole-tournament prior totals then lower bot id",
+    "cacheLifetime": "Fresh policies per series, retained across its three games; shared immutable dictionary records",
+    "decisionBudgetOverruns": "Measured in-process call wall time >100ms, not network or the 150ms production worker response gate",
+    "limitations": "Swiss/top-cut performance and network transport are not tested. Later RNG tile streams may diverge between policies. This is report-only and does not change any locked primary promotion gate."
+  },
+  "results": [
+    {
+      "id": "face-0.3",
+      "candidate": {
+        "series": 30,
+        "games": 90,
+        "threeGameAggregateWinRate": 1,
+        "strictAggregateWinRate": 1,
+        "aggregateTieRate": 0,
+        "meanThreeGameScore": 1000.3,
+        "meanOpponentThreeGameScore": 409,
+        "meanAggregateMargin": 591.3,
+        "meanFinalPlace": 1,
+        "meanGamePlace": 1.0222222222222221,
+        "meanFirstCashoutSeconds": 7.022222222222222,
+        "noCashoutRate": 0,
+        "decisionBudgetOverruns": 0,
+        "decisions": 8827,
+        "latencyMs": {
+          "mean": 13.358059238699536,
+          "p95": 44.06580000001122,
+          "p99": 61.8181999999797,
+          "max": 95.34210000000894
+        }
+      },
+      "baseline": {
+        "series": 30,
+        "games": 90,
+        "threeGameAggregateWinRate": 0.5333333333333333,
+        "strictAggregateWinRate": 0.5333333333333333,
+        "aggregateTieRate": 0,
+        "meanThreeGameScore": 790.2,
+        "meanOpponentThreeGameScore": 702.6666666666666,
+        "meanAggregateMargin": 87.53333333333333,
+        "meanFinalPlace": 1.4666666666666666,
+        "meanGamePlace": 1.4222222222222223,
+        "meanFirstCashoutSeconds": 7.622222222222222,
+        "noCashoutRate": 0,
+        "decisionBudgetOverruns": 0,
+        "decisions": 8652,
+        "latencyMs": {
+          "mean": 12.460684292649207,
+          "p95": 44.031300000002375,
+          "p99": 60.87150000000838,
+          "max": 88.96299999998882
+        }
+      },
+      "pairedMeanAggregateMarginDifference": 503.76666666666665,
+      "samples": [
+        {
+          "seed": 3177601,
+          "candidate": {
+            "seed": 3177601,
+            "candidateSeat": 0,
+            "aggregateScore": 1093,
+            "opponentAggregateScore": 359,
+            "aggregateMargin": 734,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 420,
+                "opponentScore": 72,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 100,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 345,
+                "opponentScore": 130,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 328,
+                "opponentScore": 157,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3177601,
+            "candidateSeat": 0,
+            "aggregateScore": 845,
+            "opponentAggregateScore": 653,
+            "aggregateMargin": 192,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 435,
+                "opponentScore": 88,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 166,
+                "opponentScore": 326,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 94,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 244,
+                "opponentScore": 239,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 11,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3185520,
+          "candidate": {
+            "seed": 3185520,
+            "candidateSeat": 1,
+            "aggregateScore": 897,
+            "opponentAggregateScore": 477,
+            "aggregateMargin": 420,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 362,
+                "opponentScore": 97,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 361,
+                "opponentScore": 118,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 3,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 174,
+                "opponentScore": 262,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 94,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3185520,
+            "candidateSeat": 1,
+            "aggregateScore": 827,
+            "opponentAggregateScore": 579,
+            "aggregateMargin": 248,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 245,
+                "opponentScore": 221,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 344,
+                "opponentScore": 133,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 3,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 238,
+                "opponentScore": 225,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3193439,
+          "candidate": {
+            "seed": 3193439,
+            "candidateSeat": 0,
+            "aggregateScore": 1149,
+            "opponentAggregateScore": 325,
+            "aggregateMargin": 824,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 409,
+                "opponentScore": 86,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 3,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 366,
+                "opponentScore": 128,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 374,
+                "opponentScore": 111,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 11,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3193439,
+            "candidateSeat": 0,
+            "aggregateScore": 857,
+            "opponentAggregateScore": 649,
+            "aggregateMargin": 208,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 278,
+                "opponentScore": 239,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 3,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 303,
+                "opponentScore": 189,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 276,
+                "opponentScore": 221,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 11,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3201358,
+          "candidate": {
+            "seed": 3201358,
+            "candidateSeat": 1,
+            "aggregateScore": 937,
+            "opponentAggregateScore": 440,
+            "aggregateMargin": 497,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 409,
+                "opponentScore": 75,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 100,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 284,
+                "opponentScore": 168,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 244,
+                "opponentScore": 197,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 4,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3201358,
+            "candidateSeat": 1,
+            "aggregateScore": 811,
+            "opponentAggregateScore": 629,
+            "aggregateMargin": 182,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 366,
+                "opponentScore": 115,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 4,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 172,
+                "opponentScore": 300,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 94,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 273,
+                "opponentScore": 214,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3209277,
+          "candidate": {
+            "seed": 3209277,
+            "candidateSeat": 0,
+            "aggregateScore": 876,
+            "opponentAggregateScore": 441,
+            "aggregateMargin": 435,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 276,
+                "opponentScore": 170,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 272,
+                "opponentScore": 130,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 4,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 328,
+                "opponentScore": 141,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 4,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3209277,
+            "candidateSeat": 0,
+            "aggregateScore": 675,
+            "opponentAggregateScore": 753,
+            "aggregateMargin": -78,
+            "aggregateTie": false,
+            "wonServerCrown": false,
+            "finalPlace": 2,
+            "games": [
+              {
+                "game": 1,
+                "score": 247,
+                "opponentScore": 246,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 12,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 190,
+                "opponentScore": 266,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 4,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 238,
+                "opponentScore": 241,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3217196,
+          "candidate": {
+            "seed": 3217196,
+            "candidateSeat": 1,
+            "aggregateScore": 1053,
+            "opponentAggregateScore": 380,
+            "aggregateMargin": 673,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 347,
+                "opponentScore": 146,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 286,
+                "opponentScore": 162,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 420,
+                "opponentScore": 72,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 3,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3217196,
+            "candidateSeat": 1,
+            "aggregateScore": 742,
+            "opponentAggregateScore": 812,
+            "aggregateMargin": -70,
+            "aggregateTie": false,
+            "wonServerCrown": false,
+            "finalPlace": 2,
+            "games": [
+              {
+                "game": 1,
+                "score": 305,
+                "opponentScore": 234,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 187,
+                "opponentScore": 310,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 250,
+                "opponentScore": 268,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 11,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3225115,
+          "candidate": {
+            "seed": 3225115,
+            "candidateSeat": 0,
+            "aggregateScore": 937,
+            "opponentAggregateScore": 501,
+            "aggregateMargin": 436,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 300,
+                "opponentScore": 202,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 11,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 420,
+                "opponentScore": 87,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 100,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 217,
+                "opponentScore": 212,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 3,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3225115,
+            "candidateSeat": 0,
+            "aggregateScore": 489,
+            "opponentAggregateScore": 1018,
+            "aggregateMargin": -529,
+            "aggregateTie": false,
+            "wonServerCrown": false,
+            "finalPlace": 2,
+            "games": [
+              {
+                "game": 1,
+                "score": 111,
+                "opponentScore": 404,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 11,
+                "decisions": 92,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 125,
+                "opponentScore": 389,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 4,
+                "decisions": 93,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 253,
+                "opponentScore": 225,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 2,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3233034,
+          "candidate": {
+            "seed": 3233034,
+            "candidateSeat": 1,
+            "aggregateScore": 852,
+            "opponentAggregateScore": 479,
+            "aggregateMargin": 373,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 362,
+                "opponentScore": 112,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 100,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 251,
+                "opponentScore": 184,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 3,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 239,
+                "opponentScore": 183,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3233034,
+            "candidateSeat": 1,
+            "aggregateScore": 695,
+            "opponentAggregateScore": 768,
+            "aggregateMargin": -73,
+            "aggregateTie": false,
+            "wonServerCrown": false,
+            "finalPlace": 2,
+            "games": [
+              {
+                "game": 1,
+                "score": 400,
+                "opponentScore": 108,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 137,
+                "opponentScore": 378,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 3,
+                "decisions": 94,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 158,
+                "opponentScore": 282,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 94,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3240953,
+          "candidate": {
+            "seed": 3240953,
+            "candidateSeat": 0,
+            "aggregateScore": 946,
+            "opponentAggregateScore": 420,
+            "aggregateMargin": 526,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 299,
+                "opponentScore": 149,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 348,
+                "opponentScore": 136,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 299,
+                "opponentScore": 135,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3240953,
+            "candidateSeat": 0,
+            "aggregateScore": 796,
+            "opponentAggregateScore": 694,
+            "aggregateMargin": 102,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 260,
+                "opponentScore": 227,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 12,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 308,
+                "opponentScore": 213,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 228,
+                "opponentScore": 254,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3248872,
+          "candidate": {
+            "seed": 3248872,
+            "candidateSeat": 1,
+            "aggregateScore": 1015,
+            "opponentAggregateScore": 420,
+            "aggregateMargin": 595,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 342,
+                "opponentScore": 142,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 321,
+                "opponentScore": 147,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 352,
+                "opponentScore": 131,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3248872,
+            "candidateSeat": 1,
+            "aggregateScore": 679,
+            "opponentAggregateScore": 827,
+            "aggregateMargin": -148,
+            "aggregateTie": false,
+            "wonServerCrown": false,
+            "finalPlace": 2,
+            "games": [
+              {
+                "game": 1,
+                "score": 226,
+                "opponentScore": 273,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 11,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 170,
+                "opponentScore": 346,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 94,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 283,
+                "opponentScore": 208,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3256791,
+          "candidate": {
+            "seed": 3256791,
+            "candidateSeat": 0,
+            "aggregateScore": 889,
+            "opponentAggregateScore": 530,
+            "aggregateMargin": 359,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 350,
+                "opponentScore": 143,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 277,
+                "opponentScore": 172,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 262,
+                "opponentScore": 215,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3256791,
+            "candidateSeat": 0,
+            "aggregateScore": 659,
+            "opponentAggregateScore": 845,
+            "aggregateMargin": -186,
+            "aggregateTie": false,
+            "wonServerCrown": false,
+            "finalPlace": 2,
+            "games": [
+              {
+                "game": 1,
+                "score": 225,
+                "opponentScore": 282,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 265,
+                "opponentScore": 236,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 12,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 169,
+                "opponentScore": 327,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3264710,
+          "candidate": {
+            "seed": 3264710,
+            "candidateSeat": 1,
+            "aggregateScore": 1008,
+            "opponentAggregateScore": 397,
+            "aggregateMargin": 611,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 277,
+                "opponentScore": 185,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 369,
+                "opponentScore": 120,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 362,
+                "opponentScore": 92,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 4,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3264710,
+            "candidateSeat": 1,
+            "aggregateScore": 631,
+            "opponentAggregateScore": 866,
+            "aggregateMargin": -235,
+            "aggregateTie": false,
+            "wonServerCrown": false,
+            "finalPlace": 2,
+            "games": [
+              {
+                "game": 1,
+                "score": 206,
+                "opponentScore": 276,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 94,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 249,
+                "opponentScore": 278,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 15,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 176,
+                "opponentScore": 312,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3272629,
+          "candidate": {
+            "seed": 3272629,
+            "candidateSeat": 0,
+            "aggregateScore": 1103,
+            "opponentAggregateScore": 364,
+            "aggregateMargin": 739,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 326,
+                "opponentScore": 161,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 345,
+                "opponentScore": 114,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 432,
+                "opponentScore": 89,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3272629,
+            "candidateSeat": 0,
+            "aggregateScore": 714,
+            "opponentAggregateScore": 792,
+            "aggregateMargin": -78,
+            "aggregateTie": false,
+            "wonServerCrown": false,
+            "finalPlace": 2,
+            "games": [
+              {
+                "game": 1,
+                "score": 265,
+                "opponentScore": 260,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 236,
+                "opponentScore": 251,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 213,
+                "opponentScore": 281,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3280548,
+          "candidate": {
+            "seed": 3280548,
+            "candidateSeat": 1,
+            "aggregateScore": 964,
+            "opponentAggregateScore": 462,
+            "aggregateMargin": 502,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 315,
+                "opponentScore": 168,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 307,
+                "opponentScore": 165,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 342,
+                "opponentScore": 129,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3280548,
+            "candidateSeat": 1,
+            "aggregateScore": 1030,
+            "opponentAggregateScore": 520,
+            "aggregateMargin": 510,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 264,
+                "opponentScore": 251,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 422,
+                "opponentScore": 97,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 344,
+                "opponentScore": 172,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3288467,
+          "candidate": {
+            "seed": 3288467,
+            "candidateSeat": 0,
+            "aggregateScore": 934,
+            "opponentAggregateScore": 526,
+            "aggregateMargin": 408,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 286,
+                "opponentScore": 210,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 284,
+                "opponentScore": 199,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 364,
+                "opponentScore": 117,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3288467,
+            "candidateSeat": 0,
+            "aggregateScore": 597,
+            "opponentAggregateScore": 903,
+            "aggregateMargin": -306,
+            "aggregateTie": false,
+            "wonServerCrown": false,
+            "finalPlace": 2,
+            "games": [
+              {
+                "game": 1,
+                "score": 182,
+                "opponentScore": 302,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 21,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 142,
+                "opponentScore": 343,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 94,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 273,
+                "opponentScore": 258,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3296386,
+          "candidate": {
+            "seed": 3296386,
+            "candidateSeat": 1,
+            "aggregateScore": 914,
+            "opponentAggregateScore": 422,
+            "aggregateMargin": 492,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 322,
+                "opponentScore": 131,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 304,
+                "opponentScore": 153,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 288,
+                "opponentScore": 138,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3296386,
+            "candidateSeat": 1,
+            "aggregateScore": 846,
+            "opponentAggregateScore": 692,
+            "aggregateMargin": 154,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 198,
+                "opponentScore": 337,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 94,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 296,
+                "opponentScore": 211,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 352,
+                "opponentScore": 144,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3304305,
+          "candidate": {
+            "seed": 3304305,
+            "candidateSeat": 0,
+            "aggregateScore": 1010,
+            "opponentAggregateScore": 377,
+            "aggregateMargin": 633,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 369,
+                "opponentScore": 100,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 4,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 218,
+                "opponentScore": 200,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 423,
+                "opponentScore": 77,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 100,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3304305,
+            "candidateSeat": 0,
+            "aggregateScore": 1130,
+            "opponentAggregateScore": 374,
+            "aggregateMargin": 756,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 364,
+                "opponentScore": 130,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 4,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 413,
+                "opponentScore": 92,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 353,
+                "opponentScore": 152,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3312224,
+          "candidate": {
+            "seed": 3312224,
+            "candidateSeat": 1,
+            "aggregateScore": 1013,
+            "opponentAggregateScore": 381,
+            "aggregateMargin": 632,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 399,
+                "opponentScore": 96,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 344,
+                "opponentScore": 102,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 270,
+                "opponentScore": 183,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3312224,
+            "candidateSeat": 1,
+            "aggregateScore": 841,
+            "opponentAggregateScore": 634,
+            "aggregateMargin": 207,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 278,
+                "opponentScore": 223,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 230,
+                "opponentScore": 248,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 333,
+                "opponentScore": 163,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3320143,
+          "candidate": {
+            "seed": 3320143,
+            "candidateSeat": 0,
+            "aggregateScore": 1171,
+            "opponentAggregateScore": 284,
+            "aggregateMargin": 887,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 430,
+                "opponentScore": 83,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 4,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 392,
+                "opponentScore": 100,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 349,
+                "opponentScore": 101,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 3,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3320143,
+            "candidateSeat": 0,
+            "aggregateScore": 1081,
+            "opponentAggregateScore": 419,
+            "aggregateMargin": 662,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 372,
+                "opponentScore": 142,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 4,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 371,
+                "opponentScore": 115,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 338,
+                "opponentScore": 162,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3328062,
+          "candidate": {
+            "seed": 3328062,
+            "candidateSeat": 1,
+            "aggregateScore": 940,
+            "opponentAggregateScore": 400,
+            "aggregateMargin": 540,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 240,
+                "opponentScore": 192,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 14,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 340,
+                "opponentScore": 129,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 4,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 360,
+                "opponentScore": 79,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3328062,
+            "candidateSeat": 1,
+            "aggregateScore": 427,
+            "opponentAggregateScore": 994,
+            "aggregateMargin": -567,
+            "aggregateTie": false,
+            "wonServerCrown": false,
+            "finalPlace": 2,
+            "games": [
+              {
+                "game": 1,
+                "score": 134,
+                "opponentScore": 391,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 16,
+                "decisions": 93,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 143,
+                "opponentScore": 304,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 12,
+                "decisions": 94,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 150,
+                "opponentScore": 299,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 93,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3335981,
+          "candidate": {
+            "seed": 3335981,
+            "candidateSeat": 0,
+            "aggregateScore": 954,
+            "opponentAggregateScore": 430,
+            "aggregateMargin": 524,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 292,
+                "opponentScore": 140,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 387,
+                "opponentScore": 110,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 275,
+                "opponentScore": 180,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 2,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3335981,
+            "candidateSeat": 0,
+            "aggregateScore": 671,
+            "opponentAggregateScore": 778,
+            "aggregateMargin": -107,
+            "aggregateTie": false,
+            "wonServerCrown": false,
+            "finalPlace": 2,
+            "games": [
+              {
+                "game": 1,
+                "score": 191,
+                "opponentScore": 288,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 374,
+                "opponentScore": 103,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 3,
+                "decisions": 100,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 106,
+                "opponentScore": 387,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 2,
+                "decisions": 92,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3343900,
+          "candidate": {
+            "seed": 3343900,
+            "candidateSeat": 1,
+            "aggregateScore": 844,
+            "opponentAggregateScore": 516,
+            "aggregateMargin": 328,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 265,
+                "opponentScore": 189,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 3,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 306,
+                "opponentScore": 120,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 273,
+                "opponentScore": 207,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3343900,
+            "candidateSeat": 1,
+            "aggregateScore": 694,
+            "opponentAggregateScore": 791,
+            "aggregateMargin": -97,
+            "aggregateTie": false,
+            "wonServerCrown": false,
+            "finalPlace": 2,
+            "games": [
+              {
+                "game": 1,
+                "score": 143,
+                "opponentScore": 328,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 94,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 176,
+                "opponentScore": 312,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 94,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 375,
+                "opponentScore": 151,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3351819,
+          "candidate": {
+            "seed": 3351819,
+            "candidateSeat": 0,
+            "aggregateScore": 1145,
+            "opponentAggregateScore": 332,
+            "aggregateMargin": 813,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 335,
+                "opponentScore": 136,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 399,
+                "opponentScore": 106,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 3,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 411,
+                "opponentScore": 90,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3351819,
+            "candidateSeat": 0,
+            "aggregateScore": 684,
+            "opponentAggregateScore": 848,
+            "aggregateMargin": -164,
+            "aggregateTie": false,
+            "wonServerCrown": false,
+            "finalPlace": 2,
+            "games": [
+              {
+                "game": 1,
+                "score": 182,
+                "opponentScore": 335,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 93,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 267,
+                "opponentScore": 240,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 235,
+                "opponentScore": 273,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3359738,
+          "candidate": {
+            "seed": 3359738,
+            "candidateSeat": 1,
+            "aggregateScore": 1160,
+            "opponentAggregateScore": 311,
+            "aggregateMargin": 849,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 378,
+                "opponentScore": 128,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 419,
+                "opponentScore": 71,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 100,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 363,
+                "opponentScore": 112,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3359738,
+            "candidateSeat": 1,
+            "aggregateScore": 1039,
+            "opponentAggregateScore": 490,
+            "aggregateMargin": 549,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 356,
+                "opponentScore": 159,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 380,
+                "opponentScore": 105,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 303,
+                "opponentScore": 226,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3367657,
+          "candidate": {
+            "seed": 3367657,
+            "candidateSeat": 0,
+            "aggregateScore": 1092,
+            "opponentAggregateScore": 356,
+            "aggregateMargin": 736,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 349,
+                "opponentScore": 128,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 412,
+                "opponentScore": 69,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 100,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 331,
+                "opponentScore": 159,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3367657,
+            "candidateSeat": 0,
+            "aggregateScore": 906,
+            "opponentAggregateScore": 612,
+            "aggregateMargin": 294,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 319,
+                "opponentScore": 166,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 317,
+                "opponentScore": 192,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 270,
+                "opponentScore": 254,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3375576,
+          "candidate": {
+            "seed": 3375576,
+            "candidateSeat": 1,
+            "aggregateScore": 1117,
+            "opponentAggregateScore": 354,
+            "aggregateMargin": 763,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 366,
+                "opponentScore": 134,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 13,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 361,
+                "opponentScore": 113,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 390,
+                "opponentScore": 107,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3375576,
+            "candidateSeat": 1,
+            "aggregateScore": 873,
+            "opponentAggregateScore": 610,
+            "aggregateMargin": 263,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 286,
+                "opponentScore": 211,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 13,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 335,
+                "opponentScore": 166,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 252,
+                "opponentScore": 233,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3383495,
+          "candidate": {
+            "seed": 3383495,
+            "candidateSeat": 0,
+            "aggregateScore": 870,
+            "opponentAggregateScore": 522,
+            "aggregateMargin": 348,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 199,
+                "opponentScore": 240,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 94,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 406,
+                "opponentScore": 90,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 100,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 265,
+                "opponentScore": 192,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3383495,
+            "candidateSeat": 0,
+            "aggregateScore": 795,
+            "opponentAggregateScore": 705,
+            "aggregateMargin": 90,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 214,
+                "opponentScore": 287,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 350,
+                "opponentScore": 142,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 8,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 231,
+                "opponentScore": 276,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 94,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3391414,
+          "candidate": {
+            "seed": 3391414,
+            "candidateSeat": 1,
+            "aggregateScore": 1005,
+            "opponentAggregateScore": 378,
+            "aggregateMargin": 627,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 375,
+                "opponentScore": 98,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 100,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 274,
+                "opponentScore": 176,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 356,
+                "opponentScore": 104,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 100,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3391414,
+            "candidateSeat": 1,
+            "aggregateScore": 956,
+            "opponentAggregateScore": 547,
+            "aggregateMargin": 409,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 218,
+                "opponentScore": 287,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 315,
+                "opponentScore": 178,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 423,
+                "opponentScore": 82,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 5,
+                "decisions": 100,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3399333,
+          "candidate": {
+            "seed": 3399333,
+            "candidateSeat": 0,
+            "aggregateScore": 982,
+            "opponentAggregateScore": 400,
+            "aggregateMargin": 582,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 311,
+                "opponentScore": 163,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 356,
+                "opponentScore": 115,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 315,
+                "opponentScore": 122,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3399333,
+            "candidateSeat": 0,
+            "aggregateScore": 968,
+            "opponentAggregateScore": 516,
+            "aggregateMargin": 452,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 281,
+                "opponentScore": 230,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 305,
+                "opponentScore": 162,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 10,
+                "decisions": 97,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 382,
+                "opponentScore": 124,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 9,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        },
+        {
+          "seed": 3407252,
+          "candidate": {
+            "seed": 3407252,
+            "candidateSeat": 1,
+            "aggregateScore": 1139,
+            "opponentAggregateScore": 286,
+            "aggregateMargin": 853,
+            "aggregateTie": false,
+            "wonServerCrown": true,
+            "finalPlace": 1,
+            "games": [
+              {
+                "game": 1,
+                "score": 385,
+                "opponentScore": 111,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 365,
+                "opponentScore": 88,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 99,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 389,
+                "opponentScore": 87,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 6,
+                "decisions": 98,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          },
+          "baseline": {
+            "seed": 3407252,
+            "candidateSeat": 1,
+            "aggregateScore": 748,
+            "opponentAggregateScore": 762,
+            "aggregateMargin": -14,
+            "aggregateTie": false,
+            "wonServerCrown": false,
+            "finalPlace": 2,
+            "games": [
+              {
+                "game": 1,
+                "score": 316,
+                "opponentScore": 204,
+                "place": 1,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 2,
+                "score": 210,
+                "opponentScore": 263,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 7,
+                "decisions": 96,
+                "decisionBudgetOverruns": 0
+              },
+              {
+                "game": 3,
+                "score": 222,
+                "opponentScore": 295,
+                "place": 2,
+                "auctionWindows": 88,
+                "firstCashoutSeconds": 2,
+                "decisions": 95,
+                "decisionBudgetOverruns": 0
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "productionPromotionAuthorized": false
+}
