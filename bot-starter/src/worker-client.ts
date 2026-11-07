@@ -6,6 +6,20 @@ interface Job {
   snapshot: MatchSnapshot;
   resolve: (decision: Decision | null) => void;
   timer?: ReturnType<typeof setTimeout>;
+  queuedAt: number;
+  startedAt?: number;
+}
+
+export interface WorkerMetrics {
+  requested: number;
+  completed: number;
+  activeTimeouts: number;
+  queuedTimeouts: number;
+  superseded: number;
+  starts: number;
+  errors: number;
+  roundTripTotalMs: number;
+  computeTotalMs: number;
 }
 
 /** One reusable worker, one active job, and at most one newest pending state. */
@@ -17,8 +31,13 @@ export class StrategyWorker {
   private stopped = false;
   private ready = false;
   private startup: Promise<void> | undefined;
+  private startupTimer: ReturnType<typeof setTimeout> | undefined;
+  private readonly metrics: WorkerMetrics = { requested: 0, completed: 0, activeTimeouts: 0, queuedTimeouts: 0,
+    superseded: 0, starts: 0, errors: 0, roundTripTotalMs: 0, computeTotalMs: 0 };
 
   constructor(private readonly dictionaryPath?: string, private readonly timeoutMs = 150) {}
+
+  stats(): WorkerMetrics { return { ...this.metrics }; }
 
   start(): Promise<void> {
     if (this.stopped) return Promise.reject(new Error("Worker has stopped"));
@@ -29,12 +48,15 @@ export class StrategyWorker {
         execArgv: [],
         workerData: { dictionaryPath: this.dictionaryPath },
       });
+      this.metrics.starts++;
       this.worker = worker;
       let initialized = false;
-      const startupTimer = setTimeout(() => failed(new Error("Dictionary/worker startup exceeded 15 seconds")), 15_000);
+      this.startupTimer = setTimeout(() => failed(new Error("Dictionary/worker startup exceeded 15 seconds")), 15_000);
       const failed = (error: Error) => {
         if (this.worker !== worker) return;
-        clearTimeout(startupTimer);
+        clearTimeout(this.startupTimer);
+        this.startupTimer = undefined;
+        this.metrics.errors++;
         this.ready = false;
         this.worker = undefined;
         this.startup = undefined;
@@ -51,7 +73,8 @@ export class StrategyWorker {
         if (this.worker !== worker) return;
         if (message.ready === true) {
           initialized = true;
-          clearTimeout(startupTimer);
+          clearTimeout(this.startupTimer);
+          this.startupTimer = undefined;
           this.ready = true;
           this.startup = undefined;
           resolve();
@@ -60,7 +83,13 @@ export class StrategyWorker {
         }
         const job = this.active;
         if (!job || message.id !== job.id || message.matchId !== job.snapshot.matchId || message.auctionId !== job.snapshot.auctionId) return;
-        this.finish(job, message.error ? null : message.decision);
+        const roundTripMs = performance.now() - job.queuedAt;
+        this.metrics.completed++;
+        this.metrics.roundTripTotalMs += roundTripMs;
+        if (message.error) this.metrics.errors++;
+        if (Number.isFinite(message.decision?.elapsedMs)) this.metrics.computeTotalMs += message.decision.elapsedMs;
+        this.finish(job, message.error ? null : { ...message.decision, roundTripMs,
+          queuedMs: (job.startedAt ?? job.queuedAt) - job.queuedAt });
         this.dispatch();
       });
     });
@@ -70,8 +99,9 @@ export class StrategyWorker {
   evaluate(snapshot: MatchSnapshot): Promise<Decision | null> {
     if (this.stopped) return Promise.resolve(null);
     return new Promise(resolve => {
-      if (this.pending) this.finish(this.pending, null);
-      const job: Job = { id: ++this.nextId, snapshot, resolve };
+      this.metrics.requested++;
+      if (this.pending) { this.metrics.superseded++; this.finish(this.pending, null); }
+      const job: Job = { id: ++this.nextId, snapshot, resolve, queuedAt: performance.now() };
       this.pending = job;
       // The deadline includes queue time, so fallback never waits for another
       // job or a restarted worker to finish initializing.
@@ -84,6 +114,8 @@ export class StrategyWorker {
   stop(): void {
     this.stopped = true;
     this.ready = false;
+    if (this.startupTimer) clearTimeout(this.startupTimer);
+    this.startupTimer = undefined;
     if (this.active) this.finish(this.active, null);
     this.failPending();
     const worker = this.worker;
@@ -107,16 +139,19 @@ export class StrategyWorker {
     const job = this.pending;
     this.pending = undefined;
     this.active = job;
+    job.startedAt = performance.now();
     this.worker.postMessage({ id: job.id, snapshot: job.snapshot });
   }
 
   private timeout(job: Job): void {
     if (this.pending === job) {
+      this.metrics.queuedTimeouts++;
       this.pending = undefined;
       this.finish(job, null);
       return;
     }
     if (this.active !== job) return;
+    this.metrics.activeTimeouts++;
     const worker = this.worker;
     this.ready = false;
     this.worker = undefined;

@@ -18,6 +18,53 @@ export interface Decision {
   bid: number;
   word: string | null;
   plan?: string[];
+  elapsedMs?: number;
+  roundTripMs?: number;
+  queuedMs?: number;
+}
+
+interface RowEventSource<Row> {
+  iter(): Iterable<Row>;
+  onInsert(callback: (context: unknown, row: Row) => void): void;
+  onUpdate(callback: (context: unknown, oldRow: Row, row: Row) => void): void;
+  onDelete(callback: (context: unknown, row: Row) => void): void;
+}
+
+/** SDK 2.12 client unique-index find() scans rows; maintain a real key index. */
+export function indexRows<Row extends { id: bigint }>(table: RowEventSource<Row>, changed: () => void) {
+  const rows = new Map<bigint, Row>();
+  table.onInsert((_ctx, row) => { rows.set(row.id, row); changed(); });
+  table.onUpdate((_ctx, old, row) => { if (old.id !== row.id) rows.delete(old.id); rows.set(row.id, row); changed(); });
+  table.onDelete((_ctx, row) => { rows.delete(row.id); changed(); });
+  return {
+    rows: rows as ReadonlyMap<bigint, Row>,
+    // Rebuild once after initial subscription or replay, also removing rows
+    // that disappeared while disconnected even if no row callback was emitted.
+    rebuild(): void {
+      rows.clear();
+      for (const row of table.iter()) rows.set(row.id, row);
+    },
+  };
+}
+
+export interface MatchMetrics {
+  evaluations: number;
+  fallbacks: number;
+  staleResults: number;
+  acceptedBids: number;
+  rejectedBids: number;
+  deadlineSkips: number;
+  uncalibratedSkips: number;
+  acceptedWords: number;
+  rejectedWords: number;
+  roundTripTotalMs: number;
+  roundTripMaxMs: number;
+  computeTotalMs: number;
+}
+function matchMetrics(): MatchMetrics {
+  return { evaluations: 0, fallbacks: 0, staleResults: 0, acceptedBids: 0, rejectedBids: 0,
+    deadlineSkips: 0, uncalibratedSkips: 0, acceptedWords: 0, rejectedWords: 0,
+    roundTripTotalMs: 0, roundTripMaxMs: 0, computeTotalMs: 0 };
 }
 
 /** Map server epoch timestamps into a local monotonic clock without wall-clock trust. */
@@ -93,6 +140,7 @@ interface WordPending {
   acknowledged: boolean;
 }
 interface MatchActions {
+  metrics: MatchMetrics;
   requested?: string;
   plan?: string[];
   word?: WordPending;
@@ -120,6 +168,11 @@ export class BotController {
 
   constructor(private readonly options: ControllerOptions) {
     this.now = options.now ?? (() => performance.now());
+  }
+
+  stats(matchId: bigint): MatchMetrics | undefined {
+    const metrics = this.matches.get(matchId)?.metrics;
+    return metrics ? { ...metrics } : undefined;
   }
 
   /** Collapse all row callbacks from a transaction before reading the cache. */
@@ -167,7 +220,7 @@ export class BotController {
       }
     }
     for (const snapshot of snapshots) {
-      const state = this.matches.get(snapshot.matchId) ?? {};
+      const state = this.matches.get(snapshot.matchId) ?? { metrics: matchMetrics() };
       this.matches.set(snapshot.matchId, state);
       if (state.word?.acknowledged && state.word.rack !== rackKey(snapshot.myRack)) {
         state.word = undefined;
@@ -177,14 +230,22 @@ export class BotController {
       if (state.requested === key) continue;
       state.requested = key;
       const epoch = this.epoch;
+      const requestedAt = this.now();
+      state.metrics.evaluations++;
       void this.options.evaluate(snapshot).then(decision => {
         if (this.stopped || epoch !== this.epoch || this.matches.get(snapshot.matchId) !== state) return;
+        const roundTripMs = this.now() - requestedAt;
+        state.metrics.roundTripTotalMs += roundTripMs;
+        state.metrics.roundTripMaxMs = Math.max(state.metrics.roundTripMaxMs, roundTripMs);
+        if (!decision) state.metrics.fallbacks++;
+        if (Number.isFinite(decision?.elapsedMs)) state.metrics.computeTotalMs += decision!.elapsedMs!;
         const fresh = this.current(snapshot.matchId);
         if (!fresh || snapshotKey(fresh) !== key) {
+          state.metrics.staleResults++;
           this.options.diagnostic?.("stale", snapshot, "worker result no longer matches the committed snapshot");
           return;
         }
-        this.options.diagnostic?.("decision", fresh, `bid=${decision?.bid ?? fallbackBid(fresh)} word=${decision?.word ?? "null"} fallback=${decision === null}`);
+        this.options.diagnostic?.("decision", fresh, `bid=${decision?.bid ?? fallbackBid(fresh)} word=${decision?.word ?? "null"} fallback=${decision === null} roundTripMs=${roundTripMs.toFixed(1)} computeMs=${decision?.elapsedMs?.toFixed(1) ?? "null"} queuedMs=${decision?.queuedMs?.toFixed(1) ?? "null"}`);
         if (decision?.plan) state.plan = decision.plan;
         this.bid(fresh, state, decision?.bid ?? fallbackBid(fresh));
         const word = decision ? decision.word : cachedWord(fresh, state.plan ?? []);
@@ -192,6 +253,10 @@ export class BotController {
         if (!decision) this.retry(snapshot.matchId, state);
       }).catch(() => {
         if (epoch !== this.epoch || this.matches.get(snapshot.matchId) !== state) return;
+        state.metrics.fallbacks++;
+        const roundTripMs = this.now() - requestedAt;
+        state.metrics.roundTripTotalMs += roundTripMs;
+        state.metrics.roundTripMaxMs = Math.max(state.metrics.roundTripMaxMs, roundTripMs);
         const fresh = this.current(snapshot.matchId);
         if (fresh && snapshotKey(fresh) === key) {
           this.bid(fresh, state, fallbackBid(fresh));
@@ -208,9 +273,11 @@ export class BotController {
       this.options.diagnostic?.("guard", snapshot, "missing cached open auction"); return;
     }
     if (snapshot.closesAtMs === null) {
+      state.metrics.uncalibratedSkips++;
       this.options.diagnostic?.("guard", snapshot, "awaiting a live server clock anchor"); return;
     }
     if (this.now() + 150 >= snapshot.closesAtMs) {
+      state.metrics.deadlineSkips++;
       this.options.diagnostic?.("guard", snapshot, `deadline remainingMs=${snapshot.closesAtMs - this.now()}`); return;
     }
     if (!Number.isFinite(proposed)) { this.options.diagnostic?.("guard", snapshot, "nonfinite bid"); return; }
@@ -233,6 +300,7 @@ export class BotController {
       if (epoch !== this.epoch || state.bid !== bid) return;
       bid.pending = false;
       bid.acknowledged = true;
+      state.metrics.acceptedBids++;
       this.options.report?.(`bid ${amount} accepted for auction ${bid.auctionId}`);
       const fresh = this.current(snapshot.matchId);
       if (fresh && bid.desired !== undefined && bid.desired !== bid.amount && bid.desiredKey === snapshotKey(fresh)) {
@@ -244,6 +312,7 @@ export class BotController {
     }).catch(() => {
       if (epoch !== this.epoch || state.bid !== bid) return;
       bid.pending = false;
+      state.metrics.rejectedBids++;
       this.options.report?.(`bid rejected for auction ${bid.auctionId}; checking current state`);
       const fresh = this.current(snapshot.matchId);
       if (fresh?.auctionId === bid.auctionId && fresh.closesAtMs !== null && this.now() + 150 < fresh.closesAtMs) this.retry(snapshot.matchId, state);
@@ -258,6 +327,7 @@ export class BotController {
     void this.options.submitWord(snapshot.matchId, word).then(() => {
       if (epoch !== this.epoch || state.word !== pending) return;
       pending.acknowledged = true;
+      state.metrics.acceptedWords++;
       this.options.report?.(`word ${word} accepted in match ${snapshot.matchId}`);
       // Ack and view updates may arrive in either order. Reconcile only clears
       // this flight when BOTH the ack and an authoritative rack change exist.
@@ -265,6 +335,7 @@ export class BotController {
     }).catch(() => {
       if (epoch !== this.epoch || state.word !== pending) return;
       state.word = undefined;
+      state.metrics.rejectedWords++;
       this.options.report?.(`word rejected in match ${snapshot.matchId}; checking current state`);
       this.retry(snapshot.matchId, state);
     });

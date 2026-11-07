@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { AuctionClock, BotController, estimatePrice, fallbackBid, parseTournamentId, type Decision, type MatchSnapshot } from "./client.js";
+import { AuctionClock, BotController, estimatePrice, fallbackBid, indexRows, parseTournamentId, type Decision, type MatchSnapshot } from "./client.js";
 
 const rack = (letters: string) => {
   const result = new Map<string, number>();
@@ -15,6 +15,41 @@ function deferred<T>() {
   const promise = new Promise<T>(r => { resolve = r; });
   return { promise, resolve };
 }
+
+test("key index tracks SDK row updates/deletes and rebuilds after a missed replay event", () => {
+  type Row = { id: bigint; status: string };
+  let current: Row[] = [{ id: 1n, status: "Running" }, { id: 2n, status: "Ended" }];
+  let insert!: (ctx: unknown, row: Row) => void;
+  let update!: (ctx: unknown, old: Row, row: Row) => void;
+  let remove!: (ctx: unknown, row: Row) => void;
+  let changed = 0;
+  const index = indexRows({ iter: () => current,
+    onInsert: cb => { insert = cb; }, onUpdate: cb => { update = cb; }, onDelete: cb => { remove = cb; } }, () => changed++);
+  index.rebuild();
+  assert.equal(index.rows.get(1n)?.status, "Running");
+  update({}, current[0]!, { id: 1n, status: "Ended" });
+  insert({}, { id: 3n, status: "Running" });
+  remove({}, current[1]!);
+  assert.equal(index.rows.get(1n)?.status, "Ended");
+  assert.equal(index.rows.has(2n), false);
+  assert.equal(index.rows.get(3n)?.status, "Running");
+  assert.equal(changed, 3);
+  current = [{ id: 4n, status: "Running" }]; // Reconnected snapshot omitted old rows.
+  index.rebuild();
+  assert.deepEqual([...index.rows.keys()], [4n]);
+});
+
+test("43k historical matches are scanned once, never during repeated keyed lookups", () => {
+  const rows = Array.from({ length: 43_000 }, (_, i) => ({ id: BigInt(i + 1), status: i === 42_999 ? "Running" : "Ended" }));
+  let reads = 0;
+  const index = indexRows({
+    *iter() { for (const row of rows) { reads++; yield row; } },
+    onInsert: () => {}, onUpdate: () => {}, onDelete: () => {},
+  }, () => {});
+  index.rebuild();
+  for (let i = 0; i < 10_000; i++) assert.equal(index.rows.get(43_000n)?.status, "Running");
+  assert.equal(reads, 43_000, "keyed lookups must not scan the SDK table again");
+});
 
 test("auction clock ignores cold/replayed snapshots and calibrates only new live auctions", () => {
   let now = 5000;
@@ -216,6 +251,26 @@ test("price estimate and emergency bids use the approved economics", () => {
   assert.equal(fallbackBid({ ...s, myRack: rack("E") }), 1);
   assert.equal(fallbackBid({ ...s, myBalance: -5 }), 0);
   assert.equal(fallbackBid({ ...s, bagTotal: 0 }), 0);
+});
+
+test("match metrics distinguish worker fallback from rejected transport and accepted words", async t => {
+  const current = snapshot();
+  let evaluations = 0;
+  let bidCalls = 0;
+  const controller = new BotController({ read: () => [current],
+    evaluate: async () => ++evaluations === 1 ? null : { bid: 9, word: "CAT", elapsedMs: 4 },
+    submitBid: async () => { if (++bidCalls === 1) throw new Error("temporary transport failure"); },
+    submitWord: async () => {}, now: () => 1000, retryMs: 1 });
+  t.after(() => controller.stop());
+  controller.refresh(); await flush();
+  await new Promise(resolve => setTimeout(resolve, 15)); await flush();
+  const metrics = controller.stats(current.matchId)!;
+  assert.equal(metrics.evaluations, 2);
+  assert.equal(metrics.fallbacks, 1);
+  assert.equal(metrics.rejectedBids, 1);
+  assert.equal(metrics.acceptedBids, 1);
+  assert.equal(metrics.acceptedWords, 1);
+  assert.equal(metrics.computeTotalMs, 4);
 });
 
 test("tournament identifiers reject coercions, negatives and u64 overflow", () => {

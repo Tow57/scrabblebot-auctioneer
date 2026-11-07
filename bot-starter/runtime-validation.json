@@ -1,0 +1,85 @@
+{
+  "generatedAt": "2026-11-07T20:52:11.467Z",
+  "version": "native-event-index candidate",
+  "baselineCommit": "f4569e067a1d6fafcdc773d525268856f6d1542a",
+  "profileBefore": {
+    "durationSeconds": 45.017,
+    "idleSeconds": 30.991,
+    "sdkDeepEqualSeconds": 8.161,
+    "sdkFindSeconds": 3.031,
+    "sdkGeneratorSeconds": 1.694
+  },
+  "profileAfter": {
+    "durationSeconds": 45.021,
+    "idleSeconds": 44.108,
+    "notes": "SDK linear lookup stack no longer dominates CPU; same wire protocol and strategy defaults."
+  },
+  "liveMatches": [
+    {
+      "matchId": "42702",
+      "controller": {
+        "evaluations": 69,
+        "fallbacks": 0,
+        "staleResults": 0,
+        "acceptedBids": 65,
+        "rejectedBids": 0,
+        "deadlineSkips": 0,
+        "uncalibratedSkips": 1,
+        "acceptedWords": 4,
+        "rejectedWords": 0,
+        "roundTripTotalMs": 1205.8317999999747,
+        "roundTripMaxMs": 100.74419999999918,
+        "computeTotalMs": 1174.7546000000477
+      },
+      "worker": {
+        "requested": 69,
+        "completed": 69,
+        "activeTimeouts": 0,
+        "queuedTimeouts": 0,
+        "superseded": 0,
+        "starts": 0,
+        "errors": 0,
+        "roundTripTotalMs": 1201.9982000000427,
+        "computeTotalMs": 1174.7546000000477
+      },
+      "eventLoopDelayMs": {
+        "mean": 23.300087737175794,
+        "p95": 31.571967,
+        "max": 89.849855
+      }
+    },
+    {
+      "matchId": "42703",
+      "controller": {
+        "evaluations": 72,
+        "fallbacks": 0,
+        "staleResults": 0,
+        "acceptedBids": 70,
+        "rejectedBids": 0,
+        "deadlineSkips": 0,
+        "uncalibratedSkips": 0,
+        "acceptedWords": 4,
+        "rejectedWords": 0,
+        "roundTripTotalMs": 1364.4585999999254,
+        "roundTripMaxMs": 81.3289999999979,
+        "computeTotalMs": 1331.4168000000354
+      },
+      "worker": {
+        "requested": 72,
+        "completed": 72,
+        "activeTimeouts": 0,
+        "queuedTimeouts": 0,
+        "superseded": 0,
+        "starts": 0,
+        "errors": 0,
+        "roundTripTotalMs": 1360.7117000000871,
+        "computeTotalMs": 1331.4168000000352
+      },
+      "eventLoopDelayMs": {
+        "mean": 26.75876321882353,
+        "p95": 33.619967,
+        "max": 42.565631
+      }
+    }
+  ]
+}

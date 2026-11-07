@@ -1,8 +1,9 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { monitorEventLoopDelay } from "node:perf_hooks";
 import type { Identity } from "spacetimedb";
 import { DbConnection, tables, type SubscriptionHandle } from "./module_bindings/index.js";
-import { AuctionClock, BotController, estimatePrice, parseTournamentId, type MatchSnapshot } from "./client.js";
+import { AuctionClock, BotController, estimatePrice, indexRows, parseTournamentId, type MatchSnapshot } from "./client.js";
 import { StrategyWorker } from "./worker-client.js";
 
 const HOST = process.env.STDB_HOST ?? "https://maincloud.spacetimedb.com";
@@ -26,6 +27,8 @@ async function main(): Promise<void> {
   const worker = new StrategyWorker(process.env.BOT_DICTIONARY);
   await worker.start(); // Missing/malformed dictionaries stop before any network activity.
   const auctionClock = new AuctionClock(); // Preserved across reconnects in this process.
+  const loopDelay = monitorEventLoopDelay({ resolution: 20 });
+  loopDelay.enable();
   let connection: DbConnection | undefined;
   let controller: BotController | undefined;
   let stopped = false;
@@ -41,6 +44,7 @@ async function main(): Promise<void> {
     online = false;
     if (reconnectTimer) clearTimeout(reconnectTimer);
     controller?.stop();
+    loopDelay.disable();
     worker.stop();
     const previous = connection;
     connection = undefined;
@@ -81,12 +85,13 @@ async function main(): Promise<void> {
     let registrationConfirmed = false;
     let poll: ReturnType<typeof setTimeout> | undefined;
     let sessionEpoch = 0;
-    const matchSubscriptions = new Map<bigint, { ready: boolean; handle?: SubscriptionHandle }>();
+    const matchSubscriptions = new Map<bigint, { ready: boolean; handle?: SubscriptionHandle; workerAtStart: ReturnType<StrategyWorker["stats"]> }>();
+    const matchStates = indexRows(c.db.matchState, schedule);
     const debugSeen = new Map<string, bigint | undefined>();
 
     function diagnostic(stage: string, snapshot: MatchSnapshot, detail: string): void {
       if (!DEBUG) return;
-      const match = c.db.matchState.id.find(snapshot.matchId);
+      const match = matchStates.rows.get(snapshot.matchId);
       const expected = match?.currentAuctionId;
       const key = `${snapshot.matchId}/${stage}`;
       if (debugSeen.has(key) && debugSeen.get(key) === expected) return;
@@ -132,7 +137,7 @@ async function main(): Promise<void> {
       const result: MatchSnapshot[] = [];
       for (const p of c.db.matchParticipant.iter()) {
         if (p.botId !== myBotId) continue;
-        const match = c.db.matchState.id.find(p.matchId);
+        const match = matchStates.rows.get(p.matchId);
         if (match?.status.tag !== "Running" || !matchSubscriptions.get(p.matchId)?.ready) continue;
         const auction = match.currentAuctionId === undefined ? undefined : c.db.auction.id.find(match.currentAuctionId);
         const open = auction?.status.tag === "Open" ? auction : undefined;
@@ -202,15 +207,21 @@ async function main(): Promise<void> {
 
     function reconcile(): void {
       if (stopped || connection !== c || !online || !baseReady || !ownReady || myBotId === undefined) return;
-      const running = new Set([...c.db.matchParticipant.iter()].filter(p => p.botId === myBotId && c.db.matchState.id.find(p.matchId)?.status.tag === "Running").map(p => p.matchId));
+      const running = new Set([...c.db.matchParticipant.iter()].filter(p => p.botId === myBotId && matchStates.rows.get(p.matchId)?.status.tag === "Running").map(p => p.matchId));
       for (const [id, sub] of matchSubscriptions) if (!running.has(id)) {
+        const metrics = controller?.stats(id);
+        const latest = worker.stats();
+        const workerDelta = Object.fromEntries(Object.entries(latest).map(([key, value]) => [key, value - sub.workerAtStart[key as keyof typeof latest]]));
+        log(`[metrics] ${JSON.stringify({ matchId: String(id), controller: metrics ?? null, worker: workerDelta,
+          eventLoopDelayMs: { mean: loopDelay.mean / 1e6, p95: loopDelay.percentile(95) / 1e6, max: loopDelay.max / 1e6 } })}`);
+        loopDelay.reset();
         matchSubscriptions.delete(id);
         for (const key of debugSeen.keys()) if (key.startsWith(`${id}/`)) debugSeen.delete(key);
         try { sub.handle?.unsubscribe(); } catch { /* closed connection */ }
         log(`match ${id} ended; cleared its subscriptions`);
       }
       for (const id of running) if (!matchSubscriptions.has(id)) {
-        const sub: { ready: boolean; handle?: SubscriptionHandle } = { ready: false };
+        const sub: { ready: boolean; handle?: SubscriptionHandle; workerAtStart: ReturnType<StrategyWorker["stats"]> } = { ready: false, workerAtStart: worker.stats() };
         matchSubscriptions.set(id, sub);
         sub.handle = c.subscriptionBuilder().onApplied(() => { sub.ready = true; schedule(); }).onError(subscriptionError).subscribe([
           tables.auction.where(r => r.matchId.eq(id)),
@@ -238,13 +249,14 @@ async function main(): Promise<void> {
       });
     }
 
-    for (const table of [c.db.matchState, c.db.matchParticipant, c.db.auction, c.db.auctionResult, c.db.wordPlay, c.db.myRack, c.db.openLobbies, c.db.openLobbyMembers, c.db.tournament, c.db.tournamentEntry]) {
+    for (const table of [c.db.matchParticipant, c.db.auction, c.db.auctionResult, c.db.wordPlay, c.db.myRack, c.db.openLobbies, c.db.openLobbyMembers, c.db.tournament, c.db.tournamentEntry]) {
       table.onInsert(schedule); table.onUpdate(schedule); table.onDelete(schedule);
     }
     c.db.auction.onInsert((ctx, auction) => {
       if (auction.status.tag === "Open" && auctionClock.observe(Number(auction.opensAt.microsSinceUnixEpoch / 1000n), ctx.event.tag)) schedule();
     });
     c.subscriptionBuilder().onApplied(() => {
+      matchStates.rebuild();
       baseReady = true;
       const credential = c.db.botCredential.identity.find(identity);
       if (!credential) { fatal("This token is not a bot credential. Generate a bot token on your team page and set BOT_TOKEN locally."); return; }

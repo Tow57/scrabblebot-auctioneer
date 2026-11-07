@@ -25,6 +25,10 @@ test("queued snapshots are bounded to the newest pending request", async t => {
   const decisions = await Promise.all(jobs);
   assert.ok(decisions.slice(1, -1).every(value => value === null));
   assert.ok(decisions.filter(Boolean).length <= 2);
+  const metrics = worker.stats();
+  assert.equal(metrics.requested, 12);
+  assert.equal(metrics.completed + metrics.activeTimeouts + metrics.queuedTimeouts + metrics.superseded, 12);
+  assert.equal(metrics.superseded, 10);
 });
 
 test("a missing dictionary fails startup with an actionable error", async t => {
@@ -40,5 +44,6 @@ test("hard job deadline returns fallback instead of blocking the parent", async 
   const started = performance.now();
   const decision = await worker.evaluate({ ...snapshot(), myRack: new Map([..."AEINRSTBCDFGHLMOP"].map(c => [c, 1])) });
   assert.equal(decision, null);
+  assert.equal(worker.stats().activeTimeouts, 1);
   assert.ok(performance.now() - started < 100, "parent did not promptly receive the timeout");
 });
