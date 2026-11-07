@@ -1,0 +1,363 @@
+{
+  "id": "holdout-01",
+  "preregisteredAtUtc": "2026-11-07T21:37:14.957Z",
+  "status": "locked-before-results",
+  "moduleCommit": "b5ccb36aa238ad16692f8d6af54da15ef9f11324",
+  "baseline": {
+    "commit": "f4569e067a1d6fafcdc773d525268856f6d1542a",
+    "capitalAllowance": true,
+    "description": "Frozen production tournament-v1.0 at f4569e0 with capital allowance enabled"
+  },
+  "candidates": [
+    {
+      "id": "face-0.1",
+      "policy": "face-v1",
+      "weight": 0.1,
+      "maxMissing": 1
+    },
+    {
+      "id": "face-0.3",
+      "policy": "face-v1",
+      "weight": 0.3,
+      "maxMissing": 1
+    },
+    {
+      "id": "quality-face-m2-w0.5",
+      "policy": "quality-face-v1",
+      "weight": 0.5,
+      "maxMissing": 2
+    }
+  ],
+  "rosters": [
+    {
+      "id": "mixed",
+      "weight": 0.5,
+      "description": "Three public-data-inspired market policies and two frozen starters; not reconstructions of live rivals"
+    },
+    {
+      "id": "public",
+      "weight": 0.5,
+      "description": "Three MIT-attributed premium-floor and two linear-face numeric floor archetypes over frozen v1; not full copies or verified live rivals"
+    }
+  ],
+  "jobs": [
+    {
+      "candidateId": "face-0.1",
+      "rosterId": "mixed",
+      "report": "raw/face-0.1__mixed.json",
+      "stdout": "raw/face-0.1__mixed.stdout.log",
+      "stderr": "raw/face-0.1__mixed.stderr.log"
+    },
+    {
+      "candidateId": "face-0.1",
+      "rosterId": "public",
+      "report": "raw/face-0.1__public.json",
+      "stdout": "raw/face-0.1__public.stdout.log",
+      "stderr": "raw/face-0.1__public.stderr.log"
+    },
+    {
+      "candidateId": "face-0.3",
+      "rosterId": "mixed",
+      "report": "raw/face-0.3__mixed.json",
+      "stdout": "raw/face-0.3__mixed.stdout.log",
+      "stderr": "raw/face-0.3__mixed.stderr.log"
+    },
+    {
+      "candidateId": "face-0.3",
+      "rosterId": "public",
+      "report": "raw/face-0.3__public.json",
+      "stdout": "raw/face-0.3__public.stdout.log",
+      "stderr": "raw/face-0.3__public.stderr.log"
+    },
+    {
+      "candidateId": "quality-face-m2-w0.5",
+      "rosterId": "mixed",
+      "report": "raw/quality-face-m2-w0.5__mixed.json",
+      "stdout": "raw/quality-face-m2-w0.5__mixed.stdout.log",
+      "stderr": "raw/quality-face-m2-w0.5__mixed.stderr.log"
+    },
+    {
+      "candidateId": "quality-face-m2-w0.5",
+      "rosterId": "public",
+      "report": "raw/quality-face-m2-w0.5__public.json",
+      "stdout": "raw/quality-face-m2-w0.5__public.stdout.log",
+      "stderr": "raw/quality-face-m2-w0.5__public.stderr.log"
+    }
+  ],
+  "controls": {
+    "BOT_BENCHMARK": "1",
+    "BOT_CAPITAL_ALLOWANCE": "1",
+    "BOT_BENCHMARK_COMPARE_V1": "1",
+    "BOT_BENCHMARK_COMPARE_CORE": "0",
+    "BOT_BENCHMARK_MAIN_ONLY": "1",
+    "BOT_BENCHMARK_SEEDS": "30",
+    "BOT_BENCHMARK_SEED_OFFSET": "100",
+    "BOT_BENCHMARK_TRACE": "1",
+    "BOT_TARGET_PLANNING": "0",
+    "BOT_TARGET_DISCOUNT": "0.65",
+    "BOT_TARGET_BID_FACTOR": "2",
+    "BOT_PROTECT_CORE_BID": "0",
+    "BOT_CASHOUT_LENGTH": "7",
+    "BOT_LIQUIDITY_MULTIPLIER": "0",
+    "BOT_BID_SCALE": "1",
+    "BOT_TERMINAL_DENIAL": "0"
+  },
+  "seedOffset": 100,
+  "seeds": [
+    801901,
+    809820,
+    817739,
+    825658,
+    833577,
+    841496,
+    849415,
+    857334,
+    865253,
+    873172,
+    881091,
+    889010,
+    896929,
+    904848,
+    912767,
+    920686,
+    928605,
+    936524,
+    944443,
+    952362,
+    960281,
+    968200,
+    976119,
+    984038,
+    991957,
+    999876,
+    1007795,
+    1015714,
+    1023633,
+    1031552
+  ],
+  "pairing": "The same 30 previously unseen seeds are used in both rosters; each measured seat occurs five times. Initial deals are paired, but later RNG consumption can diverge by policy.",
+  "primaryGate": {
+    "minimumRelativeScoreGain": 0.05,
+    "pooledMeanDefinition": "Arithmetic mean of mixed and public roster mean scores, equally weighted; gain = candidate / baseline - 1",
+    "placement": "Candidate mean place must be no worse than baseline separately in EACH roster",
+    "confidence": "For each seed average its two roster candidate-minus-baseline score differences; use n=30 seed clusters, sample variance with df=29, two-sided 95% t interval",
+    "tCritical": 2.045,
+    "intervalLowerMustExceed": 0,
+    "decisionBudgetMs": 100,
+    "decisionBudgetGate": "Total candidate decisionBudgetOverruns across both rosters must not exceed the baseline total",
+    "deadlineInterpretation": "Measured in-process decision wall time >100ms is a conservative offline overrun. The cooperative solver stop can have bookkeeping overhead; this is NOT a network failure or the production worker 150ms IPC-inclusive response gate."
+  },
+  "finalistSelection": "Among primary qualifiers choose highest pooled relative score gain, then highest paired interval lower bound, then candidate id. This selects further validation only, never deployment.",
+  "requiredNextValidation": {
+    "frozenV1": {
+      "pairedSeeds": 30,
+      "seedOffset": 200,
+      "maximumRelativeScoreLoss": 0.05,
+      "maximumMeanPlaceWorsening": 0.2
+    },
+    "additional": [
+      "First-price and price-stress validation",
+      "Six-seed starter safety smoke",
+      "Live transport, worker response deadline and performance gate"
+    ],
+    "productionWorkerResponseBudgetMs": 150,
+    "automaticPromotion": false
+  },
+  "marketDefinition": "For every run use ALL public auction winners: face-1 paid totals/counts, face>=4 paid totals/counts, and distinct buying seats. Summary prices pool totals/counts; active-seat summary is the mean per match.",
+  "clearing": "Child processes inherit the environment with every BOT_* key, OPPONENT_CALIBRATION, TOURNAMENT_ID, STDB_HOST and STDB_DB removed; only the explicit controls and job settings are added. No environment values are printed.",
+  "execution": {
+    "sequential": true,
+    "command": "node vitest.mjs run src/tests/bot-benchmark.test.ts --maxWorkers=1 --minWorkers=1",
+    "rawReportsMustNotExist": true,
+    "existingOutputPolicy": "Refuse any existing raw output, summary, or attempt lock; no automatic resume or overwrite"
+  },
+  "reportFingerprints": {
+    "dictionarySha256": "b819e7b67f8f2c80640ae76f0edbe59a4a1befb6de0f348463642ad49bdd2ad3",
+    "candidateSourcesSha256": "48716b5f3c15b6e0d54d2ce103dae47c507ade898375f282172372cad0204340",
+    "policyFixturesSha256": "f176b2b9063c9b3578ae957b413e25428f0adb272161a7e90f836eaa33d9c5e1",
+    "rolloutSourceSha256": "08290de0dfa5032c2de0faf6b3c6e8942e6d2bc3706703c1790124a1efdddad5",
+    "faceBidSourceSha256": "8f2abfe10314a16697bceab0cdf3b104641869e5eca83ee607b9c32dcb0606d9",
+    "cashoutSourceSha256": "2657b01c7cd7a7317d68cb386762c64f3cc19cf09609ea069e622f7e937a8cef",
+    "publicFormulaSourceSha256": "fedf0fb5ae264a7970231502ccecd8589b8252b0373ddfc80fca93f8c12d1bd6",
+    "targetSourceSha256": "617da1864be80019ca92acd822f7482330db062b4a342f87c43c1b5ad62b5d6c",
+    "qualityFaceSourceSha256": "ea699ad813adbdd16e723989fd9fb320de0ab654c72112b5417f0b0d2343988a"
+  },
+  "sourceHashes": [
+    {
+      "base": "repository",
+      "path": "bot-starter/package-lock.json",
+      "sha256": "22d75b63274467a2adfc1129a345ccdc99b7e93dcf015cc5f2308a1d37399de2"
+    },
+    {
+      "base": "repository",
+      "path": "bot-starter/src/client.ts",
+      "sha256": "09e0ad90a54a04d85d535168a4db76d58617bc4c10327415805841694c32badf"
+    },
+    {
+      "base": "repository",
+      "path": "bot-starter/src/dictionary.ts",
+      "sha256": "ab5831f9b83021524b22af876db2bd4c9c01e5f544ca1865911980775066ce23"
+    },
+    {
+      "base": "repository",
+      "path": "bot-starter/src/optimizer.ts",
+      "sha256": "fdb9391f88b7e79df188cb9b6034a27e34845e80c490be5ff54bb3be23aafc05"
+    },
+    {
+      "base": "repository",
+      "path": "bot-starter/src/strategy.ts",
+      "sha256": "9d07b623c481617cc30371819d04d7557a25c304baf3f882589f2ae43511085e"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/node_modules/spacetimedb/package.json",
+      "sha256": "8e3c5827cae9108f5d67538252ba3a88c8c97abfea71ce222cfae7c257305f13"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/package-lock.json",
+      "sha256": "f337cb3dd7022613d8acf29c8da2bc01ba3028271fcc64603eddbfb79113f7f8"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/dictionary.ts",
+      "sha256": "316c509912dc45b75da83fe22c4e816231745f41790a734ea1edec38ab84b654"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/game.ts",
+      "sha256": "bf851825e9852289c836de33fc61543aa14be6c4b6e5e86abecfe5562413e184"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/identity.ts",
+      "sha256": "b8cd91e1d06ec4bf4e43d64d050c82accc9d7d9240cd4c8380f9a65a6606b494"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/index.ts",
+      "sha256": "be9469999604a1aa07ba0bfbfee2748d541058dbdb7eeb72f1bc9fd2eae95629"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/letters.ts",
+      "sha256": "102784fcfe2ce0fca2daa9d9e93ed93ebd4157f4b30b663128fa52cf27fcd630"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/libm.ts",
+      "sha256": "d1c77660e22b9ef82f92ad873bdab8de1954f3552f2b1a6ab403d3cf1b17a1bd"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/lobby.ts",
+      "sha256": "7c3e5b0575c8ca6be810a990acdca99f4cf1c73dc9549eb45a16eb7570484b95"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/ratings.ts",
+      "sha256": "2ef90f86befede99444063702298763d6782bdee9ca8d460e06adf059ca43cf2"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/schema.ts",
+      "sha256": "67aa898efa43351fc0f19669e21ded132387d560f66e437305c09e7bc11d9334"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/tests/bot-benchmark.test.ts",
+      "sha256": "128b14fe421a5a4f5027c976cb148c321651e69ec6cb32d06898af94ae35fd84"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/tests/fixtures/cashout-ablation.ts",
+      "sha256": "2657b01c7cd7a7317d68cb386762c64f3cc19cf09609ea069e622f7e937a8cef"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/tests/fixtures/face-bid-ablation.ts",
+      "sha256": "8f2abfe10314a16697bceab0cdf3b104641869e5eca83ee607b9c32dcb0606d9"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/tests/fixtures/opponent-policies.ts",
+      "sha256": "8e1ca664c507888016788f533dae44f1e9645c4a9f635b2bbe9733270eabe53e"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/tests/fixtures/public-opponent-policies.ts",
+      "sha256": "fedf0fb5ae264a7970231502ccecd8589b8252b0373ddfc80fca93f8c12d1bd6"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/tests/fixtures/quality-face-ablation.ts",
+      "sha256": "ea699ad813adbdd16e723989fd9fb320de0ab654c72112b5417f0b0d2343988a"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/tests/fixtures/rollout-candidate.ts",
+      "sha256": "08290de0dfa5032c2de0faf6b3c6e8942e6d2bc3706703c1790124a1efdddad5"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/tests/fixtures/target-strategy.ts",
+      "sha256": "617da1864be80019ca92acd822f7482330db062b4a342f87c43c1b5ad62b5d6c"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/tests/fixtures/v1/dictionary.ts",
+      "sha256": "0c7cc180a3e75b44d5d67d1debbcd92026f16045b541494a281fce8caf1b36f6"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/tests/fixtures/v1/optimizer.ts",
+      "sha256": "fa516d58a7621f798a9315267138133b1568e2d26d1229332a9728d80cacb6f2"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/tests/fixtures/v1/strategy.ts",
+      "sha256": "42c7a7ce4b4e98ff2ed0fd718141ae1581c26c090302774972553dcf0fe21735"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/tests/harness.ts",
+      "sha256": "a6d9c937d480b3f23dc14ed486688c6d2e11459dc0cb7fc6e750c1eed3eee3b2"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/text.ts",
+      "sha256": "7fee61325305530ace42fb7e5d5e376cf6141ec20bc3ccce8d7ae53832c8cffe"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/tournament.ts",
+      "sha256": "e82e5c2b108cab3acbcd50d74b6f12491d1bb82759997fd0e618b80f6edc06f6"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/src/wordlist.d.ts",
+      "sha256": "a18601f1a3b6c7ee8effe60b37a1651393bb3d6b998cf51b68914e90ec4bd5e9"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/vitest.config.ts",
+      "sha256": "fd9e8c0225d08888765a8b34a35dc5a99a5d26da7d5cbeac995a6d00d286d8a2"
+    },
+    {
+      "base": "repository",
+      "path": "spacetimedb/wordlist.txt",
+      "sha256": "b819e7b67f8f2c80640ae76f0edbe59a4a1befb6de0f348463642ad49bdd2ad3"
+    },
+    {
+      "base": "refinement",
+      "path": "run-holdout.mjs",
+      "sha256": "e40ec3c0eeb13166af90aa28aed5baf685e16316964759d784f0d51d06e8ecbe"
+    },
+    {
+      "base": "refinement",
+      "path": "summarize-holdout.mjs",
+      "sha256": "cc169edf44407f896eb0ed30ef72b89346cd4fd4257e953eae3836ef61158a47"
+    }
+  ],
+  "uncertainty": "Three fixed candidate comparisons with unadjusted intervals. Synthetic seed-cluster uncertainty is not proof of a random tournament win. No adaptive threshold, roster, or candidate changes are allowed within this holdout."
+}

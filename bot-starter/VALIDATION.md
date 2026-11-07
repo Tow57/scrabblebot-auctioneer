@@ -12,6 +12,12 @@
 
 See `benchmark-results.json` for the release comparison and `benchmark-core-results.json` for the original core. The benchmark driver is the same for both policies, so these results measure strategy differences rather than the starter's original transport/cooldown bugs.
 
+### Locked refinement comparison
+
+Three fixed candidates were tested on 30 previously unseen paired seeds against each of two rosters: mixed market/starter policies and MIT-attributed public-formula archetypes over frozen v1. All entrants were external bots under the actual server reducers. The criteria and source hashes were locked before running. All 180 candidate/baseline pairs completed, and the corresponding module/fixture suite passed **208 tests** with two opt-in experiments skipped.
+
+None qualified. Equal-weight mean score changes were **−0.57%** for face weight 0.1, **−20.63%** for face weight 0.3, and **−2.09%** for quality-gated face weighting. Their paired confidence intervals use 30 seed clusters, averaging each seed's two roster differences. Weight 0.1 improved public-roster placement but lost score on mixed tables; this does not meet the locked combined gate. No strategy was promoted. See `benchmark-holdout-results.json` and `benchmark-holdout-manifest.json`; experimental code remains under server test fixtures only.
+
 The promoted capital allowance was also tested against **five previous-version core bots** over 30 paired scenarios: mean score **164.83 versus 91.9**, mean place **1.20 versus 3.03**, and **25/30 first-place finishes**. First-price cases improved too. In the separate fixed expensive-bidder fixture its score declined from 160.75 to 124.25 while still finishing first in all four cases; the policy is not uniformly superior on every opponent model. See `benchmark-capital-results.json`.
 
 ## Live verification
