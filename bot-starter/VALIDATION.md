@@ -19,7 +19,7 @@ The promoted capital allowance was also tested against **five previous-version c
 
 CPU profiling found that SDK 2.12 unique-index `find()` linearly scans cached rows. Repeated lookups through roughly 43,000 historical matches consumed about 12.8 seconds of a 45-second profile. The client now keeps a native match-ID map updated from row events and rebuilt after subscription replay. The next 45-second profile was 44.1 seconds idle, and the lookup stack disappeared from the major CPU consumers.
 
-The first complete post-fix telemetry interval (match 42702) recorded 69/69 completed worker decisions, zero fallbacks, stale results, rejected bids or deadline skips; the only skipped bid was cold-start clock calibration. See `runtime-validation.json`. Independent tests cover 43,000-row lookup complexity and replay consistency. This changes cache access and observability, not the SDK schema, server rules, or production bidding policy.
+The first complete post-fix telemetry interval (match 42702) recorded 69/69 completed worker decisions, zero fallbacks, stale results, rejected bids or deadline skips; the only skipped bid was cold-start clock calibration. See `runtime-validation.json`. The isolated release snapshot built and passed **36 bot tests**, including 43,000-row lookup complexity and replay consistency. This changes cache access and observability, not the SDK schema, server rules, or production bidding policy.
 
 Team **Tow57**, bot **Tow57-Auctioneer**, bot ID **164**, on the organizer's production service. Credentials stay local in an ignored token file.
 
