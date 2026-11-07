@@ -28,6 +28,8 @@ Production applies the exact confirmed multiplier only to positive bids with **t
 
 Independent same-family checks found no outstanding issues and passed full-dictionary production/frozen parity over 56 contexts. Real native-worker validation received **36/36 responses**, no timeouts/errors/restarts, p95 **65.29 ms**, maximum **66.06 ms** in the final run. All 28 conservatively comparable oracle cases matched; longer partial/deadline-adjacent cases were excluded from exactness claims. See `heads-up-native-validation.json`. These offline finals and native-worker results do not establish Swiss qualification or wins against every live rival. A live two-player tournament match has not yet been available.
 
+A clean archive of production source `5560ebdf8aeb3cf23fb47a906e53cee6b9445ee9` installed, built and passed **61/61 bot tests** in a fresh Windows path containing spaces and `#`. After a controlled single-process restart, five consecutive full six-player practice matches (42885, 42888, 42891, 42894, 42897) completed with zero worker timeouts, fallbacks, stale results, rejected bids/words or deadline skips. Maximum decision round trip was **57.48 ms**. Mean score was 79.2 and mean place 3.4. This checks operation of the released process; the two-player adjustment is inactive in those six-player matches. See `live-headsup-validation.json`.
+
 The promoted capital allowance was also tested against **five previous-version core bots** over 30 paired scenarios: mean score **164.83 versus 91.9**, mean place **1.20 versus 3.03**, and **25/30 first-place finishes**. First-price cases improved too. In the separate fixed expensive-bidder fixture its score declined from 160.75 to 124.25 while still finishing first in all four cases; the policy is not uniformly superior on every opponent model. See `benchmark-capital-results.json`.
 
 ## Live verification
@@ -75,7 +77,7 @@ The eight-sample lookahead experiment scored **341.5** versus the core's **336**
 
 ## Tournament and source release
 
-The user confirmed **November 7, 2026, 10:45 PM America/Chicago**, giving a latest code freeze of **9:15 PM**. The service currently exposes only the old ended tournament ID 1. This bot is **not registered** for tonight until a valid upcoming ID is supplied or becomes verifiable from the organizer.
+The user confirmed **November 7, 2026, 10:45 PM America/Chicago**, giving a latest code freeze of **9:15 PM**. Their supplied organizer announcement specifies **ECSW 1.315**, connection before 10:45 PM, and submission of a public GitHub repository. The announcement does not supply a tournament ID, separate registration cutoff, or repository submission destination. The service currently exposes only the old ended tournament ID 1. This bot is **not registered** for tonight until a valid upcoming ID is supplied or becomes verifiable from the organizer.
 
 Tournament mode registers promptly when a valid upcoming ID is configured, continues any existing practice match, and never joins another practice lobby. This deliberately improves the earlier planned sequence: the actual server accepts busy entrants and waits for their practice matches before starting round one. A proposed client-side delay was rejected during review because registration could close before the practice match ends. A live upcoming-event registration has not yet been possible.
 
