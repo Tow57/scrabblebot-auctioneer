@@ -4,10 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prepare:bindings": "node scripts/prepare-bindings.mjs",
+    "prestart": "node scripts/prepare-bindings.mjs",
     "generate": "npm install --prefix ../spacetimedb && spacetime generate --lang typescript --out-dir src/module_bindings --module-path ../spacetimedb",
     "start": "tsx src/index.ts",
-    "test": "node --import tsx --test src/strategy.test.ts",
-    "build": "tsc"
+    "pretest": "node scripts/prepare-bindings.mjs",
+    "test": "node --import tsx --test src/*.test.ts",
+    "prebuild": "node scripts/prepare-bindings.mjs",
+    "build": "tsc",
+    "benchmark": "node scripts/benchmark.mjs"
   },
   "dependencies": {
     "spacetimedb": "^2.12.0",

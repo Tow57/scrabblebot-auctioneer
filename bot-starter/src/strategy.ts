@@ -1,63 +1,141 @@
-// Edit this file to implement your bidding and word-forming strategy.
+import { DictionaryIndex, loadDictionary, rackToCounts, scoreWord } from "./dictionary.js";
+import { RackOptimizer, type SearchBudget } from "./optimizer.js";
 
-// Standard Scrabble letter values — useful for valuation.
-export const LETTER_VALUE: Record<string, number> = {
-  A: 1, B: 3, C: 3, D: 2, E: 1, F: 4, G: 2, H: 4, I: 1, J: 8,
-  K: 5, L: 1, M: 3, N: 1, O: 1, P: 3, Q: 10, R: 1, S: 1, T: 1,
-  U: 1, V: 4, W: 4, X: 8, Y: 4, Z: 10,
-};
+export { canSpell, LETTER_VALUE, loadDictionary, rackToCounts, scoreWord } from "./dictionary.js";
+
+export type AuctionType = "Vickrey" | "FirstPrice";
 
 export interface BidContext {
-  letter: string;        // Letter being auctioned, e.g. "Q"
-  myBalance: number;     // Current balance
-  myRack: Map<string, number>; // Letters you currently own, letter -> count
+  letter: string;
+  myBalance: number;
+  myRack: ReadonlyMap<string, number>;
+  bagTotal?: number;
+  participantCount?: number;
+  auctionType?: AuctionType;
+  estimatedPrice?: number;
+  deadlineMs?: number;
+  dictionary?: readonly string[];
 }
 
-/**
- * Decide how much to bid for `letter`. Return 0 to skip.
- * Default: bid the letter's face value plus a small premium if you don't have one yet.
- */
-export function decideBid(ctx: BidContext): number {
-  const value = LETTER_VALUE[ctx.letter] ?? 1;
-  const have = ctx.myRack.get(ctx.letter) ?? 0;
-  // Pay slightly above face value for letters you don't have yet.
-  const want = have === 0 ? value + 2 : Math.max(1, value);
-  return Math.min(want, Math.max(0, ctx.myBalance));
+export interface StrategyContext extends BidContext {
+  bagTotal: number;
+  participantCount: number;
+  auctionType: AuctionType;
+  estimatedPrice: number;
 }
 
 export interface WordContext {
-  myRack: Map<string, number>;
-  dictionary: string[]; // Sorted uppercase list, shared at startup
+  myRack: ReadonlyMap<string, number>;
+  dictionary: readonly string[];
+  myBalance?: number;
+  bagTotal?: number;
+  deadlineMs?: number;
 }
 
-/**
- * Try to form a word using letters from `myRack`.
- * Return the word (uppercase) to play, or null to skip.
- *
- * Default strategy: greedily find the longest playable word in the dictionary.
- *
- * Keep this fast. The bot runs it on every rack change, and while it runs
- * the bot can't see the match move on: a search that takes longer than an
- * auction means bids on closed auctions and words from spent letters.
- */
+export interface StrategyDecision {
+  bid: number;
+  word: string | null;
+  plan: string[];
+  cashout: number;
+  /** Whether the current rack's cashout partition was proved optimal. */
+  exact: boolean;
+  elapsedMs: number;
+}
+
+export interface StrategyOptions {
+  /** Opt-in at the library level; the tournament worker enables this measured policy. */
+  capitalAllowance?: boolean;
+}
+
+/** Stateful only for dictionary/search caches; decisions use this snapshot alone. */
+export class StrategyEngine {
+  readonly dictionary: DictionaryIndex;
+  readonly optimizer: RackOptimizer;
+
+  constructor(words: readonly string[] | DictionaryIndex, private readonly options: StrategyOptions = {}) {
+    this.dictionary = words instanceof DictionaryIndex ? words : new DictionaryIndex(words);
+    this.optimizer = new RackOptimizer(this.dictionary);
+  }
+
+  decide(ctx: StrategyContext): StrategyDecision {
+    const start = performance.now();
+    const deadline = Math.min(start + 100, ctx.deadlineMs ?? Infinity);
+    const counts = rackToCounts(ctx.myRack);
+    const balance = Number.isFinite(ctx.myBalance) ? Math.max(0, Math.floor(ctx.myBalance)) : 0;
+    const bagTotal = Number.isFinite(ctx.bagTotal) ? Math.max(0, Math.floor(ctx.bagTotal)) : 0;
+    const budget: SearchBudget = { deadlineMs: Math.min(deadline, start + 40), maxStates: 10_000, states: 0 };
+    const current = this.optimizer.optimize(counts, budget);
+    const plan = [...current.words].sort((a, b) => scoreWord(b) - scoreWord(a) || a.localeCompare(b));
+    let size = 0;
+    for (const count of counts) size += count;
+    const word = plan.find(candidate => candidate.length >= 7)
+      ?? ((balance < 12 || size >= 12 || bagTotal <= 3) ? plan[0] ?? null : null);
+    let bid = 0;
+    if (balance > 0 && bagTotal > 0 && /^[A-Z]$/.test(ctx.letter)) {
+      const letter = ctx.letter.charCodeAt(0) - 65;
+      const augmented = counts.slice();
+      augmented[letter]++;
+      budget.deadlineMs = Math.min(deadline, start + 85);
+      const withLetter = this.optimizer.optimize(augmented, budget);
+      let copiesUsed = 0;
+      for (const candidate of withLetter.words) {
+        for (const used of candidate) if (used === ctx.letter) copiesUsed++;
+      }
+      // A bounded second search can improve an old plan without using this tile.
+      const immediate = copiesUsed > counts[letter] ? Math.max(0, withLetter.score - current.score) : 0;
+      if (bagTotal === 1 && immediate > 0) {
+        // The next auction is the unplayable final tile: currency has no further use.
+        bid = balance;
+      } else {
+        const completion = this.dictionary.completionValue(counts, letter, Math.min(2, bagTotal - 1), deadline);
+        const participants = Number.isFinite(ctx.participantCount) ? Math.max(1, ctx.participantCount) : 6;
+        const price = Number.isFinite(ctx.estimatedPrice) ? Math.max(1, ctx.estimatedPrice) : 3;
+        const expectedWins = Math.max(1, bagTotal / participants);
+        const pacing = Math.max(0.5, Math.min(3, balance / (expectedWins * price)));
+        const value = Math.max(immediate, completion);
+        if (value > 0) {
+          const coreBid = Math.ceil(value * pacing);
+          // Starting capital has no terminal score. Allocate some buying power
+          // independently of small option values when opponents set high prices.
+          // An incomplete option may still need two purchases; keep their funding.
+          const fundedWins = immediate > 0 ? expectedWins : Math.max(3, expectedWins);
+          const allowance = balance / fundedWins * (ctx.auctionType === "FirstPrice" ? 0.5 : 1);
+          const capitalBid = this.options.capitalAllowance && bagTotal > 1 ? Math.ceil(value + allowance) : 0;
+          bid = Math.min(balance, Math.max(coreBid, capitalBid));
+          if (ctx.auctionType === "FirstPrice") bid = Math.max(1, Math.floor(bid * 0.8));
+        }
+      }
+    }
+    return { bid, word, plan, cashout: current.score, exact: current.exact, elapsedMs: performance.now() - start };
+  }
+}
+
+const engines = new WeakMap<readonly string[], StrategyEngine>();
+let defaultWords: string[] | undefined;
+function engineFor(dictionary?: readonly string[]): StrategyEngine {
+  const words = dictionary ?? (defaultWords ??= loadDictionary());
+  let engine = engines.get(words);
+  if (!engine) {
+    engine = new StrategyEngine(words);
+    engines.set(words, engine);
+  }
+  return engine;
+}
+
+// Convenience wrappers retain the starter's two-function integration surface.
+export function decideBid(ctx: BidContext): number {
+  return engineFor(ctx.dictionary).decide({
+    ...ctx,
+    bagTotal: ctx.bagTotal ?? 99,
+    participantCount: ctx.participantCount ?? 6,
+    auctionType: ctx.auctionType ?? "Vickrey",
+    estimatedPrice: ctx.estimatedPrice ?? 3,
+  }).bid;
+}
+
 export function chooseWord(ctx: WordContext): string | null {
-  let tiles = 0;
-  for (const count of ctx.myRack.values()) tiles += count;
-
-  // The dictionary is longest first, so the first word we can spell is
-  // the longest.
-  for (const word of ctx.dictionary) {
-    if (word.length <= tiles && canSpell(word, ctx.myRack)) return word;
-  }
-  return null;
-}
-
-// Whether `rack` has every letter of `word`, counting repeats.
-function canSpell(word: string, rack: Map<string, number>): boolean {
-  const used: Record<string, number> = {};
-  for (const c of word) {
-    used[c] = (used[c] ?? 0) + 1;
-    if (used[c] > (rack.get(c) ?? 0)) return false;
-  }
-  return true;
+  return engineFor(ctx.dictionary).decide({
+    myRack: ctx.myRack, myBalance: ctx.myBalance ?? 0, letter: "", bagTotal: ctx.bagTotal ?? 0,
+    participantCount: 6, auctionType: "Vickrey", estimatedPrice: 3, deadlineMs: ctx.deadlineMs,
+  }).word;
 }

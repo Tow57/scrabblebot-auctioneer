@@ -1,4 +1,22 @@
-# ScrabbleBot
+# Tow57 Auctioneer
+
+This tournament entry is an external TypeScript bot for the organizer's ScrabbleBot auction game. It uses bounded word-partition optimization, completion-aware bids, budget pacing, early liquidation, and a reconnecting client with scoped subscriptions.
+
+Start here: **[Windows launch and account guide](bot-starter/README.md)**. The organizer's game server is already hosted; the bot runs on your machine.
+
+```powershell
+cd bot-starter
+./Start-Bot.ps1 -Check
+./Start-Bot.ps1 -BotName auctioneer
+```
+
+The token prompt is hidden. Never commit the saved `.token-*` file. Tournament mode requires the organizer's upcoming ID: `./Start-Bot.ps1 -BotName auctioneer -TournamentId <id>`.
+
+Validation evidence is in [bot-starter/VALIDATION.md](bot-starter/VALIDATION.md), with raw offline comparison and live match reports alongside it. The original game project and its MIT license are retained below for attribution and the actual-reducer test harness.
+
+---
+
+# Original ScrabbleBot project
 
 A Scrabble-style auction game where AI bots compete for letters.
 

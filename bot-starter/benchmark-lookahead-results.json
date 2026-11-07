@@ -1,0 +1,1339 @@
+{
+  "generatedAt": "2026-11-07T20:06:38.494Z",
+  "moduleCommit": "b5ccb36aa238ad16692f8d6af54da15ef9f11324",
+  "dictionarySha256": "b819e7b67f8f2c80640ae76f0edbe59a4a1befb6de0f348463642ad49bdd2ad3",
+  "methodology": {
+    "players": 6,
+    "candidateStrategy": "eight-sample lookahead experiment",
+    "inputs": "Own authenticated my_rack view, public match/participant/auction state and settled payments only",
+    "baseline": "Original starter strategy functions under the same reliable driver",
+    "pairing": "Fixed seeds reset before initial deal and each auction tick; measured seat rotates across six positions",
+    "limitation": "Policies can consume different RNG amounts, so paired seeds do not guarantee identical later tile streams",
+    "endgame": "No post-settlement cashout; both drivers skip the unusable final tile",
+    "priceEstimate": "EWMA of chronological positive settled payments in the current match; starts at 3 and updates 0.8 * estimate + 0.2 * paid",
+    "winRate": "Finishes with the highest score, including shared first places",
+    "latency": "In-process strategy calls only; excludes websocket/network/server latency",
+    "fallbackRate": "Fraction of measured decisions whose engine reports exact=false",
+    "strengthGate": "Report-only; correctness and affordability are asserted"
+  },
+  "vickrey": {
+    "candidate": {
+      "matches": 30,
+      "meanScore": 341.5,
+      "meanPlace": 1,
+      "winRate": 1,
+      "meanLeftoverFaceValue": 0.4,
+      "meanFinalBalance": 206.8,
+      "decisions": 2350,
+      "fallbackRate": 0,
+      "lookaheadCoverage": 0.7638297872340426,
+      "latencyMs": {
+        "mean": 7.766006510638293,
+        "p95": 16.390299999999115,
+        "p99": 20.906999999999243,
+        "max": 152.66390000000047
+      }
+    },
+    "baseline": {
+      "matches": 30,
+      "meanScore": 30.266666666666666,
+      "meanPlace": 3.3666666666666667,
+      "winRate": 0.13333333333333333,
+      "meanLeftoverFaceValue": 6.066666666666666,
+      "meanFinalBalance": 85.7,
+      "decisions": 2204,
+      "fallbackRate": 0,
+      "lookaheadCoverage": 0,
+      "latencyMs": {
+        "mean": 0.18543239564422348,
+        "p95": 0.8244999999988067,
+        "p99": 2.868000000000393,
+        "max": 22.823000000000093
+      }
+    },
+    "pairedMeanScoreDifference": 311.23333333333335,
+    "pairedMeanPlaceImprovement": 2.3666666666666667,
+    "samples": [
+      {
+        "seed": 10001,
+        "seat": 0,
+        "candidate": {
+          "seed": 10001,
+          "seat": 0,
+          "score": 316,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 193,
+          "auctions": 68,
+          "decisions": 78,
+          "fallbacks": 0,
+          "lookaheadDecisions": 65
+        },
+        "baseline": {
+          "seed": 10001,
+          "seat": 0,
+          "score": 18,
+          "place": 5,
+          "won": false,
+          "leftoverFaceValue": 0,
+          "finalBalance": 93,
+          "auctions": 68,
+          "decisions": 73,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 17920,
+        "seat": 1,
+        "candidate": {
+          "seed": 17920,
+          "seat": 1,
+          "score": 290,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 183,
+          "auctions": 68,
+          "decisions": 78,
+          "fallbacks": 0,
+          "lookaheadDecisions": 66
+        },
+        "baseline": {
+          "seed": 17920,
+          "seat": 1,
+          "score": 24,
+          "place": 4,
+          "won": false,
+          "leftoverFaceValue": 12,
+          "finalBalance": 82,
+          "auctions": 68,
+          "decisions": 72,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 25839,
+        "seat": 2,
+        "candidate": {
+          "seed": 25839,
+          "seat": 2,
+          "score": 354,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 217,
+          "auctions": 68,
+          "decisions": 79,
+          "fallbacks": 0,
+          "lookaheadDecisions": 55
+        },
+        "baseline": {
+          "seed": 25839,
+          "seat": 2,
+          "score": 35,
+          "place": 2,
+          "won": false,
+          "leftoverFaceValue": 0,
+          "finalBalance": 94,
+          "auctions": 68,
+          "decisions": 75,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 33758,
+        "seat": 3,
+        "candidate": {
+          "seed": 33758,
+          "seat": 3,
+          "score": 368,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 237,
+          "auctions": 68,
+          "decisions": 79,
+          "fallbacks": 0,
+          "lookaheadDecisions": 69
+        },
+        "baseline": {
+          "seed": 33758,
+          "seat": 3,
+          "score": 42,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 2,
+          "finalBalance": 91,
+          "auctions": 68,
+          "decisions": 76,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 41677,
+        "seat": 4,
+        "candidate": {
+          "seed": 41677,
+          "seat": 4,
+          "score": 357,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 211,
+          "auctions": 68,
+          "decisions": 79,
+          "fallbacks": 0,
+          "lookaheadDecisions": 54
+        },
+        "baseline": {
+          "seed": 41677,
+          "seat": 4,
+          "score": 36,
+          "place": 2,
+          "won": false,
+          "leftoverFaceValue": 18,
+          "finalBalance": 78,
+          "auctions": 68,
+          "decisions": 72,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 49596,
+        "seat": 5,
+        "candidate": {
+          "seed": 49596,
+          "seat": 5,
+          "score": 328,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 181,
+          "auctions": 68,
+          "decisions": 79,
+          "fallbacks": 0,
+          "lookaheadDecisions": 55
+        },
+        "baseline": {
+          "seed": 49596,
+          "seat": 5,
+          "score": 26,
+          "place": 5,
+          "won": false,
+          "leftoverFaceValue": 14,
+          "finalBalance": 65,
+          "auctions": 68,
+          "decisions": 72,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 57515,
+        "seat": 0,
+        "candidate": {
+          "seed": 57515,
+          "seat": 0,
+          "score": 352,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 225,
+          "auctions": 68,
+          "decisions": 78,
+          "fallbacks": 0,
+          "lookaheadDecisions": 63
+        },
+        "baseline": {
+          "seed": 57515,
+          "seat": 0,
+          "score": 17,
+          "place": 5,
+          "won": false,
+          "leftoverFaceValue": 10,
+          "finalBalance": 93,
+          "auctions": 68,
+          "decisions": 72,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 65434,
+        "seat": 1,
+        "candidate": {
+          "seed": 65434,
+          "seat": 1,
+          "score": 367,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 210,
+          "auctions": 68,
+          "decisions": 79,
+          "fallbacks": 0,
+          "lookaheadDecisions": 58
+        },
+        "baseline": {
+          "seed": 65434,
+          "seat": 1,
+          "score": 33,
+          "place": 3,
+          "won": false,
+          "leftoverFaceValue": 3,
+          "finalBalance": 92,
+          "auctions": 68,
+          "decisions": 73,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 73353,
+        "seat": 2,
+        "candidate": {
+          "seed": 73353,
+          "seat": 2,
+          "score": 340,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 194,
+          "auctions": 68,
+          "decisions": 79,
+          "fallbacks": 0,
+          "lookaheadDecisions": 62
+        },
+        "baseline": {
+          "seed": 73353,
+          "seat": 2,
+          "score": 36,
+          "place": 2,
+          "won": false,
+          "leftoverFaceValue": 3,
+          "finalBalance": 81,
+          "auctions": 68,
+          "decisions": 75,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 81272,
+        "seat": 3,
+        "candidate": {
+          "seed": 81272,
+          "seat": 3,
+          "score": 373,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 239,
+          "auctions": 68,
+          "decisions": 78,
+          "fallbacks": 0,
+          "lookaheadDecisions": 58
+        },
+        "baseline": {
+          "seed": 81272,
+          "seat": 3,
+          "score": 53,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 9,
+          "finalBalance": 101,
+          "auctions": 68,
+          "decisions": 74,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 89191,
+        "seat": 4,
+        "candidate": {
+          "seed": 89191,
+          "seat": 4,
+          "score": 317,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 190,
+          "auctions": 68,
+          "decisions": 78,
+          "fallbacks": 0,
+          "lookaheadDecisions": 63
+        },
+        "baseline": {
+          "seed": 89191,
+          "seat": 4,
+          "score": 24,
+          "place": 6,
+          "won": false,
+          "leftoverFaceValue": 0,
+          "finalBalance": 93,
+          "auctions": 68,
+          "decisions": 73,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 97110,
+        "seat": 5,
+        "candidate": {
+          "seed": 97110,
+          "seat": 5,
+          "score": 323,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 4,
+          "finalBalance": 180,
+          "auctions": 68,
+          "decisions": 78,
+          "fallbacks": 0,
+          "lookaheadDecisions": 65
+        },
+        "baseline": {
+          "seed": 97110,
+          "seat": 5,
+          "score": 26,
+          "place": 4,
+          "won": false,
+          "leftoverFaceValue": 0,
+          "finalBalance": 100,
+          "auctions": 68,
+          "decisions": 72,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 105029,
+        "seat": 0,
+        "candidate": {
+          "seed": 105029,
+          "seat": 0,
+          "score": 336,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 214,
+          "auctions": 68,
+          "decisions": 77,
+          "fallbacks": 0,
+          "lookaheadDecisions": 57
+        },
+        "baseline": {
+          "seed": 105029,
+          "seat": 0,
+          "score": 31,
+          "place": 4,
+          "won": false,
+          "leftoverFaceValue": 0,
+          "finalBalance": 96,
+          "auctions": 68,
+          "decisions": 74,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 112948,
+        "seat": 1,
+        "candidate": {
+          "seed": 112948,
+          "seat": 1,
+          "score": 360,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 208,
+          "auctions": 68,
+          "decisions": 79,
+          "fallbacks": 0,
+          "lookaheadDecisions": 57
+        },
+        "baseline": {
+          "seed": 112948,
+          "seat": 1,
+          "score": 42,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 6,
+          "finalBalance": 76,
+          "auctions": 68,
+          "decisions": 74,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 120867,
+        "seat": 2,
+        "candidate": {
+          "seed": 120867,
+          "seat": 2,
+          "score": 340,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 211,
+          "auctions": 68,
+          "decisions": 79,
+          "fallbacks": 0,
+          "lookaheadDecisions": 56
+        },
+        "baseline": {
+          "seed": 120867,
+          "seat": 2,
+          "score": 35,
+          "place": 2,
+          "won": false,
+          "leftoverFaceValue": 1,
+          "finalBalance": 96,
+          "auctions": 68,
+          "decisions": 73,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 128786,
+        "seat": 3,
+        "candidate": {
+          "seed": 128786,
+          "seat": 3,
+          "score": 349,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 3,
+          "finalBalance": 221,
+          "auctions": 68,
+          "decisions": 77,
+          "fallbacks": 0,
+          "lookaheadDecisions": 58
+        },
+        "baseline": {
+          "seed": 128786,
+          "seat": 3,
+          "score": 28,
+          "place": 4,
+          "won": false,
+          "leftoverFaceValue": 6,
+          "finalBalance": 96,
+          "auctions": 68,
+          "decisions": 72,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 136705,
+        "seat": 4,
+        "candidate": {
+          "seed": 136705,
+          "seat": 4,
+          "score": 332,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 205,
+          "auctions": 68,
+          "decisions": 78,
+          "fallbacks": 0,
+          "lookaheadDecisions": 64
+        },
+        "baseline": {
+          "seed": 136705,
+          "seat": 4,
+          "score": 32,
+          "place": 2,
+          "won": false,
+          "leftoverFaceValue": 1,
+          "finalBalance": 72,
+          "auctions": 68,
+          "decisions": 76,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 144624,
+        "seat": 5,
+        "candidate": {
+          "seed": 144624,
+          "seat": 5,
+          "score": 386,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 238,
+          "auctions": 68,
+          "decisions": 79,
+          "fallbacks": 0,
+          "lookaheadDecisions": 59
+        },
+        "baseline": {
+          "seed": 144624,
+          "seat": 5,
+          "score": 40,
+          "place": 2,
+          "won": false,
+          "leftoverFaceValue": 2,
+          "finalBalance": 90,
+          "auctions": 68,
+          "decisions": 74,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 152543,
+        "seat": 0,
+        "candidate": {
+          "seed": 152543,
+          "seat": 0,
+          "score": 305,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 177,
+          "auctions": 68,
+          "decisions": 78,
+          "fallbacks": 0,
+          "lookaheadDecisions": 52
+        },
+        "baseline": {
+          "seed": 152543,
+          "seat": 0,
+          "score": 19,
+          "place": 6,
+          "won": false,
+          "leftoverFaceValue": 18,
+          "finalBalance": 70,
+          "auctions": 68,
+          "decisions": 72,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 160462,
+        "seat": 1,
+        "candidate": {
+          "seed": 160462,
+          "seat": 1,
+          "score": 358,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 203,
+          "auctions": 68,
+          "decisions": 80,
+          "fallbacks": 0,
+          "lookaheadDecisions": 59
+        },
+        "baseline": {
+          "seed": 160462,
+          "seat": 1,
+          "score": 38,
+          "place": 4,
+          "won": false,
+          "leftoverFaceValue": 0,
+          "finalBalance": 94,
+          "auctions": 68,
+          "decisions": 73,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 168381,
+        "seat": 2,
+        "candidate": {
+          "seed": 168381,
+          "seat": 2,
+          "score": 351,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 210,
+          "auctions": 68,
+          "decisions": 79,
+          "fallbacks": 0,
+          "lookaheadDecisions": 65
+        },
+        "baseline": {
+          "seed": 168381,
+          "seat": 2,
+          "score": 11,
+          "place": 6,
+          "won": false,
+          "leftoverFaceValue": 2,
+          "finalBalance": 90,
+          "auctions": 68,
+          "decisions": 72,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 176300,
+        "seat": 3,
+        "candidate": {
+          "seed": 176300,
+          "seat": 3,
+          "score": 324,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 198,
+          "auctions": 68,
+          "decisions": 78,
+          "fallbacks": 0,
+          "lookaheadDecisions": 57
+        },
+        "baseline": {
+          "seed": 176300,
+          "seat": 3,
+          "score": 36,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 88,
+          "auctions": 68,
+          "decisions": 75,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 184219,
+        "seat": 4,
+        "candidate": {
+          "seed": 184219,
+          "seat": 4,
+          "score": 340,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 211,
+          "auctions": 68,
+          "decisions": 79,
+          "fallbacks": 0,
+          "lookaheadDecisions": 60
+        },
+        "baseline": {
+          "seed": 184219,
+          "seat": 4,
+          "score": 16,
+          "place": 6,
+          "won": false,
+          "leftoverFaceValue": 23,
+          "finalBalance": 74,
+          "auctions": 68,
+          "decisions": 70,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 192138,
+        "seat": 5,
+        "candidate": {
+          "seed": 192138,
+          "seat": 5,
+          "score": 322,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 208,
+          "auctions": 68,
+          "decisions": 77,
+          "fallbacks": 0,
+          "lookaheadDecisions": 64
+        },
+        "baseline": {
+          "seed": 192138,
+          "seat": 5,
+          "score": 38,
+          "place": 2,
+          "won": false,
+          "leftoverFaceValue": 0,
+          "finalBalance": 82,
+          "auctions": 68,
+          "decisions": 75,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 200057,
+        "seat": 0,
+        "candidate": {
+          "seed": 200057,
+          "seat": 0,
+          "score": 332,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 205,
+          "auctions": 68,
+          "decisions": 78,
+          "fallbacks": 0,
+          "lookaheadDecisions": 68
+        },
+        "baseline": {
+          "seed": 200057,
+          "seat": 0,
+          "score": 18,
+          "place": 6,
+          "won": false,
+          "leftoverFaceValue": 8,
+          "finalBalance": 81,
+          "auctions": 68,
+          "decisions": 73,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 207976,
+        "seat": 1,
+        "candidate": {
+          "seed": 207976,
+          "seat": 1,
+          "score": 337,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 203,
+          "auctions": 68,
+          "decisions": 78,
+          "fallbacks": 0,
+          "lookaheadDecisions": 53
+        },
+        "baseline": {
+          "seed": 207976,
+          "seat": 1,
+          "score": 34,
+          "place": 2,
+          "won": false,
+          "leftoverFaceValue": 4,
+          "finalBalance": 90,
+          "auctions": 68,
+          "decisions": 74,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 215895,
+        "seat": 2,
+        "candidate": {
+          "seed": 215895,
+          "seat": 2,
+          "score": 340,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 1,
+          "finalBalance": 200,
+          "auctions": 68,
+          "decisions": 78,
+          "fallbacks": 0,
+          "lookaheadDecisions": 58
+        },
+        "baseline": {
+          "seed": 215895,
+          "seat": 2,
+          "score": 31,
+          "place": 2,
+          "won": false,
+          "leftoverFaceValue": 10,
+          "finalBalance": 63,
+          "auctions": 68,
+          "decisions": 77,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 223814,
+        "seat": 3,
+        "candidate": {
+          "seed": 223814,
+          "seat": 3,
+          "score": 358,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 208,
+          "auctions": 68,
+          "decisions": 79,
+          "fallbacks": 0,
+          "lookaheadDecisions": 66
+        },
+        "baseline": {
+          "seed": 223814,
+          "seat": 3,
+          "score": 33,
+          "place": 3,
+          "won": false,
+          "leftoverFaceValue": 10,
+          "finalBalance": 82,
+          "auctions": 68,
+          "decisions": 74,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 231733,
+        "seat": 4,
+        "candidate": {
+          "seed": 231733,
+          "seat": 4,
+          "score": 358,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 4,
+          "finalBalance": 222,
+          "auctions": 68,
+          "decisions": 77,
+          "fallbacks": 0,
+          "lookaheadDecisions": 56
+        },
+        "baseline": {
+          "seed": 231733,
+          "seat": 4,
+          "score": 27,
+          "place": 4,
+          "won": false,
+          "leftoverFaceValue": 10,
+          "finalBalance": 86,
+          "auctions": 68,
+          "decisions": 73,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 239652,
+        "seat": 5,
+        "candidate": {
+          "seed": 239652,
+          "seat": 5,
+          "score": 332,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 202,
+          "auctions": 68,
+          "decisions": 78,
+          "fallbacks": 0,
+          "lookaheadDecisions": 53
+        },
+        "baseline": {
+          "seed": 239652,
+          "seat": 5,
+          "score": 29,
+          "place": 4,
+          "won": false,
+          "leftoverFaceValue": 10,
+          "finalBalance": 82,
+          "auctions": 68,
+          "decisions": 74,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      }
+    ]
+  },
+  "firstPrice": {
+    "candidate": {
+      "matches": 6,
+      "meanScore": 202.83333333333334,
+      "meanPlace": 1,
+      "winRate": 1,
+      "meanLeftoverFaceValue": 0.16666666666666666,
+      "meanFinalBalance": 10,
+      "decisions": 452,
+      "fallbackRate": 0,
+      "lookaheadCoverage": 0.9314159292035398,
+      "latencyMs": {
+        "mean": 4.9245084070801015,
+        "p95": 13.65329999999085,
+        "p99": 20.994000000006054,
+        "max": 31.957699999999022
+      }
+    },
+    "baseline": {
+      "matches": 6,
+      "meanScore": 30.166666666666668,
+      "meanPlace": 3.1666666666666665,
+      "winRate": 0.16666666666666666,
+      "meanLeftoverFaceValue": 7.666666666666667,
+      "meanFinalBalance": 83.83333333333333,
+      "decisions": 440,
+      "fallbackRate": 0,
+      "lookaheadCoverage": 0,
+      "latencyMs": {
+        "mean": 0.18051818181864457,
+        "p95": 0.8418000000092434,
+        "p99": 3.138600000005681,
+        "max": 7.712600000013481
+      }
+    },
+    "pairedMeanScoreDifference": 172.66666666666666,
+    "pairedMeanPlaceImprovement": 2.1666666666666665,
+    "samples": [
+      {
+        "seed": 10001,
+        "seat": 0,
+        "candidate": {
+          "seed": 10001,
+          "seat": 0,
+          "score": 180,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 11,
+          "auctions": 68,
+          "decisions": 75,
+          "fallbacks": 0,
+          "lookaheadDecisions": 70
+        },
+        "baseline": {
+          "seed": 10001,
+          "seat": 0,
+          "score": 18,
+          "place": 5,
+          "won": false,
+          "leftoverFaceValue": 0,
+          "finalBalance": 93,
+          "auctions": 68,
+          "decisions": 73,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 17920,
+        "seat": 1,
+        "candidate": {
+          "seed": 17920,
+          "seat": 1,
+          "score": 178,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 12,
+          "auctions": 68,
+          "decisions": 75,
+          "fallbacks": 0,
+          "lookaheadDecisions": 71
+        },
+        "baseline": {
+          "seed": 17920,
+          "seat": 1,
+          "score": 24,
+          "place": 4,
+          "won": false,
+          "leftoverFaceValue": 12,
+          "finalBalance": 82,
+          "auctions": 68,
+          "decisions": 72,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 25839,
+        "seat": 2,
+        "candidate": {
+          "seed": 25839,
+          "seat": 2,
+          "score": 225,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 12,
+          "auctions": 68,
+          "decisions": 75,
+          "fallbacks": 0,
+          "lookaheadDecisions": 70
+        },
+        "baseline": {
+          "seed": 25839,
+          "seat": 2,
+          "score": 35,
+          "place": 2,
+          "won": false,
+          "leftoverFaceValue": 0,
+          "finalBalance": 94,
+          "auctions": 68,
+          "decisions": 75,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 33758,
+        "seat": 3,
+        "candidate": {
+          "seed": 33758,
+          "seat": 3,
+          "score": 240,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 10,
+          "auctions": 68,
+          "decisions": 77,
+          "fallbacks": 0,
+          "lookaheadDecisions": 73
+        },
+        "baseline": {
+          "seed": 33758,
+          "seat": 3,
+          "score": 42,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 2,
+          "finalBalance": 91,
+          "auctions": 68,
+          "decisions": 76,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 41677,
+        "seat": 4,
+        "candidate": {
+          "seed": 41677,
+          "seat": 4,
+          "score": 227,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 1,
+          "finalBalance": 5,
+          "auctions": 68,
+          "decisions": 75,
+          "fallbacks": 0,
+          "lookaheadDecisions": 65
+        },
+        "baseline": {
+          "seed": 41677,
+          "seat": 4,
+          "score": 36,
+          "place": 2,
+          "won": false,
+          "leftoverFaceValue": 18,
+          "finalBalance": 78,
+          "auctions": 68,
+          "decisions": 72,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 49596,
+        "seat": 5,
+        "candidate": {
+          "seed": 49596,
+          "seat": 5,
+          "score": 167,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 10,
+          "auctions": 68,
+          "decisions": 75,
+          "fallbacks": 0,
+          "lookaheadDecisions": 72
+        },
+        "baseline": {
+          "seed": 49596,
+          "seat": 5,
+          "score": 26,
+          "place": 5,
+          "won": false,
+          "leftoverFaceValue": 14,
+          "finalBalance": 65,
+          "auctions": 68,
+          "decisions": 72,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      }
+    ]
+  },
+  "expensiveOpponents": {
+    "candidate": {
+      "matches": 4,
+      "meanScore": 149.75,
+      "meanPlace": 1,
+      "winRate": 1,
+      "meanLeftoverFaceValue": 1.25,
+      "meanFinalBalance": 156.25,
+      "decisions": 294,
+      "fallbackRate": 0,
+      "lookaheadCoverage": 0.8775510204081632,
+      "latencyMs": {
+        "mean": 7.059032653060813,
+        "p95": 12.259699999995064,
+        "p99": 15.575299999996787,
+        "max": 25.74099999999453
+      }
+    },
+    "baseline": {
+      "matches": 4,
+      "meanScore": 62.5,
+      "meanPlace": 1,
+      "winRate": 1,
+      "meanLeftoverFaceValue": 7.25,
+      "meanFinalBalance": 129.5,
+      "decisions": 308,
+      "fallbackRate": 0,
+      "lookaheadCoverage": 0,
+      "latencyMs": {
+        "mean": 0.2298857142853773,
+        "p95": 0.9219999999913853,
+        "p99": 2.783899999994901,
+        "max": 4.548900000008871
+      }
+    },
+    "pairedMeanScoreDifference": 87.25,
+    "pairedMeanPlaceImprovement": 0,
+    "samples": [
+      {
+        "seed": 10001,
+        "seat": 0,
+        "candidate": {
+          "seed": 10001,
+          "seat": 0,
+          "score": 140,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 4,
+          "finalBalance": 179,
+          "auctions": 68,
+          "decisions": 73,
+          "fallbacks": 0,
+          "lookaheadDecisions": 66
+        },
+        "baseline": {
+          "seed": 10001,
+          "seat": 0,
+          "score": 58,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 1,
+          "finalBalance": 110,
+          "auctions": 68,
+          "decisions": 78,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 17920,
+        "seat": 1,
+        "candidate": {
+          "seed": 17920,
+          "seat": 1,
+          "score": 124,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 1,
+          "finalBalance": 108,
+          "auctions": 68,
+          "decisions": 73,
+          "fallbacks": 0,
+          "lookaheadDecisions": 65
+        },
+        "baseline": {
+          "seed": 17920,
+          "seat": 1,
+          "score": 46,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 7,
+          "finalBalance": 118,
+          "auctions": 68,
+          "decisions": 77,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 25839,
+        "seat": 2,
+        "candidate": {
+          "seed": 25839,
+          "seat": 2,
+          "score": 168,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 158,
+          "auctions": 68,
+          "decisions": 74,
+          "fallbacks": 0,
+          "lookaheadDecisions": 62
+        },
+        "baseline": {
+          "seed": 25839,
+          "seat": 2,
+          "score": 65,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 10,
+          "finalBalance": 132,
+          "auctions": 68,
+          "decisions": 77,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      },
+      {
+        "seed": 33758,
+        "seat": 3,
+        "candidate": {
+          "seed": 33758,
+          "seat": 3,
+          "score": 167,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 0,
+          "finalBalance": 180,
+          "auctions": 68,
+          "decisions": 74,
+          "fallbacks": 0,
+          "lookaheadDecisions": 65
+        },
+        "baseline": {
+          "seed": 33758,
+          "seat": 3,
+          "score": 81,
+          "place": 1,
+          "won": true,
+          "leftoverFaceValue": 11,
+          "finalBalance": 158,
+          "auctions": 68,
+          "decisions": 76,
+          "fallbacks": 0,
+          "lookaheadDecisions": 0
+        }
+      }
+    ]
+  }
+}

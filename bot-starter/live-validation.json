@@ -1,0 +1,82 @@
+{
+  "generatedAt": "2026-11-07T20:32:22.124Z",
+  "status": "PASS",
+  "botId": 164,
+  "botName": "Tow57-Auctioneer",
+  "requiredCompleteMatches": 5,
+  "observedCompleteMatches": 5,
+  "excludedRestartMatchIds": [
+    42663,
+    42664,
+    42665,
+    42666,
+    42667,
+    42668,
+    42669,
+    42670,
+    42671,
+    42672,
+    42673,
+    42674,
+    42675,
+    42676,
+    42677,
+    42678,
+    42679
+  ],
+  "method": "Anonymous read-only official SQL: match_state, match_participant; consecutive bot matches excluding the deliberately interrupted first match.",
+  "note": "Outcome evidence does not prove every network request met its deadline. See the local live log for accepted actions and reconnect checks.",
+  "transientReadErrors": 0,
+  "matches": [
+    {
+      "matchId": 42680,
+      "startedAtMicros": 1794083039351314,
+      "endedAtMicros": 1794083107825591,
+      "score": 62,
+      "balance": 11,
+      "place": 3,
+      "players": 6,
+      "rounds": 68
+    },
+    {
+      "matchId": 42681,
+      "startedAtMicros": 1794083108373364,
+      "endedAtMicros": 1794083176635689,
+      "score": 80,
+      "balance": 24,
+      "place": 3,
+      "players": 6,
+      "rounds": 68
+    },
+    {
+      "matchId": 42682,
+      "startedAtMicros": 1794083177100139,
+      "endedAtMicros": 1794083245352485,
+      "score": 45,
+      "balance": 58,
+      "place": 4,
+      "players": 6,
+      "rounds": 68
+    },
+    {
+      "matchId": 42684,
+      "startedAtMicros": 1794083314140443,
+      "endedAtMicros": 1794083382653200,
+      "score": 33,
+      "balance": 14,
+      "place": 6,
+      "players": 6,
+      "rounds": 68
+    },
+    {
+      "matchId": 42686,
+      "startedAtMicros": 1794083451831606,
+      "endedAtMicros": 1794083539234648,
+      "score": 42,
+      "balance": 28,
+      "place": 5,
+      "players": 6,
+      "rounds": 68
+    }
+  ]
+}
