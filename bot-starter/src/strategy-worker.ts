@@ -15,6 +15,7 @@ const capitalAllowance = process.env.BOT_CAPITAL_ALLOWANCE !== "0";
 const engine = new StrategyEngine(loadDictionary(workerData?.dictionaryPath), {
   capitalAllowance,
   headsUpFaceBidWeight: capitalAllowance ? headsUpFaceBidWeight : 0,
+  wordFirst: true,
 });
 parentPort.on("message", (request: { id: number; snapshot: MatchSnapshot }) => {
   try {

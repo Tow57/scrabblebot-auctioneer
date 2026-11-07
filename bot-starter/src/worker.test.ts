@@ -41,7 +41,11 @@ test("native mjs worker initializes tsx, loads the official dictionary, and pres
   const decision = await worker.evaluate(snapshot());
   assert.ok(decision, "small-rack computation must finish inside the 150ms worker deadline");
   assert.ok(["ACT", "CAT", "AT", "TA"].includes(decision.word ?? ""));
-  assert.ok(Number.isInteger(decision.bid) && decision.bid >= 0 && decision.bid <= 5);
+  const rawLibrary = new StrategyEngine(dictionary(), { capitalAllowance: true }).decide(snapshot());
+  assert.ok(rawLibrary.word && rawLibrary.bid > 0, "legacy library retains its bid on the old rack");
+  assert.equal(decision.bid, 0, "the word-first worker does not return that obsolete positive bid");
+  assert.equal(decision.word, rawLibrary.word);
+  assert.deepEqual(decision.plan, rawLibrary.plan);
 });
 
 test("queued snapshots are bounded to the newest pending request", async t => {
@@ -89,6 +93,7 @@ test("native worker defaults to the confirmed heads-up formula and preserves oth
         const decision = await worker.evaluate(current);
         assert.ok(decision, "native heads-up response must arrive inside the 150ms worker budget");
         assert.ok(base.bid > 0);
+        assert.equal(base.word, null, "formula cases exercise bidding rather than a pending cashout");
         assert.equal(decision.bid, Math.min(100, Math.ceil(base.bid * (1 + 0.3 * (LETTER_VALUE[letter] - 1)))));
         assert.equal(decision.word, base.word);
         assert.deepEqual(decision.plan, base.plan);
@@ -105,7 +110,8 @@ test("native worker defaults to the confirmed heads-up formula and preserves oth
         const base = original.decide(current);
         const decision = await worker.evaluate(current);
         assert.ok(decision);
-        assert.equal(decision.bid, base.bid);
+        assert.equal(decision.bid, base.word ? 0 : base.bid, "worker bids zero for a selected cashout word");
+        assert.equal(decision.word, base.word);
       }
       assert.equal(worker.stats().activeTimeouts, 0);
       t.diagnostic(`Native heads-up round trips: ${latencies.map(value => value.toFixed(1)).join(", ")}ms`);
@@ -119,7 +125,7 @@ test("worker weight opt-out, valid override, and capital-policy opt-out retain t
       const worker = new StrategyWorker();
       const capitalAllowance = settings.capital !== "0";
       const expected = new StrategyEngine(dictionary(), {
-        capitalAllowance, headsUpFaceBidWeight: capitalAllowance ? Number(settings.weight) : 0,
+        capitalAllowance, headsUpFaceBidWeight: capitalAllowance ? Number(settings.weight) : 0, wordFirst: true,
       });
       try {
         await worker.start();

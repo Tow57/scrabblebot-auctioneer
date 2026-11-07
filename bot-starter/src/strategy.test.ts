@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { canSpell, DictionaryIndex, loadDictionary, rackToCounts, scoreWord } from "./dictionary.js";
 import { RackOptimizer } from "./optimizer.js";
-import { StrategyEngine, type StrategyContext } from "./strategy.js";
+import { decideBid, StrategyEngine, type StrategyContext, type StrategyDecision } from "./strategy.js";
 
 const rack = (letters: string): Map<string, number> => {
   const result = new Map<string, number>();
@@ -247,6 +247,77 @@ test("word policy holds short words, releases maximum-bonus words, and liquidate
   const before = [...snapshot.myRack];
   engine.decide(snapshot);
   assert.deepEqual([...snapshot.myRack], before);
+});
+
+test("word-first work avoidance is opt-in and preserves default bids, plans and helpers", () => {
+  const words = ["AT", "CAT", "CATS", "DOG", "HAT", "READING", "AX", "EL", "AXE", "QAT", "QUA", "ZOO"];
+  const index = new DictionaryIndex(words);
+  const options = { capitalAllowance: true, headsUpFaceBidWeight: 0.3 };
+  const stripTiming = ({ elapsedMs: _elapsedMs, ...decision }: StrategyDecision) => decision;
+  const cases = [
+    context("READINGCA", { letter: "T", participantCount: 2 }),
+    context("CAT", { letter: "S", myBalance: 11 }),
+    context("CATBDEFGHJKL", { letter: "S" }),
+    context("CAT", { letter: "S", bagTotal: 3 }),
+    context("CAT", { letter: "S", bagTotal: 0 }),
+    context("CAT", { letter: "S" }),
+    context("CA", { letter: "T", participantCount: 2 }),
+    context("QZ", { letter: "E" }),
+    context("CA", { letter: "T", bagTotal: 1, myBalance: 37 }),
+    context("CA", { letter: "T", myBalance: 0 }),
+    context("CA", { letter: "T", auctionType: "FirstPrice" }),
+  ].map(snapshot => ({ ...snapshot, bagTotal: snapshot.bagTotal === 40 ? 60 : snapshot.bagTotal, estimatedPrice: 8 }));
+  for (const snapshot of cases) {
+    const baseline = new StrategyEngine(index, options).decide(snapshot);
+    const explicitDefault = new StrategyEngine(index, { ...options, wordFirst: false }).decide(snapshot);
+    assert.deepEqual(stripTiming(explicitDefault), stripTiming(baseline));
+    const fast = new StrategyEngine(index, { ...options, wordFirst: true });
+    const optimize = fast.optimizer.optimize.bind(fast.optimizer);
+    const completion = index.completionValue;
+    const searches: boolean[] = [];
+    let completionCalls = 0;
+    fast.optimizer.optimize = (...args) => {
+      const result = optimize(...args); searches.push(result.exact); return result;
+    };
+    index.completionValue = function (...args) { completionCalls++; return completion.apply(this, args); };
+    const before = [...snapshot.myRack];
+    let result: StrategyDecision;
+    try { result = fast.decide(snapshot); }
+    finally { index.completionValue = completion; }
+    assert.ok(searches.every(Boolean), "small contract cases must be solved exactly");
+    assert.deepEqual([...snapshot.myRack], before);
+    assert.deepEqual(stripTiming(result), { ...stripTiming(baseline), bid: baseline.word ? 0 : baseline.bid });
+    assert.equal(assertLegal(result.plan, [...snapshot.myRack].flatMap(([letter, count]) => Array(count).fill(letter)).join(""), index.words), result.cashout);
+    if (baseline.word) {
+      assert.equal(searches.length, 1, "word-first decisions skip the augmented solve");
+      assert.equal(completionCalls, 0, "word-first decisions skip completion valuation");
+    } else {
+      assert.equal(searches.length, snapshot.myBalance > 0 && snapshot.bagTotal > 0 ? 2 : 1);
+    }
+  }
+  const helper = { ...context("READINGCA", { letter: "T", participantCount: 2, bagTotal: 60, estimatedPrice: 8 }), dictionary: words };
+  assert.equal(decideBid(helper), 3, "legacy bid-only helper retains its independent positive suggestion");
+  assert.equal(new StrategyEngine(index, options).decide(helper).bid, 9, "default library still computes the old raw bid with a selected word");
+});
+
+test("word-first bidding resumes from the authoritative rack after cashout", () => {
+  const index = new DictionaryIndex(["READING", "CAT", "AT"]);
+  const options = { capitalAllowance: true, headsUpFaceBidWeight: 0.3 };
+  const engine = new StrategyEngine(index, { ...options, wordFirst: true });
+  const initial = context("READINGCA", { letter: "T", participantCount: 2, bagTotal: 60, estimatedPrice: 8 });
+  const cashout = engine.decide(initial);
+  assert.equal(cashout.word, "READING");
+  assert.equal(cashout.bid, 0);
+  const committedRack = new Map(initial.myRack);
+  for (const letter of cashout.word!) committedRack.set(letter, committedRack.get(letter)! - 1);
+  const fresh = { ...initial, myRack: committedRack, myBalance: initial.myBalance + scoreWord(cashout.word!) };
+  const next = engine.decide(fresh);
+  const baseline = new StrategyEngine(index, options).decide(fresh);
+  assert.equal(next.word, null);
+  assert.ok(next.bid > 0, "the offered T is repriced after the word leaves CA");
+  assert.equal(next.bid, baseline.bid);
+  assert.equal(next.cashout, baseline.cashout);
+  assert.deepEqual(initial.myRack, rack("READINGCA"));
 });
 
 test("full pinned dictionary produces legal decisions and bounds dense-rack search", t => {

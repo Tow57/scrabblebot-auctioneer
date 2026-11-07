@@ -47,6 +47,8 @@ export interface StrategyOptions {
   capitalAllowance?: boolean;
   /** Only two-player Vickrey matches; zero preserves the original policy. */
   headsUpFaceBidWeight?: number;
+  /** Opt-in for drivers that cash the selected word before placing a new bid. */
+  wordFirst?: boolean;
 }
 
 /** Stateful only for dictionary/search caches; decisions use this snapshot alone. */
@@ -78,6 +80,9 @@ export class StrategyEngine {
     for (const count of counts) size += count;
     const word = plan.find(candidate => candidate.length >= 7)
       ?? ((balance < 12 || size >= 12 || bagTotal <= 3) ? plan[0] ?? null : null);
+    if (this.options.wordFirst && word !== null) {
+      return { bid: 0, word, plan, cashout: current.score, exact: current.exact, elapsedMs: performance.now() - start };
+    }
     let bid = 0;
     if (balance > 0 && bagTotal > 0 && /^[A-Z]$/.test(ctx.letter)) {
       const letter = ctx.letter.charCodeAt(0) - 65;
