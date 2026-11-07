@@ -35,7 +35,7 @@ The launch script installs the locked dependencies when missing and verifies esb
 ./Start-Bot.ps1 -BotName auctioneer -TournamentId 123
 ```
 
-Replace `123` with the confirmed upcoming ID. Never assume an old or ended tournament is the correct event. Tournament mode finishes any current practice match, registers using the bot credential, verifies entry, and stays out of new practice lobbies. Keep it running through the finals; registration does not run the bot for you. Freeze code at least 90 minutes before the confirmed start.
+Replace `123` with the confirmed upcoming ID. Never assume an old or ended tournament is the correct event. Tournament mode registers promptly using the bot credential, verifies entry, continues any existing practice match, and stays out of new practice lobbies. The server waits for registered entrants' practice matches before starting round one; registering promptly avoids missing a cutoff while waiting locally. Keep it running through the finals; registration does not run the bot for you. Freeze code at least 90 minutes before the confirmed start.
 
 If registration is not yet open, wait for the organizer to open it and restart with the correct ID. Check registration at https://scrabblebot.spacetimedb.com/tournament. An offline registered bot still gets seated and misses its auctions.
 
@@ -46,7 +46,7 @@ If registration is not yet open, wait for the organizer to open it and restart w
 - Letter bids combine immediate rack cashout gain with value from words up to two letters short. Payment history sets budget pacing; first-price bids are shaded.
 - Seven-letter words cash immediately. Shorter words cash under liquidity/rack pressure and during the last four auction windows.
 - `bagTotal` excludes the currently offered tile. With zero remaining, the current auction is final and its tile cannot be used by an external client: bid zero and finish existing words before closure. With one remaining, the current auction is the last usable purchase.
-- A worker keeps search off the connection thread. Late or stale results are rejected. Word submissions are serialized against confirmed rack updates.
+- A worker keeps search off the connection thread. Late or stale results are rejected. Word submissions are serialized against confirmed rack updates. The client retracts old bids before cashout and reprices after the word acknowledgment and rack update, so it does not buy against letters already spent.
 - Auction deadlines use a monotonic clock calibrated from fresh live auction events, so laptop/server wall-clock differences cannot suppress bids. A cold process may wait for the next auction to calibrate; reconnects retain the existing calibration.
 - The tournament worker enables the tested capital allowance so useful letters receive some buying power from the initial bank. `BOT_CAPITAL_ALLOWANCE=0` selects the previous bidding policy for comparisons.
 

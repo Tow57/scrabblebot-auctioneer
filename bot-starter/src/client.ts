@@ -113,9 +113,9 @@ export function estimatePrice(prices: number[]): number {
   return estimate;
 }
 
-/** A bounded emergency bid; never guesses that an unusable final tile has value. */
+/** Emergency bids have no immediate-gain proof, so skip both terminal auctions. */
 export function fallbackBid(s: MatchSnapshot): number {
-  if (!s.letter || s.bagTotal === 0 || !Number.isFinite(s.myBalance)) return 0;
+  if (!s.letter || s.bagTotal <= 1 || !Number.isFinite(s.myBalance)) return 0;
   const points: Record<string, number> = { B: 3, C: 3, D: 2, F: 4, G: 2, H: 4, J: 8, K: 5, M: 3, P: 3, Q: 10, V: 4, W: 4, X: 8, Y: 4, Z: 10 };
   const premium = (s.myRack.get(s.letter) ?? 0) === 0 ? 2 : 0;
   return Math.max(0, Math.min(Math.floor(s.myBalance), (points[s.letter] ?? 1) + premium));
@@ -144,7 +144,8 @@ interface MatchActions {
   requested?: string;
   plan?: string[];
   word?: WordPending;
-  bid?: { auctionId: bigint; amount: number; pending: boolean; acknowledged: boolean; desired?: number; desiredKey?: string };
+  bid?: { auctionId: bigint; amount: number; pending: boolean; acknowledged: boolean; desired?: number; desiredKey?: string;
+    needsCancellation: boolean; cancelAttempted: boolean };
   retry?: ReturnType<typeof setTimeout>;
 }
 
@@ -247,9 +248,7 @@ export class BotController {
         }
         this.options.diagnostic?.("decision", fresh, `bid=${decision?.bid ?? fallbackBid(fresh)} word=${decision?.word ?? "null"} fallback=${decision === null} roundTripMs=${roundTripMs.toFixed(1)} computeMs=${decision?.elapsedMs?.toFixed(1) ?? "null"} queuedMs=${decision?.queuedMs?.toFixed(1) ?? "null"}`);
         if (decision?.plan) state.plan = decision.plan;
-        this.bid(fresh, state, decision?.bid ?? fallbackBid(fresh));
-        const word = decision ? decision.word : cachedWord(fresh, state.plan ?? []);
-        if (word && !state.word) this.word(fresh, state, word);
+        this.act(fresh, state, decision);
         if (!decision) this.retry(snapshot.matchId, state);
       }).catch(() => {
         if (epoch !== this.epoch || this.matches.get(snapshot.matchId) !== state) return;
@@ -259,40 +258,64 @@ export class BotController {
         state.metrics.roundTripMaxMs = Math.max(state.metrics.roundTripMaxMs, roundTripMs);
         const fresh = this.current(snapshot.matchId);
         if (fresh && snapshotKey(fresh) === key) {
-          this.bid(fresh, state, fallbackBid(fresh));
-          const word = cachedWord(fresh, state.plan ?? []);
-          if (word && !state.word) this.word(fresh, state, word);
+          this.act(fresh, state, null);
           this.retry(snapshot.matchId, state);
         }
       });
     }
   }
 
+  private act(snapshot: MatchSnapshot, state: MatchActions, decision: Decision | null): void {
+    const planned = decision ? decision.word : cachedWord(snapshot, state.plan ?? []);
+    const word = planned && canSpell(planned, snapshot.myRack) ? planned : null;
+    if (state.word || word) {
+      // A bid valued using letters we are about to spend must not survive
+      // that cashout. Reprice only after both the ack and view update arrive.
+      this.bid(snapshot, state, 0);
+      if (word && !state.word) this.word(snapshot, state, word);
+      return;
+    }
+    this.bid(snapshot, state, decision?.bid ?? fallbackBid(snapshot));
+  }
+
   private bid(snapshot: MatchSnapshot, state: MatchActions, proposed: number): void {
     if (snapshot.auctionId === null) {
       this.options.diagnostic?.("guard", snapshot, "missing cached open auction"); return;
+    }
+    if (!Number.isFinite(proposed)) { this.options.diagnostic?.("guard", snapshot, "nonfinite bid"); return; }
+    const amount = Math.max(0, Math.min(Math.floor(proposed), Math.floor(snapshot.myBalance)));
+    if (state.word && amount > 0) { this.bid(snapshot, state, 0); return; }
+    const prior = state.bid?.auctionId === snapshot.auctionId ? state.bid : undefined;
+    if (amount === 0 && !prior?.needsCancellation && !(prior?.pending && (prior.desired ?? 0) > 0)) {
+      this.options.diagnostic?.("guard", snapshot, "zero strategy bid without a prior positive bid"); return;
     }
     if (snapshot.closesAtMs === null) {
       state.metrics.uncalibratedSkips++;
       this.options.diagnostic?.("guard", snapshot, "awaiting a live server clock anchor"); return;
     }
-    if (this.now() + 150 >= snapshot.closesAtMs) {
+    const remaining = snapshot.closesAtMs - this.now();
+    if (remaining <= 0) {
       state.metrics.deadlineSkips++;
-      this.options.diagnostic?.("guard", snapshot, `deadline remainingMs=${snapshot.closesAtMs - this.now()}`); return;
+      this.options.diagnostic?.("guard", snapshot, "auction deadline passed"); return;
     }
-    if (!Number.isFinite(proposed)) { this.options.diagnostic?.("guard", snapshot, "nonfinite bid"); return; }
-    const amount = Math.max(0, Math.min(Math.floor(proposed), Math.floor(snapshot.myBalance)));
-    const prior = state.bid;
-    if (amount === 0 && (!prior || prior.auctionId !== snapshot.auctionId || prior.amount === 0)) {
-      this.options.diagnostic?.("guard", snapshot, "zero strategy bid without a prior positive bid"); return;
-    }
-    if (prior?.auctionId === snapshot.auctionId && prior.pending) {
+    if (prior?.pending) {
+      if (amount > 0 && remaining <= 150) return;
+      // A cashout already invalidated this in-flight positive bid. Send its
+      // queued zero before considering any value from the post-cashout rack.
+      if (prior.amount > 0 && prior.desired === 0 && amount > 0) return;
       prior.desired = amount;
       prior.desiredKey = snapshotKey(snapshot);
       return;
     }
-    if (prior?.auctionId === snapshot.auctionId && prior.acknowledged && prior.amount === amount) return;
-    const bid: NonNullable<MatchActions["bid"]> = { auctionId: snapshot.auctionId, amount, pending: true, acknowledged: false };
+    // First zero retractions reduce exposure and may use the final 150 ms.
+    // A failed cancellation can retry only with the usual safety margin.
+    if (remaining <= 150 && (amount > 0 || prior?.cancelAttempted)) {
+      state.metrics.deadlineSkips++;
+      this.options.diagnostic?.("guard", snapshot, `deadline remainingMs=${remaining}`); return;
+    }
+    if (prior?.acknowledged && prior.amount === amount) return;
+    const bid: NonNullable<MatchActions["bid"]> = { auctionId: snapshot.auctionId, amount, pending: true, acknowledged: false,
+      needsCancellation: amount > 0 || prior?.needsCancellation === true, cancelAttempted: amount === 0 };
     this.options.diagnostic?.("guard", snapshot, `sending amount=${amount}`);
     state.bid = bid;
     const epoch = this.epoch;
@@ -300,12 +323,14 @@ export class BotController {
       if (epoch !== this.epoch || state.bid !== bid) return;
       bid.pending = false;
       bid.acknowledged = true;
+      bid.needsCancellation = amount > 0;
       state.metrics.acceptedBids++;
       this.options.report?.(`bid ${amount} accepted for auction ${bid.auctionId}`);
       const fresh = this.current(snapshot.matchId);
-      if (fresh && bid.desired !== undefined && bid.desired !== bid.amount && bid.desiredKey === snapshotKey(fresh)) {
+      if (fresh && fresh.auctionId === bid.auctionId && bid.desired !== undefined && bid.desired !== bid.amount
+        && (bid.desired === 0 || bid.desiredKey === snapshotKey(fresh))) {
         this.bid(fresh, state, bid.desired);
-      } else if (fresh && snapshotKey(fresh) !== snapshotKey(snapshot)) {
+      } else if (fresh && (amount === 0 || snapshotKey(fresh) !== snapshotKey(snapshot))) {
         state.requested = undefined;
         this.refresh();
       }
@@ -315,6 +340,7 @@ export class BotController {
       state.metrics.rejectedBids++;
       this.options.report?.(`bid rejected for auction ${bid.auctionId}; checking current state`);
       const fresh = this.current(snapshot.matchId);
+      if (bid.amount > 0 && bid.desired === 0 && fresh?.auctionId === bid.auctionId) this.bid(fresh, state, 0);
       if (fresh?.auctionId === bid.auctionId && fresh.closesAtMs !== null && this.now() + 150 < fresh.closesAtMs) this.retry(snapshot.matchId, state);
     });
   }

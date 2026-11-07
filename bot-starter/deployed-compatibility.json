@@ -1,0 +1,258 @@
+{
+  "checkedAtUtc": "2026-11-07T21:01:34.157Z",
+  "method": {
+    "command": "spacetimedb-cli.exe --root-dir <task-local-config> describe scrabblebot --server maincloud --anonymous --no-config --json",
+    "access": "Anonymous public metadata; no credentials/config/token contents inspected; no reducer calls or mutations",
+    "host": "https://maincloud.spacetimedb.com",
+    "database": "scrabblebot",
+    "schemaSha256": "1af3beeeb5e18ddab137d7ba55a26dcca694b5f7ebc08ceeeeda636916d9668d"
+  },
+  "source": {
+    "head": "34ed0f32c17990a720ece6703f0d3a0120c09514",
+    "tag": "runtime-v1.1",
+    "upstreamPin": "b5ccb36aa238ad16692f8d6af54da15ef9f11324",
+    "sdkVersion": "2.12.0",
+    "bindingGeneratorVersion": "2.12.0",
+    "bindingGeneratorCommit": "2f8905d6aaf3e9ffcbce3a8a1a1e30e715ad5db7",
+    "portableCliVersion": "2.12.0",
+    "portableCliCommit": "2f8905d6aaf3e9ffcbce3a8a1a1e30e715ad5db7",
+    "upstreamUnchangedPaths": [
+      "src/module_bindings",
+      "spacetimedb/src/index.ts",
+      "spacetimedb/src/schema.ts",
+      "spacetimedb/src/game.ts",
+      "spacetimedb/src/tournament.ts",
+      "spacetimedb/src/letters.ts"
+    ],
+    "upstreamUnchanged": true,
+    "botBindingsEqualTrackedBindings": true,
+    "bindingFileCount": 61
+  },
+  "deployed": {
+    "serverVersion": null,
+    "serverVersionObservation": "describe does not include server binary version; anonymous /v1/ping returned HTTP 200 with nginx/1.18.0 (Ubuntu) proxy header and no SpacetimeDB version header",
+    "reducersInspected": 27,
+    "readableTablesAndViewsInspected": 30,
+    "allGeneratedReducersCompatible": true,
+    "allGeneratedReadRowsCompatible": true
+  },
+  "requiredReducers": [
+    {
+      "name": "join_lobby",
+      "clientAccessor": "joinLobby",
+      "clientCallable": true,
+      "compatible": true,
+      "deployedParameters": [],
+      "clientParameters": []
+    },
+    {
+      "name": "register_for_tournament",
+      "clientAccessor": "registerForTournament",
+      "clientCallable": true,
+      "compatible": true,
+      "deployedParameters": [
+        "tournament_id:u64"
+      ],
+      "clientParameters": [
+        "tournamentId:u64"
+      ]
+    },
+    {
+      "name": "submit_bid",
+      "clientAccessor": "submitBid",
+      "clientCallable": true,
+      "compatible": true,
+      "deployedParameters": [
+        "auction_id:u64",
+        "amount:i64"
+      ],
+      "clientParameters": [
+        "auctionId:u64",
+        "amount:i64"
+      ]
+    },
+    {
+      "name": "submit_word",
+      "clientAccessor": "submitWord",
+      "clientCallable": true,
+      "compatible": true,
+      "deployedParameters": [
+        "match_id:u64",
+        "word:string"
+      ],
+      "clientParameters": [
+        "matchId:u64",
+        "word:string"
+      ]
+    }
+  ],
+  "requiredReadRows": [
+    {
+      "name": "auction",
+      "kind": "table",
+      "public": true,
+      "columns": [
+        "id:u64",
+        "match_id:u64",
+        "letter:string",
+        "opens_at:timestamp(i64 micros)",
+        "closes_at:timestamp(i64 micros)",
+        "status:enum(open|closed)"
+      ],
+      "compatible": true
+    },
+    {
+      "name": "auction_result",
+      "kind": "table",
+      "public": true,
+      "columns": [
+        "auction_id:u64",
+        "match_id:u64",
+        "letter:string",
+        "winner_bot_id:option<u64>",
+        "paid:i64",
+        "closed_at:timestamp(i64 micros)"
+      ],
+      "compatible": true
+    },
+    {
+      "name": "match_participant",
+      "kind": "table",
+      "public": true,
+      "columns": [
+        "id:u64",
+        "match_id:u64",
+        "bot_id:u64",
+        "balance:i64",
+        "score:i64"
+      ],
+      "compatible": true
+    },
+    {
+      "name": "match_state",
+      "kind": "table",
+      "public": true,
+      "columns": [
+        "id:u64",
+        "status:enum(lobby|running|ended)",
+        "current_round:u32",
+        "current_auction_id:option<u64>",
+        "bag_total:u32",
+        "auction_type:enum(firstprice|vickrey)",
+        "created_at:timestamp(i64 micros)",
+        "started_at:option<timestamp(i64 micros)>",
+        "ended_at:option<timestamp(i64 micros)>",
+        "auction_duration_ms:u64",
+        "starting_rack_size:u32"
+      ],
+      "compatible": true
+    },
+    {
+      "name": "tournament",
+      "kind": "table",
+      "public": true,
+      "columns": [
+        "id:u64",
+        "status:enum(lobby|swiss|bracket|final|ended|registration|forceended)",
+        "swiss_rounds_total:u32",
+        "current_round:u32",
+        "top_cut:u32",
+        "match_size:u32",
+        "auction_type:enum(firstprice|vickrey)",
+        "created_at:timestamp(i64 micros)",
+        "ended_at:option<timestamp(i64 micros)>",
+        "winner_bot_id:option<u64>"
+      ],
+      "compatible": true
+    },
+    {
+      "name": "tournament_entry",
+      "kind": "table",
+      "public": true,
+      "columns": [
+        "id:u64",
+        "tournament_id:u64",
+        "bot_id:u64",
+        "swiss_points:i32",
+        "eliminated:bool",
+        "total_score:i64",
+        "final_finish_position:option<u32>"
+      ],
+      "compatible": true
+    },
+    {
+      "name": "word_play",
+      "kind": "table",
+      "public": true,
+      "columns": [
+        "id:u64",
+        "match_id:u64",
+        "bot_id:u64",
+        "word:string",
+        "base_score:i64",
+        "bonus:i64",
+        "total_reward:i64",
+        "played_at:timestamp(i64 micros)"
+      ],
+      "compatible": true
+    },
+    {
+      "name": "my_rack",
+      "kind": "view",
+      "public": true,
+      "anonymous": false,
+      "params": [],
+      "columns": [
+        "id:u64",
+        "match_id:u64",
+        "bot_id:u64",
+        "letter:string",
+        "count:u32"
+      ],
+      "compatible": true
+    },
+    {
+      "name": "open_lobbies",
+      "kind": "view",
+      "public": true,
+      "anonymous": true,
+      "params": [],
+      "columns": [
+        "id:u64",
+        "status:enum(open|resolved|cancelled)",
+        "opens_at:timestamp(i64 micros)",
+        "closes_at:timestamp(i64 micros)",
+        "max_size:u32",
+        "auction_type:enum(firstprice|vickrey)",
+        "resolved_match_id:option<u64>"
+      ],
+      "compatible": true
+    },
+    {
+      "name": "open_lobby_members",
+      "kind": "view",
+      "public": true,
+      "anonymous": true,
+      "params": [],
+      "columns": [
+        "id:u64",
+        "lobby_id:u64",
+        "bot_id:u64",
+        "joined_at:timestamp(i64 micros)"
+      ],
+      "compatible": true
+    }
+  ],
+  "mismatches": [],
+  "naming": "Client camelCase accessors map to canonical snake_case wire names. Argument/column ordering and recursively expanded types were compared; generated enum names differ only by case from deployed source names and were normalized for comparison.",
+  "liveRegistration": {
+    "attempted": false,
+    "verified": false,
+    "reason": "This audit only reads metadata. It does not validate registration acceptance, current registration window, tournament entry, or eligibility."
+  },
+  "limits": [
+    "Compatible ABI does not prove identical deployed game implementation, dictionary contents, tournament settings or source commit.",
+    "No live negative tests or old-tournament registration attempts were performed.",
+    "No live behavior was inferred solely from this schema check."
+  ]
+}

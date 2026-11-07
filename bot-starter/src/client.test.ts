@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { AuctionClock, BotController, estimatePrice, fallbackBid, indexRows, parseTournamentId, type Decision, type MatchSnapshot } from "./client.js";
+import { StrategyEngine } from "./strategy.js";
 
 const rack = (letters: string) => {
   const result = new Map<string, number>();
@@ -12,8 +13,9 @@ const snapshot = (): MatchSnapshot => ({ matchId: 1n, auctionId: 2n, letter: "E"
 const flush = async () => { for (let i = 0; i < 3; i++) await new Promise<void>(resolve => setImmediate(resolve)); };
 function deferred<T>() {
   let resolve!: (value: T) => void;
-  const promise = new Promise<T>(r => { resolve = r; });
-  return { promise, resolve };
+  let reject!: (error: unknown) => void;
+  const promise = new Promise<T>((r, e) => { resolve = r; reject = e; });
+  return { promise, resolve, reject };
 }
 
 test("key index tracks SDK row updates/deletes and rebuilds after a missed replay event", () => {
@@ -211,13 +213,195 @@ test("worker fallback revalidates cached plans and follows endgame cashout", asy
   let current = snapshot();
   let calls = 0;
   const words: string[] = [];
+  const bids: bigint[] = [];
   const controller = new BotController({ read: () => [current], evaluate: async () => ++calls === 1
     ? { bid: 1, word: null, plan: ["ZZ", "CAT", "DOG"] } : null,
-    submitBid: async () => {}, submitWord: async (_id, word) => { words.push(word); }, now: () => 1000 });
+    submitBid: async (_id, amount) => { bids.push(amount); }, submitWord: async (_id, word) => { words.push(word); }, now: () => 1000 });
   t.after(() => controller.stop());
   controller.refresh(); await flush(); assert.deepEqual(words, []);
   current = { ...current, bagTotal: 2 }; controller.refresh(); await flush();
   assert.deepEqual(words, ["CAT"]);
+  assert.deepEqual(bids, [1n, 0n], "cached cashout retracts the bid instead of placing a fallback bid");
+});
+
+test("real RAINBOWS decision cashes out before valuing the now-empty rack near the deadline", async t => {
+  let now = 1700;
+  let current = { ...snapshot(), myRack: rack("RAINBOW"), letter: "S", closesAtMs: 2000 };
+  const engine = new StrategyEngine(["RAINBOW", "RAINBOWS"], { capitalAllowance: true });
+  assert.equal(engine.decide(current).bid, 35, "the old rack makes this a high bid");
+  const bids: bigint[] = [];
+  const words: string[] = [];
+  const controller = new BotController({ read: () => [current], evaluate: async s => engine.decide(s),
+    submitBid: async (_id, amount) => { bids.push(amount); },
+    submitWord: async (_id, word) => {
+      words.push(word); now = 1900;
+      current = { ...current, myRack: new Map(), myBalance: 136, score: 36 };
+      controller.refresh();
+    }, now: () => now });
+  t.after(() => controller.stop());
+  controller.refresh(); await flush();
+  assert.deepEqual(words, ["RAINBOW"]);
+  assert.deepEqual(bids, [], "no obsolete pre-cashout bid may reach the server");
+  assert.equal(engine.decide(current).bid, 0);
+});
+
+test("an unspellable worker word cannot suppress an otherwise valid bid", async t => {
+  const bids: bigint[] = [];
+  const words: string[] = [];
+  const controller = new BotController({ read: () => [snapshot()], evaluate: async () => ({ bid: 7, word: "ZZ" }),
+    submitBid: async (_id, amount) => { bids.push(amount); }, submitWord: async (_id, word) => { words.push(word); }, now: () => 1000 });
+  t.after(() => controller.stop());
+  controller.refresh(); await flush();
+  assert.deepEqual(words, []);
+  assert.deepEqual(bids, [7n]);
+});
+
+test("accepted positive bids get one zero retraction inside the 150ms margin before cashout", async t => {
+  let now = 1000;
+  let current = { ...snapshot(), closesAtMs: 2000 };
+  let cashout = false;
+  const bids: bigint[] = [];
+  const words: string[] = [];
+  const controller = new BotController({ read: () => [current], evaluate: async () => ({ bid: 99, word: cashout ? "CAT" : null }),
+    submitBid: async (_id, amount) => { bids.push(amount); }, submitWord: async (_id, word) => { words.push(word); }, now: () => now });
+  t.after(() => controller.stop());
+  controller.refresh(); await flush();
+  cashout = true; now = 1900; current = { ...current, score: 1 }; controller.refresh(); await flush();
+  current = { ...current, estimatedPrice: 4 }; controller.refresh(); await flush();
+  assert.deepEqual(bids, [99n, 0n]);
+  assert.deepEqual(words, ["CAT"], "the word remains a single flight while the rack is unchanged");
+});
+
+test("an in-flight positive bid queues a late zero cancellation until its acknowledgment", async t => {
+  let now = 1000;
+  let current = { ...snapshot(), closesAtMs: 2000 };
+  let cashout = false;
+  const ack = deferred<unknown>();
+  const bids: bigint[] = [];
+  const words: string[] = [];
+  const controller = new BotController({ read: () => [current], evaluate: async () => ({ bid: 8, word: cashout ? "CAT" : null }),
+    submitBid: async (_id, amount) => { bids.push(amount); if (bids.length === 1) await ack.promise; },
+    submitWord: async (_id, word) => { words.push(word); }, now: () => now });
+  t.after(() => controller.stop());
+  controller.refresh(); await flush();
+  cashout = true; now = 1900; current = { ...current, score: 1 }; controller.refresh(); await flush();
+  assert.deepEqual(bids, [8n]);
+  assert.deepEqual(words, ["CAT"]);
+  now = 1950; ack.resolve(undefined); await flush();
+  assert.deepEqual(bids, [8n, 0n]);
+});
+
+test("completed cashout cannot overwrite a queued zero before the old positive bid acknowledges", async t => {
+  for (const remaining of [100, 900]) {
+    let now = 1000;
+    let current = { ...snapshot(), closesAtMs: 2000 };
+    let cashout = false;
+    const bidAck = deferred<unknown>();
+    const wordAck = deferred<unknown>();
+    const bids: bigint[] = [];
+    const controller = new BotController({ read: () => [current], evaluate: async s => ({
+      bid: s.myRack.has("C") ? 99 : 1, word: cashout && s.myRack.has("C") ? "CAT" : null,
+    }), submitBid: async (_id, amount) => { bids.push(amount); if (bids.length === 1) await bidAck.promise; },
+    submitWord: async () => { await wordAck.promise; }, now: () => now });
+    t.after(() => controller.stop());
+    controller.refresh(); await flush();
+    cashout = true; current = { ...current, score: 1 }; controller.refresh(); await flush();
+    current = { ...current, myRack: rack("DOG"), myBalance: 105, score: 5 };
+    wordAck.resolve(undefined); controller.refresh(); await flush();
+    assert.deepEqual(bids, [99n], "fresh bid 1 must not replace the queued cancellation");
+    now = 2000 - remaining;
+    bidAck.resolve(undefined); await flush();
+    assert.deepEqual(bids, remaining > 150 ? [99n, 0n, 1n] : [99n, 0n]);
+  }
+});
+
+test("positive bidding resumes only after both word acknowledgment and authoritative rack change", async t => {
+  for (const order of ["ack-first", "cache-first"]) {
+    let current = snapshot();
+    const ack = deferred<unknown>();
+    const bids: bigint[] = [];
+    const words: string[] = [];
+    const controller = new BotController({ read: () => [current], evaluate: async s => ({ bid: 12, word: s.myRack.has("C") ? "CAT" : null }),
+      submitBid: async (_id, amount) => { bids.push(amount); }, submitWord: async (_id, word) => { words.push(word); await ack.promise; }, now: () => 1000 });
+    t.after(() => controller.stop());
+    controller.refresh(); await flush();
+    assert.deepEqual(bids, []);
+    if (order === "ack-first") ack.resolve(undefined);
+    else current = { ...current, myRack: rack("DOG"), myBalance: 105, score: 5 };
+    controller.refresh(); await flush();
+    assert.deepEqual(bids, [], `${order}: one completion signal alone must not enable bidding`);
+    if (order === "ack-first") current = { ...current, myRack: rack("DOG"), myBalance: 105, score: 5 };
+    else ack.resolve(undefined);
+    controller.refresh(); await flush();
+    assert.deepEqual(words, ["CAT"]);
+    assert.deepEqual(bids, [12n]);
+  }
+});
+
+test("failed words recover from a fresh snapshot without spending the old rack again", async t => {
+  let current = snapshot();
+  const wordResult = deferred<unknown>();
+  const bids: bigint[] = [];
+  const words: string[] = [];
+  const controller = new BotController({ read: () => [current], evaluate: async s => ({ bid: 6, word: s.myRack.has("C") ? "CAT" : null }),
+    submitBid: async (_id, amount) => { bids.push(amount); }, submitWord: async (_id, word) => { words.push(word); await wordResult.promise; },
+    now: () => 1000, retryMs: 1 });
+  t.after(() => controller.stop());
+  controller.refresh(); await flush();
+  current = { ...current, myRack: rack("DOG"), score: 5 }; controller.refresh(); await flush();
+  assert.deepEqual(bids, []);
+  wordResult.reject(new Error("request failed after authoritative state changed")); await flush();
+  await new Promise(resolve => setTimeout(resolve, 15)); await flush();
+  assert.deepEqual(words, ["CAT"]);
+  assert.deepEqual(bids, [6n]);
+});
+
+test("cached cashout also precedes bidding when worker evaluation rejects", async t => {
+  let current = snapshot();
+  let evaluations = 0;
+  const bids: bigint[] = [];
+  const words: string[] = [];
+  const controller = new BotController({ read: () => [current], evaluate: async () => {
+    if (++evaluations === 1) return { bid: 7, word: null, plan: ["CAT"] };
+    throw new Error("worker failed");
+  }, submitBid: async (_id, amount) => { bids.push(amount); }, submitWord: async (_id, word) => { words.push(word); }, now: () => 1000 });
+  t.after(() => controller.stop());
+  controller.refresh(); await flush();
+  current = { ...current, bagTotal: 2 }; controller.refresh(); await flush();
+  assert.deepEqual(bids, [7n, 0n]);
+  assert.deepEqual(words, ["CAT"]);
+});
+
+test("no zero retraction is sent at or after the auction deadline", async t => {
+  let now = 1000;
+  let current = { ...snapshot(), closesAtMs: 2000 };
+  let cashout = false;
+  const bids: bigint[] = [];
+  const controller = new BotController({ read: () => [current], evaluate: async () => ({ bid: 8, word: cashout ? "CAT" : null }),
+    submitBid: async (_id, amount) => { bids.push(amount); }, submitWord: async () => {}, now: () => now });
+  t.after(() => controller.stop());
+  controller.refresh(); await flush();
+  cashout = true; now = 2000; current = { ...current, score: 1 }; controller.refresh(); await flush();
+  now = 2010; current = { ...current, estimatedPrice: 4 }; controller.refresh(); await flush();
+  assert.deepEqual(bids, [8n]);
+});
+
+test("failed zero retractions retry with ample time but never retry inside the late margin", async t => {
+  for (const remaining of [900, 100]) {
+    let now = 1000;
+    let current = { ...snapshot(), closesAtMs: 2000 };
+    let cashout = false;
+    const bids: bigint[] = [];
+    const controller = new BotController({ read: () => [current], evaluate: async () => ({ bid: 8, word: cashout ? "CAT" : null }),
+      submitBid: async (_id, amount) => { bids.push(amount); if (bids.length === 2) throw new Error("zero request failed"); },
+      submitWord: async () => {}, now: () => now, retryMs: 1 });
+    t.after(() => controller.stop());
+    controller.refresh(); await flush();
+    cashout = true; now = 2000 - remaining; current = { ...current, score: 1 }; controller.refresh(); await flush();
+    await new Promise(resolve => setTimeout(resolve, 15));
+    current = { ...current, estimatedPrice: 4 }; controller.refresh(); await flush();
+    assert.deepEqual(bids, remaining > 150 ? [8n, 0n, 0n] : [8n, 0n]);
+  }
 });
 
 test("disconnect invalidates in-flight strategy results", async t => {
@@ -251,6 +435,7 @@ test("price estimate and emergency bids use the approved economics", () => {
   assert.equal(fallbackBid({ ...s, myRack: rack("E") }), 1);
   assert.equal(fallbackBid({ ...s, myBalance: -5 }), 0);
   assert.equal(fallbackBid({ ...s, bagTotal: 0 }), 0);
+  assert.equal(fallbackBid({ ...s, bagTotal: 1 }), 0, "emergency fallback has no proof that the last usable tile improves cashout");
 });
 
 test("match metrics distinguish worker fallback from rejected transport and accepted words", async t => {
@@ -265,12 +450,12 @@ test("match metrics distinguish worker fallback from rejected transport and acce
   controller.refresh(); await flush();
   await new Promise(resolve => setTimeout(resolve, 15)); await flush();
   const metrics = controller.stats(current.matchId)!;
-  assert.equal(metrics.evaluations, 2);
+  assert.equal(metrics.evaluations, 3, "zero acknowledgment triggers a fresh evaluation after cancellation");
   assert.equal(metrics.fallbacks, 1);
   assert.equal(metrics.rejectedBids, 1);
   assert.equal(metrics.acceptedBids, 1);
   assert.equal(metrics.acceptedWords, 1);
-  assert.equal(metrics.computeTotalMs, 4);
+  assert.equal(metrics.computeTotalMs, 8);
 });
 
 test("tournament identifiers reject coercions, negatives and u64 overflow", () => {
