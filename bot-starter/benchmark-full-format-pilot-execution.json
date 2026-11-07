@@ -1,0 +1,76 @@
+{
+  "recordedAtUtc": "2026-11-07T23:08:47.781Z",
+  "sessionId": 18696,
+  "terminalExitCode": 1,
+  "cleanPass": false,
+  "vitest": {
+    "testFilesPassed": 1,
+    "assertionTestsPassed": 4,
+    "unhandledErrors": 1,
+    "unhandledError": "[vitest-worker]: Timeout calling \"onTaskUpdate\"",
+    "durationSeconds": 737.94,
+    "heavyTestDurationMs": 733909
+  },
+  "artifacts": {
+    "manifest": "work/refinement/full-format-pilot-01-manifest.json",
+    "manifestSha256": "ec8a7b2a23b69b174d9b457a279d3235eb2fed63650d09e18f85f99471888ab2",
+    "report": "work/refinement/full-format-pilot-01-results.json",
+    "reportSha256": "ea66ffdf5fea8c4f1f86b44262c430687a75bb75825077061c0fabb322aa165a",
+    "sourceSnapshot": "work/refinement/full-format-pilot-01-source/tournament-format-benchmark.test.ts",
+    "sourceSha256": "c3cb2d1d82b536961d4de36cc84927f853e0a2dbf0143fc60c18e2473475e650"
+  },
+  "interpretation": "All six pairs completed and the benchmark assertions/source immutability check passed, but runner exited1 with an infrastructure RPC timeout. Results are exploratory observations, not a clean verification pass or production promotion.",
+  "infrastructureDiagnosis": {
+    "primaryPackage": "vitest3.2.7 installed source",
+    "rpcDefault": {
+      "file": "outputs/scrabblebot/spacetimedb/node_modules/vitest/dist/chunks/index.B521nVV-.js",
+      "lines": [
+        3,
+        21,
+        136
+      ],
+      "evidence": "Bundled Birpc DEFAULT_TIMEOUT=6e4; normal RPC waits for response and clears timeout on receipt."
+    },
+    "taskUpdates": {
+      "file": "outputs/scrabblebot/spacetimedb/node_modules/vitest/dist/chunks/index.CwejwG0H.js",
+      "lines": [
+        47,
+        48
+      ],
+      "evidence": "Test runner dispatches rpc().onTaskUpdate as a reply-bearing call."
+    },
+    "rpcEvents": {
+      "file": "outputs/scrabblebot/spacetimedb/node_modules/vitest/dist/chunks/rpc.-pEldfrD.js",
+      "lines": [
+        43,
+        44,
+        45,
+        46,
+        48
+      ],
+      "evidence": "Only onUserConsoleLog,onCollected,onCancel are events; timeout emits exact observed error."
+    },
+    "rpcTransport": {
+      "file": "outputs/scrabblebot/spacetimedb/node_modules/vitest/dist/chunks/utils.CAioKnHs.js",
+      "lines": [
+        9,
+        25
+      ],
+      "evidence": "Thread/fork RPC options add message transport and serialization, with no timeout override."
+    },
+    "unsupportedEnvironmentOverride": "No VITEST_RPC_TIMEOUT or rpcTimeout string found in installed vitest/dist JavaScript; no timeout override was attempted.",
+    "inference": "Synchronous whole-tournament A/B blocks prevented worker event-loop reply handling for longer than the default60s. All simulation assertions completed, followed by rejected task-update RPC. This explains infrastructure failure without claiming clean validation."
+  },
+  "followupFix": {
+    "scope": "Only tournament-format-benchmark.test.ts, after old source snapshot preservation",
+    "change": "runTournament async; await setImmediate only after completed deadline groups and cut snapshot; await existing callers and use Awaited<ReturnType>. No simulated clock,RNG,action or tick-order change.",
+    "newSourceSha256": "1dea510c8fd639bd2c69d1bcc2a884074e48e3fc4ec3b3087f4ba635627ade6e",
+    "lightweightValidation": {
+      "exitCode": 0,
+      "testsPassed": 3,
+      "heavyTestsSkipped": 1,
+      "testDurationMs": 1928
+    },
+    "heavyRerun": false
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "createdAtUtc": "2026-11-07T22:55:34.674Z",
+  "status": "Preregistered before launch; exploratory only",
+  "experiment": "full-format-pilot-01",
+  "interpretation": "Fresh actual-format exploration, not a replacement for the failed combined-score gate. No production promotion from this pilot. Candidate B remains experimental.",
+  "policies": {
+    "A": "Current: frozen capital-enabled v1 at N>=3; face0.3 at N2 Vickrey",
+    "B": "Experimental: face0.1 at N>=3; same face0.3 at N2 Vickrey",
+    "gates": "Original word/search/terminal behavior preserved; nonterminal bid transforms only; no learned state or hidden opponent inputs."
+  },
+  "design": {
+    "pairs": 6,
+    "seedOffset": 700,
+    "seeds": [
+      5553301,
+      5561220,
+      5569139,
+      5577058,
+      5584977,
+      5592896
+    ],
+    "candidatePositions": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "entrants": 18,
+    "externalOnly": true,
+    "swissRounds": 4,
+    "tableSize": 6,
+    "topCut": 6,
+    "bracketSizes": [
+      6,
+      5,
+      4,
+      3
+    ],
+    "finalGames": 3,
+    "finalPlayers": 2,
+    "auctionType": "Vickrey",
+    "otherEntrantsInOrder": [
+      "v1",
+      "v1",
+      "v1",
+      "v1",
+      "v1",
+      "v1",
+      "premium-floor",
+      "premium-floor",
+      "linear-face",
+      "linear-face",
+      "market-v1",
+      "market-v1",
+      "market",
+      "market",
+      "starter",
+      "starter",
+      "starter"
+    ],
+    "rosterSha256": "4bbd8a023d87841077a5190b37208d07f7ac46ee93ddd96694732cf375a3cfd0",
+    "rosterCaveat": "Fixed public-data-inspired stress archetypes, not actual rival reconstructions. This six-pair pilot covers only positions0–5; further confirmation requires fresh seeds/full rotation.",
+    "scheduler": "Act on every table in the next same-closing-deadline group before setting the monotone clock and ticking the precollected group; actual auto-Swiss and admin finals reducers."
+  },
+  "metrics": [
+    "paired Swiss points/rank/score",
+    "top-cut indicators",
+    "crown indicators",
+    "final aggregates/opponent kinds",
+    "raw and rate synchronous decision wall times over100ms",
+    "source/seed/external-only audit"
+  ],
+  "runtime": {
+    "command": "npm test -- --run src/tests/tournament-format-benchmark.test.ts --maxWorkers=1 --minWorkers=1",
+    "workingDirectory": "C:\\Users\\lucas\\Documents\\Codex\\2026-11-07\\what\\outputs\\scrabblebot\\spacetimedb",
+    "environment": {
+      "BOT_TOURNAMENT_FORMAT_BENCHMARK": "1",
+      "BOT_TOURNAMENT_FORMAT_BENCHMARK_SEEDS": "6",
+      "BOT_TOURNAMENT_FORMAT_BENCHMARK_SEED_OFFSET": "700",
+      "BOT_TOURNAMENT_FORMAT_BENCHMARK_REPORT": "C:\\Users\\lucas\\Documents\\Codex\\2026-11-07\\what\\work\\refinement\\full-format-pilot-01-results.json"
+    },
+    "execution": "Sequential A then B within each seed; one Vitest worker; parent owns release/live process."
+  },
+  "sourceHashes": {
+    "tournament-format-benchmark.test.ts": "c3cb2d1d82b536961d4de36cc84927f853e0a2dbf0143fc60c18e2473475e650",
+    "harness.ts": "a6d9c937d480b3f23dc14ed486688c6d2e11459dc0cb7fc6e750c1eed3eee3b2",
+    "fixtures/v1/strategy.ts": "42c7a7ce4b4e98ff2ed0fd718141ae1581c26c090302774972553dcf0fe21735",
+    "fixtures/v1/dictionary.ts": "0c7cc180a3e75b44d5d67d1debbcd92026f16045b541494a281fce8caf1b36f6",
+    "fixtures/v1/optimizer.ts": "fa516d58a7621f798a9315267138133b1568e2d26d1229332a9728d80cacb6f2",
+    "fixtures/opponent-policies.ts": "8e1ca664c507888016788f533dae44f1e9645c4a9f635b2bbe9733270eabe53e",
+    "fixtures/public-opponent-policies.ts": "fedf0fb5ae264a7970231502ccecd8589b8252b0373ddfc80fca93f8c12d1bd6",
+    "fixtures/face-bid-ablation.ts": "8f2abfe10314a16697bceab0cdf3b104641869e5eca83ee607b9c32dcb0606d9",
+    "../index.ts": "be9469999604a1aa07ba0bfbfee2748d541058dbdb7eeb72f1bc9fd2eae95629",
+    "../schema.ts": "67aa898efa43351fc0f19669e21ded132387d560f66e437305c09e7bc11d9334",
+    "../game.ts": "bf851825e9852289c836de33fc61543aa14be6c4b6e5e86abecfe5562413e184",
+    "../tournament.ts": "e82e5c2b108cab3acbcd50d74b6f12491d1bb82759997fd0e618b80f6edc06f6",
+    "../letters.ts": "102784fcfe2ce0fca2daa9d9e93ed93ebd4157f4b30b663128fa52cf27fcd630",
+    "../dictionary.ts": "316c509912dc45b75da83fe22c4e816231745f41790a734ea1edec38ab84b654"
+  },
+  "sourceFingerprintSha256": "84e86e5df8b35a6cdc43b21860217b3c8fae6e1c9b7ac1c02dc1847af141bbe7",
+  "dictionarySha256": "b819e7b67f8f2c80640ae76f0edbe59a4a1befb6de0f348463642ad49bdd2ad3",
+  "resultPath": "C:\\Users\\lucas\\Documents\\Codex\\2026-11-07\\what\\work\\refinement\\full-format-pilot-01-results.json",
+  "productionPromotionAuthorized": false
+}

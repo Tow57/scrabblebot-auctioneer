@@ -4,13 +4,13 @@
 
 - Official server source and generated bindings pinned to `b5ccb36aa238ad16692f8d6af54da15ef9f11324`; SDK 2.12.0. No game module changes or publication.
 - Exact supplied dictionary: 172,820 words, 156,473 unique anagram signatures; SHA-256 `b819e7b67f8f2c80640ae76f0edbe59a4a1befb6de0f348463642ad49bdd2ad3`.
-- TypeScript build and **61 bot tests passed**, including exhaustive packing-oracle comparisons, worker deadlines, stale bigint IDs, bid cancellation, word serialization, reconnect exposure recovery, two-player mode/opt-out guards, wall-clock skew, replay calibration, and Windows file URLs with spaces and encoded characters. Earlier clean archives also installed, built, and passed their corresponding release tests in fresh Windows directories containing spaces and `#`.
+- TypeScript build and **63 bot tests passed**, including exhaustive packing-oracle comparisons, worker deadlines, stale bigint IDs, bid cancellation, word serialization, reconnect exposure recovery, two-player mode/opt-out guards, word-first work avoidance with preserved library defaults, wall-clock skew, replay calibration, and Windows file URLs with spaces and encoded characters. Word-first source `f1c68e2c0b8d94e62def3d433a7207bf6c4008c3` installed, built and passed all 63 tests from a clean archive in a fresh Windows path containing spaces and `#`. Earlier archives passed their corresponding release tests too.
 - Anonymous deployed-schema inspection matched **all 27 generated reducers and all 30 readable table/view row shapes**, including `register_for_tournament(u64)` and the private-to-bot `my_rack` view. All 61 client binding files match the pinned tracked bindings. The server binary version is not exposed by this metadata. See `deployed-compatibility.json`.
 - Full organizer module suite: **183 passed**, with the expensive benchmark separately opted in.
-- Actual server-reducer comparison: **30 paired Vickrey scenarios** against five frozen starter strategies. Release mean score **361.8**, baseline **30.27**; mean place **1.00** versus **3.37**; the release finished first in all 30. In-process decision p95 **15.44 ms**, maximum **29.34 ms** in that run.
+- Earlier capital-enabled core comparison: **30 paired Vickrey scenarios** against five frozen starter strategies. Mean score **361.8**, baseline **30.27**; mean place **1.00** versus **3.37**; the candidate finished first in all 30. In-process decision p95 **15.44 ms**, maximum **29.34 ms** in that run. This precedes the word-first computation change and does not measure its current match trajectories.
 - Additional first-price and expensive-bidder fixtures passed. Offline scenarios use public state and each external bot's own authenticated rack, with no simulated-bot post-final-tile advantage. Paired seeds are reproducible but can yield different later tile streams when bid patterns change RNG consumption.
 
-See `benchmark-results.json` for the release comparison and `benchmark-core-results.json` for the original core. The benchmark driver is the same for both policies, so these results measure strategy differences rather than the starter's original transport/cooldown bugs.
+See `benchmark-results.json` for that earlier comparison and `benchmark-core-results.json` for the original core. The benchmark driver is the same for both policies, so these results measure strategy differences rather than the starter's original transport/cooldown bugs.
 
 ### Locked refinement comparison
 
@@ -26,11 +26,34 @@ The candidate won **30/30 series** versus **16/30** for the paired frozen-v1 con
 
 Production applies the exact confirmed multiplier only to positive bids with **two participants, Vickrey auctions, and more than one tile remaining in the bag**. It preserves the original balance cap, word/search policy, terminal handling, larger tables and FirstPrice. The worker defaults to weight 0.3; the library defaults off. Both opt-outs are tested. The existing frozen policy and source snapshots remain available for comparison and rollback.
 
-Independent same-family checks found no outstanding issues and passed full-dictionary production/frozen parity over 56 contexts. Real native-worker validation received **36/36 responses**, no timeouts/errors/restarts, p95 **65.29 ms**, maximum **66.06 ms** in the final run. All 28 conservatively comparable oracle cases matched; longer partial/deadline-adjacent cases were excluded from exactness claims. See `heads-up-native-validation.json`. These offline finals and native-worker results do not establish Swiss qualification or wins against every live rival. A live two-player tournament match has not yet been available.
+For the v1.3 profile before word-first work avoidance, independent same-family checks found no outstanding issues and passed full-dictionary production/frozen parity over 56 contexts. Real native-worker validation received **36/36 responses**, no timeouts/errors/restarts, p95 **65.29 ms**, maximum **66.06 ms** in the final run. All 28 conservatively comparable oracle cases matched; longer partial/deadline-adjacent cases were excluded from exactness claims. See `heads-up-native-validation.json`. These offline finals and native-worker results do not establish Swiss qualification or wins against every live rival. A live two-player tournament match has not yet been available.
 
 A clean archive of production source `5560ebdf8aeb3cf23fb47a906e53cee6b9445ee9` installed, built and passed **61/61 bot tests** in a fresh Windows path containing spaces and `#`. After a controlled single-process restart, five consecutive full six-player practice matches (42885, 42888, 42891, 42894, 42897) completed with zero worker timeouts, fallbacks, stale results, rejected bids/words or deadline skips. Maximum decision round trip was **57.48 ms**. Mean score was 79.2 and mean place 3.4. This checks operation of the released process; the two-player adjustment is inactive in those six-player matches. See `live-headsup-validation.json`.
 
 The promoted capital allowance was also tested against **five previous-version core bots** over 30 paired scenarios: mean score **164.83 versus 91.9**, mean place **1.20 versus 3.03**, and **25/30 first-place finishes**. First-price cases improved too. In the separate fixed expensive-bidder fixture its score declined from 160.75 to 124.25 while still finishing first in all four cases; the policy is not uniformly superior on every opponent model. See `benchmark-capital-results.json`.
+
+### Additional two-player opponent checks
+
+A report-only robustness check tested the earlier **v1.3 profile before word-first work avoidance** on 30 fresh seeds at offset 900 against each of two MIT-attributed acquisition archetypes. These combine published numerical bid floors with frozen-v1 word/search policies; they are not verified replicas of named live rivals. Each series used the actual three-game finals reducers and alternating seats, paired with a frozen-v1 control against the same archetype.
+
+| Opponent archetype | v1.3 crowns | Frozen-v1 crowns | Paired aggregate-margin gain, 95% CI |
+| --- | ---: | ---: | ---: |
+| Premium floor | 29/30 | 7/30 | 692.90 [556.42, 829.38] |
+| Linear face | 20/30 | 4/30 | 507.43 [388.67, 626.20] |
+
+Intervals use 30 paired seeds per archetype. Averaging the two archetypes within each seed gives an equally weighted gain of 600.17 points, 95% CI [486.29, 714.05], with **n = 30**, not 180 independent games. There were **two candidate decision calls over 100 ms versus one control call**; maxima were **100.72 ms** and **100.04 ms**. These are synchronous in-process timings; the run does not measure IPC or the production 150 ms response watchdog. See `benchmark-heads-up-public-results.json`. This adds fixed-opponent robustness evidence, not universal tournament strength or a new promotion-gate pass.
+
+### Word-first worker computation
+
+Source `f1c68e2` enables `StrategyOptions.wordFirst` only in the production worker. Once the original current-rack search selects a word, it returns that word and plan with bid zero, skipping the augmented-rack and completion searches. The controller already cashes the word first and requests a fresh bid after the acknowledgment and authoritative rack update. The library option defaults off, preserving raw library and `decideBid` behavior. Tests cover the single optimizer call, skipped completion valuation, unchanged no-word bidding and a positive fresh bid after rack removal.
+
+Word scoring, cashout rules, optimizer and deadlines are unchanged. Skipping an augmented search also skips its cache population, so later approximate partitions and match trajectories can differ. This is not a strict 100 ms timing fix: playable-entry sorting, greedy preparation and grouping still have unchecked stretches.
+
+The clean archived source passed its locked install, build and **63/63 bot tests**. Its real native-worker stress check returned **12/12 legal responses**, with **zero timeouts or worker errors**, maximum round trip **106.27 ms** and maximum compute time **104.07 ms**. The sole compute sample over 100 ms was the **93-tile post-game rack boundary**, not an active-auction state; all active-composition cases stayed under 100 ms in that run. These samples do not guarantee every future decision will meet either time bound. See `word-first-native-validation.json`.
+
+The word-first runtime completed **six consecutive full six-player practice matches** (43126, 43132, 43138, 43144, 43150, 43156): zero worker timeouts, fallbacks, stale results, rejected bids/words, deadline skips or calibration skips. Maximum decision round trip was **66.20 ms**, mean score **81.33**, mean shared place **2.83**, and shared-first rate **1/6**. The first partial post-restart interval was excluded. These varying live opponents provide operational evidence, not a controlled score comparison. See `live-word-first-validation.json`.
+
+A separately preregistered **36-pair actual-format confirmation** is in progress, comparing this production profile with an additional face-0.1 premium at larger Vickrey tables. It has authorized no multiway promotion. The earlier combined raw-score gate remains failed; the new experiment measures actual-format crowns under its own locked criteria. The earlier six-pair exploratory format pilot completed but exited 1 with a Vitest reporting timeout; its report, original source and failure receipt are preserved in `benchmark-full-format-pilot*`. The confirmation uses cooperative simulation-step yields and retains all predeclared seeds and guards.
 
 ## Live verification
 
@@ -90,6 +113,8 @@ An independent **same-family** agent performed a read-only review against the pi
 A later same-family review reproduced the obsolete-bid issue described above and caught a cancellation-priority race in the first draft of its fix. The final diff resolved that finding; the reviewer independently passed six focused controller regressions and checked the SDK's transaction-update/reducer-ack contract. The full bot suite passed 46 tests.
 
 The reconnect refinement received another independent same-family review. It caught and resolved missing-cache expiry handling and a pre-existing synchronous word-send failure. Ten focused recovery regressions passed independently; the full bot build and 56-test suite passed. This was not cross-family review.
+
+The word-first worker change received a same-family review of the actual controller callers, opt-in default and legacy helper contract, with no outstanding P1/P2 findings. Its full bot suite passed 63 tests. This does not establish whole-match cache parity or a strict 100 ms wall-clock bound.
 
 Live network observations and offline timings do not prove every future request will meet a deadline or predict tournament wins. The upcoming event ID, cutoff, live registration confirmation, and organizer's repository-submission channel remain unverified. The locked upstream server test dependencies are retained; no development HTTP server is started by these checks.
 

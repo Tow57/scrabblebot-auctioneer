@@ -42,19 +42,22 @@ If registration is not yet open, wait for the organizer to open it and restart w
 ## Strategy and timing
 
 - Canonical anagram signatures and a trie enumerate legal words with repeated letters.
-- A greedy legal partition seeds bounded memoized search for the best combined word reward, including unused tiles. Search is capped at 100 ms and 10,000 states; interrupted results are approximate.
+- A greedy legal partition seeds memoized search for the best combined word reward, including unused tiles. Search uses a cooperative 100 ms deadline and a 10,000-state limit; interrupted results are approximate. Preparing playable entries can exceed the time target, so this is not a strict 100 ms wall-clock guarantee.
 - Letter bids combine immediate rack cashout gain with value from words up to two letters short. Payment history sets budget pacing; first-price bids are shaded.
 - Seven-letter words cash immediately. Shorter words cash under liquidity/rack pressure and during the last four auction windows.
 - `bagTotal` excludes the currently offered tile. With zero remaining, the current auction is final and its tile cannot be used by an external client: bid zero and finish existing words before closure. With one remaining, the current auction is the last usable purchase.
 - A worker keeps search off the connection thread. Late or stale results are rejected. Word submissions are serialized against confirmed rack updates. The client retracts old bids before cashout and reprices after the word acknowledgment and rack update, so it does not buy against letters already spent.
+- The worker enables `StrategyOptions.wordFirst`: once a word is selected, it returns that word with bid zero and skips the obsolete augmented-rack and completion searches. A fresh decision bids after the confirmed rack update. The library option defaults off, preserving `decideBid` and raw library outputs. Skipping those searches also changes cache population, so later approximate trajectories may differ.
 - Auction deadlines use a monotonic clock calibrated from fresh live auction events, so laptop/server wall-clock differences cannot suppress bids. A cold process may wait for the next auction to calibrate; reconnects retain the existing calibration.
 - A memory-only ledger preserves possible bids across reconnects. Cold recovery may send one zero cancellation before clock calibration; the server can reject it if the auction closes in transit. Purchases still require calibration and the 150 ms margin. Normal cashout waits for recovery acknowledgment or auction advance; final-tile cashout has priority.
 - The tournament worker enables the tested capital allowance so useful letters receive some buying power from the initial bank. `BOT_CAPITAL_ALLOWANCE=0` selects the previous bidding policy for comparisons.
-- Two-player Vickrey matches additionally favor useful high-value letters with the validated 0.3 face-weight adjustment. It preserves terminal bids, words, and search. `BOT_HEADS_UP_FACE_WEIGHT=0` disables this adjustment; values must be finite from 0 to 0.5. `BOT_CAPITAL_ALLOWANCE=0` disables both adjustments. Larger tables and FirstPrice use the existing policy.
+- Two-player Vickrey matches additionally favor useful high-value letters with the validated 0.3 face-weight adjustment. This adjustment changes the final bid only; scoring, cashout rules and terminal guards are shared with the core. `BOT_HEADS_UP_FACE_WEIGHT=0` disables it; values must be finite from 0 to 0.5. `BOT_CAPITAL_ALLOWANCE=0` disables both bid adjustments. Larger tables and FirstPrice use the existing bid policy.
 
 The current server discards unsold tiles and randomizes tied bids. Opponents' starting racks are private, and live top bids are unavailable to bots. Some older guide text describes these differently.
 
 ## Validation
+
+Word-first source `f1c68e2` installed, built and passed **63 bot tests** from a clean archived checkout in a Windows path containing spaces and `#`. The native stress check returned 12/12 legal responses without timeouts or worker errors; details and timing limits are in `VALIDATION.md`.
 
 ```powershell
 npm run build
@@ -64,14 +67,14 @@ node ../spacetimedb/node_modules/esbuild/install.js
 npm test --prefix ../spacetimedb
 $env:BOT_BENCHMARK = '1'
 $env:BOT_BENCHMARK_SEEDS = '30'
-$env:BOT_BENCHMARK_REPORT = (Join-Path (Get-Location) 'benchmark-results.json')
+$env:BOT_BENCHMARK_REPORT = (Join-Path (Get-Location) 'benchmark-local-results.json')
 npm run benchmark
 Remove-Item Env:BOT_BENCHMARK, Env:BOT_BENCHMARK_SEEDS, Env:BOT_BENCHMARK_REPORT
 ```
 
-The benchmark uses the actual in-memory server reducers and six external-bot credentials. It compares fixed paired seeds and rotating candidate seats against the original starter policies under the same reliable driver. Paired seeds are reproducible, but do not guarantee identical tile streams when bid patterns change RNG consumption. Offline results do not establish network reliability.
+This command reruns the historical core comparison using the actual in-memory server reducers and six external-bot credentials. It compares fixed paired seeds and rotating candidate seats against the original starter policies under the same reliable driver. The separate full-format experiment uses the current production word-first profile. Paired seeds are reproducible, but do not guarantee identical tile streams when bid patterns change RNG consumption. Offline results do not establish network reliability.
 
-See `VALIDATION.md` for executed results and remaining live checks. Optional lookahead is eligible only after a 5% mean-score improvement with no worse placement or deadline behavior; the tested core remains the default unless that gate passes.
+See `VALIDATION.md` for executed results and remaining live checks. Optional lookahead failed its 5% score/placement/deadline gate and is absent from production. The old multiway raw-score holdout remains failed. A separate 36-pair actual-format comparison is in progress and has authorized no multiway promotion.
 
 ## Source release
 

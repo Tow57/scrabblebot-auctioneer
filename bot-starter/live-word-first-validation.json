@@ -1,0 +1,421 @@
+{
+  "generatedAt": "2026-11-07T23:56:46.164Z",
+  "botId": 164,
+  "phase": "wordfirst-rollout",
+  "sourceCommit": "f1c68e2c0b8d94e62def3d433a7207bf6c4008c3",
+  "policy": "Capital-v1 / N=2 Vickrey face-weight 0.3 with worker-only word-first computation",
+  "firstIntervalPolicy": "Exclude the first post-restart metric interval as potentially partial; all subsequent intervals count.",
+  "fullMatches": 6,
+  "meanScore": 81.33333333333333,
+  "meanPlace": 2.8333333333333335,
+  "winRate": 0.16666666666666666,
+  "totals": {
+    "evaluations": 428,
+    "fallbacks": 0,
+    "staleResults": 0,
+    "acceptedBids": 399,
+    "rejectedBids": 0,
+    "deadlineSkips": 0,
+    "uncalibratedSkips": 0,
+    "acceptedWords": 20,
+    "rejectedWords": 0
+  },
+  "workerTimeouts": 0,
+  "decisionRoundTripMaxMs": 66.20220000002882,
+  "matches": [
+    {
+      "matchId": "43120",
+      "participantCount": 6,
+      "score": 98,
+      "balance": 23,
+      "place": 3,
+      "excludedFromFullSoak": true,
+      "words": [
+        {
+          "word": "ZOUAVE",
+          "reward": 45
+        },
+        {
+          "word": "FRAGILE",
+          "reward": 33
+        },
+        {
+          "word": "CHAIN",
+          "reward": 20
+        }
+      ],
+      "health": {
+        "matchId": "43120",
+        "controller": {
+          "evaluations": 32,
+          "fallbacks": 0,
+          "staleResults": 0,
+          "acceptedBids": 26,
+          "rejectedBids": 0,
+          "deadlineSkips": 0,
+          "uncalibratedSkips": 2,
+          "acceptedWords": 3,
+          "rejectedWords": 0,
+          "roundTripTotalMs": 567.8762000000029,
+          "roundTripMaxMs": 83.43919999999889,
+          "computeTotalMs": 524.0395999999955
+        },
+        "worker": {
+          "requested": 32,
+          "completed": 32,
+          "activeTimeouts": 0,
+          "queuedTimeouts": 0,
+          "superseded": 0,
+          "starts": 0,
+          "errors": 0,
+          "roundTripTotalMs": 565.6104999999975,
+          "computeTotalMs": 524.0395999999955
+        },
+        "eventLoopDelayMs": {
+          "mean": 29.595385873048908,
+          "p95": 31.965183,
+          "max": 98.107391
+        }
+      }
+    },
+    {
+      "matchId": "43126",
+      "participantCount": 6,
+      "score": 66,
+      "balance": 7,
+      "place": 3,
+      "excludedFromFullSoak": false,
+      "words": [
+        {
+          "word": "LINKUPS",
+          "reward": 39
+        },
+        {
+          "word": "TOOTERS",
+          "reward": 21
+        },
+        {
+          "word": "ALOE",
+          "reward": 6
+        }
+      ],
+      "health": {
+        "matchId": "43126",
+        "controller": {
+          "evaluations": 71,
+          "fallbacks": 0,
+          "staleResults": 0,
+          "acceptedBids": 67,
+          "rejectedBids": 0,
+          "deadlineSkips": 0,
+          "uncalibratedSkips": 0,
+          "acceptedWords": 3,
+          "rejectedWords": 0,
+          "roundTripTotalMs": 420.34639999999854,
+          "roundTripMaxMs": 33.17199999999866,
+          "computeTotalMs": 391.41490000001795
+        },
+        "worker": {
+          "requested": 71,
+          "completed": 71,
+          "activeTimeouts": 0,
+          "queuedTimeouts": 0,
+          "superseded": 0,
+          "starts": 0,
+          "errors": 0,
+          "roundTripTotalMs": 417.2730000000338,
+          "computeTotalMs": 391.41490000001795
+        },
+        "eventLoopDelayMs": {
+          "mean": 29.482340975450082,
+          "p95": 31.932415,
+          "max": 35.618815
+        }
+      }
+    },
+    {
+      "matchId": "43132",
+      "participantCount": 6,
+      "score": 78,
+      "balance": 3,
+      "place": 2,
+      "excludedFromFullSoak": false,
+      "words": [
+        {
+          "word": "JOSTLING",
+          "reward": 48
+        },
+        {
+          "word": "PORNIER",
+          "reward": 27
+        },
+        {
+          "word": "LOO",
+          "reward": 3
+        }
+      ],
+      "health": {
+        "matchId": "43132",
+        "controller": {
+          "evaluations": 71,
+          "fallbacks": 0,
+          "staleResults": 0,
+          "acceptedBids": 67,
+          "rejectedBids": 0,
+          "deadlineSkips": 0,
+          "uncalibratedSkips": 0,
+          "acceptedWords": 3,
+          "rejectedWords": 0,
+          "roundTripTotalMs": 926.5423999999475,
+          "roundTripMaxMs": 64.35310000000754,
+          "computeTotalMs": 896.8086999999214
+        },
+        "worker": {
+          "requested": 71,
+          "completed": 71,
+          "activeTimeouts": 0,
+          "queuedTimeouts": 0,
+          "superseded": 0,
+          "starts": 0,
+          "errors": 0,
+          "roundTripTotalMs": 923.3555999999662,
+          "computeTotalMs": 896.8086999999214
+        },
+        "eventLoopDelayMs": {
+          "mean": 29.120345945945946,
+          "p95": 31.932415,
+          "max": 35.651583
+        }
+      }
+    },
+    {
+      "matchId": "43138",
+      "participantCount": 6,
+      "score": 105,
+      "balance": 6,
+      "place": 2,
+      "excludedFromFullSoak": false,
+      "words": [
+        {
+          "word": "ADJUVANT",
+          "reward": 57
+        },
+        {
+          "word": "HIGGLED",
+          "reward": 39
+        },
+        {
+          "word": "AERO",
+          "reward": 6
+        },
+        {
+          "word": "AIT",
+          "reward": 3
+        }
+      ],
+      "health": {
+        "matchId": "43138",
+        "controller": {
+          "evaluations": 72,
+          "fallbacks": 0,
+          "staleResults": 0,
+          "acceptedBids": 66,
+          "rejectedBids": 0,
+          "deadlineSkips": 0,
+          "uncalibratedSkips": 0,
+          "acceptedWords": 4,
+          "rejectedWords": 0,
+          "roundTripTotalMs": 953.535400000168,
+          "roundTripMaxMs": 66.20220000002882,
+          "computeTotalMs": 923.1025999999838
+        },
+        "worker": {
+          "requested": 72,
+          "completed": 72,
+          "activeTimeouts": 0,
+          "queuedTimeouts": 0,
+          "superseded": 0,
+          "starts": 0,
+          "errors": 0,
+          "roundTripTotalMs": 950.3592000001227,
+          "computeTotalMs": 923.1025999999838
+        },
+        "eventLoopDelayMs": {
+          "mean": 25.734510093264248,
+          "p95": 31.817727,
+          "max": 190.185471
+        }
+      }
+    },
+    {
+      "matchId": "43144",
+      "participantCount": 6,
+      "score": 69,
+      "balance": 17,
+      "place": 4,
+      "excludedFromFullSoak": false,
+      "words": [
+        {
+          "word": "KAOLINS",
+          "reward": 33
+        },
+        {
+          "word": "POTATION",
+          "reward": 30
+        },
+        {
+          "word": "ALES",
+          "reward": 6
+        }
+      ],
+      "health": {
+        "matchId": "43144",
+        "controller": {
+          "evaluations": 71,
+          "fallbacks": 0,
+          "staleResults": 0,
+          "acceptedBids": 66,
+          "rejectedBids": 0,
+          "deadlineSkips": 0,
+          "uncalibratedSkips": 0,
+          "acceptedWords": 3,
+          "rejectedWords": 0,
+          "roundTripTotalMs": 341.24419999984093,
+          "roundTripMaxMs": 29.38870000001043,
+          "computeTotalMs": 316.39139999999315
+        },
+        "worker": {
+          "requested": 71,
+          "completed": 71,
+          "activeTimeouts": 0,
+          "queuedTimeouts": 0,
+          "superseded": 0,
+          "starts": 0,
+          "errors": 0,
+          "roundTripTotalMs": 338.6942000001145,
+          "computeTotalMs": 316.39139999999315
+        },
+        "eventLoopDelayMs": {
+          "mean": 25.230382864144143,
+          "p95": 31.064063,
+          "max": 35.553279
+        }
+      }
+    },
+    {
+      "matchId": "43150",
+      "participantCount": 6,
+      "score": 103,
+      "balance": 10,
+      "place": 1,
+      "excludedFromFullSoak": false,
+      "words": [
+        {
+          "word": "EXPOUND",
+          "reward": 51
+        },
+        {
+          "word": "OBVIOUS",
+          "reward": 36
+        },
+        {
+          "word": "PATIO",
+          "reward": 14
+        },
+        {
+          "word": "AI",
+          "reward": 2
+        }
+      ],
+      "health": {
+        "matchId": "43150",
+        "controller": {
+          "evaluations": 72,
+          "fallbacks": 0,
+          "staleResults": 0,
+          "acceptedBids": 66,
+          "rejectedBids": 0,
+          "deadlineSkips": 0,
+          "uncalibratedSkips": 0,
+          "acceptedWords": 4,
+          "rejectedWords": 0,
+          "roundTripTotalMs": 657.6794999997946,
+          "roundTripMaxMs": 52.75370000000112,
+          "computeTotalMs": 629.4364999996615
+        },
+        "worker": {
+          "requested": 72,
+          "completed": 72,
+          "activeTimeouts": 0,
+          "queuedTimeouts": 0,
+          "superseded": 0,
+          "starts": 0,
+          "errors": 0,
+          "roundTripTotalMs": 654.3445000000065,
+          "computeTotalMs": 629.4364999996615
+        },
+        "eventLoopDelayMs": {
+          "mean": 25.052389033189034,
+          "p95": 30.523391,
+          "max": 35.192831
+        }
+      }
+    },
+    {
+      "matchId": "43156",
+      "participantCount": 6,
+      "score": 67,
+      "balance": 8,
+      "place": 5,
+      "excludedFromFullSoak": false,
+      "words": [
+        {
+          "word": "BOSCAGE",
+          "reward": 36
+        },
+        {
+          "word": "TITANITE",
+          "reward": 24
+        },
+        {
+          "word": "GONE",
+          "reward": 7
+        }
+      ],
+      "health": {
+        "matchId": "43156",
+        "controller": {
+          "evaluations": 71,
+          "fallbacks": 0,
+          "staleResults": 0,
+          "acceptedBids": 67,
+          "rejectedBids": 0,
+          "deadlineSkips": 0,
+          "uncalibratedSkips": 0,
+          "acceptedWords": 3,
+          "rejectedWords": 0,
+          "roundTripTotalMs": 833.7833999998984,
+          "roundTripMaxMs": 56.39159999997355,
+          "computeTotalMs": 803.4686000002548
+        },
+        "worker": {
+          "requested": 71,
+          "completed": 71,
+          "activeTimeouts": 0,
+          "queuedTimeouts": 0,
+          "superseded": 0,
+          "starts": 0,
+          "errors": 0,
+          "roundTripTotalMs": 830.3479999999977,
+          "computeTotalMs": 803.4686000002548
+        },
+        "eventLoopDelayMs": {
+          "mean": 25.687034694300518,
+          "p95": 31.571967,
+          "max": 35.389439
+        }
+      }
+    }
+  ],
+  "limitation": "Observational live opponents vary; this proves operation, not causal score improvement or a tournament win."
+}
