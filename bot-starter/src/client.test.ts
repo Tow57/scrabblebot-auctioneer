@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { AuctionClock, BotController, estimatePrice, fallbackBid, indexRows, parseTournamentId, type Decision, type MatchSnapshot } from "./client.js";
+import { AuctionClock, BidExposureLedger, BotController, estimatePrice, fallbackBid, indexRows, parseTournamentId, type Decision, type MatchSnapshot } from "./client.js";
 import { StrategyEngine } from "./strategy.js";
 
 const rack = (letters: string) => {
@@ -101,7 +101,7 @@ test("host wall-clock skew and jumps cannot suppress a live monotonic bid", asyn
   assert.ok(Math.abs(clock.deadlineFor(1_700_000_001_000)! - (initialMono + 1000)) < 1);
 });
 
-test("uncalibrated cold-start auctions are skipped without suppressing word cashout", async t => {
+test("uncalibrated positive bids are skipped while exposure-free cashout proceeds", async t => {
   const current = { ...snapshot(), closesAtMs: null };
   const bids: bigint[] = [];
   const words: string[] = [];
@@ -356,6 +356,25 @@ test("failed words recover from a fresh snapshot without spending the old rack a
   assert.deepEqual(bids, [6n]);
 });
 
+test("a synchronous word transport failure releases its flight and retries fresh state", async t => {
+  let current = snapshot();
+  const attempts: string[] = [];
+  const controller = new BotController({ read: () => [current], now: () => 1000, retryMs: 1,
+    evaluate: async s => ({ bid: 0, word: s.myRack.has("C") ? "CAT" : null }), submitBid: async () => {},
+    submitWord: (_id, word) => {
+      attempts.push(word);
+      if (attempts.length === 1) throw new Error("socket send failed synchronously");
+      current = { ...current, myRack: rack("DOG"), score: 5, myBalance: 105 };
+      return Promise.resolve();
+    } });
+  t.after(() => controller.stop());
+  controller.refresh(); await flush();
+  await new Promise(resolve => setTimeout(resolve, 15)); await flush();
+  assert.deepEqual(attempts, ["CAT", "CAT"]);
+  assert.equal(controller.stats(1n)?.rejectedWords, 1);
+  assert.equal(controller.stats(1n)?.acceptedWords, 1);
+});
+
 test("cached cashout also precedes bidding when worker evaluation rejects", async t => {
   let current = snapshot();
   let evaluations = 0;
@@ -413,6 +432,204 @@ test("disconnect invalidates in-flight strategy results", async t => {
   controller.refresh(); await flush(); controller.disconnected();
   decision.resolve({ bid: 15, word: "CAT" }); await flush();
   assert.deepEqual(bids, []);
+});
+
+test("accepted bid exposure survives empty replay and retracts before a resumed word", async t => {
+  const bidExposure = new BidExposureLedger();
+  let now = 1000;
+  let current = { ...snapshot(), closesAtMs: 2000 };
+  let online = true;
+  let cashout = false;
+  let serverBid = 0n;
+  const zeroAck = deferred<unknown>();
+  const bids: bigint[] = [];
+  const words: string[] = [];
+  const controller = new BotController({ bidExposure, read: () => online ? [current] : [], now: () => now,
+    evaluate: async s => ({ bid: s.myRack.has("C") ? 99 : 0, word: cashout && s.myRack.has("C") ? "CAT" : null }),
+    submitBid: async (_id, amount) => { serverBid = amount; bids.push(amount); if (amount === 0n) await zeroAck.promise; },
+    submitWord: async (_id, word) => { words.push(word); current = { ...current, myRack: rack("DOG"), score: 5, myBalance: 105 }; controller.refresh(); } });
+  t.after(() => controller.stop());
+  controller.refresh(); await flush(); assert.equal(serverBid, 99n);
+  online = false; controller.disconnected(); controller.refresh(); await flush();
+  assert.equal(bidExposure.size, 1, "empty resubscription snapshots do not prove settlement");
+  cashout = true; online = true; now = 1900; controller.refresh(); await flush();
+  assert.deepEqual(bids, [99n, 0n], "first recovery zero may reduce exposure with100ms left");
+  assert.deepEqual(words, [], "cashout waits for recovery cancellation acknowledgement");
+  zeroAck.resolve(undefined); await flush();
+  assert.deepEqual(words, ["CAT"]); assert.equal(serverBid, 0n); assert.equal(bidExposure.size, 0);
+});
+
+test("a positive send with lost acknowledgement survives full controller replacement", async t => {
+  const bidExposure = new BidExposureLedger();
+  let current = snapshot();
+  let serverBid = 0n;
+  const oldAck = deferred<unknown>();
+  const bids: bigint[] = [];
+  const first = new BotController({ bidExposure, read: () => [current], now: () => 1000,
+    evaluate: async () => ({ bid: 99, word: null, plan: ["CAT"] }),
+    submitBid: async (_id, amount) => { bids.push(amount); serverBid = amount; await oldAck.promise; }, submitWord: async () => {} });
+  first.refresh(); await flush(); assert.equal(serverBid, 99n);
+  first.stop();
+  const words: string[] = [];
+  const second = new BotController({ bidExposure, read: () => [current], now: () => 1500,
+    evaluate: async () => null, submitBid: async (_id, amount) => { bids.push(amount); serverBid = amount; },
+    submitWord: async (_id, word) => { words.push(word); }, retryMs: 60_000 });
+  t.after(() => second.stop());
+  second.refresh(); await flush();
+  assert.equal(serverBid, 3n, "fresh fallback reprices only after zero acknowledgement");
+  assert.deepEqual(bids, [99n, 0n, 3n]);
+  assert.deepEqual(words, [], "the previous controller's word plan is not carried across reconnect");
+  oldAck.resolve(undefined); await flush();
+  assert.equal(bidExposure.size, 1, "the obsolete99 ACK cannot discard the new3 exposure");
+});
+
+test("a cold ten-second auction gets one uncalibrated zero before cashout and no positive bid", async t => {
+  const bidExposure = new BidExposureLedger();
+  bidExposure.markUnknown([1n]); // Main does this only once, from its committed initial own-running set.
+  let current: MatchSnapshot = { ...snapshot(), closesAtMs: null };
+  let now = 2000; // A previous process's99 can still exist in a10-second auction.
+  let serverBid = 99n;
+  const zeroAck = deferred<unknown>();
+  const bids: bigint[] = [];
+  const words: string[] = [];
+  const controller = new BotController({ bidExposure, read: () => [current], now: () => now,
+    evaluate: async s => ({ bid: 12, word: s.myRack.has("C") ? "CAT" : null }),
+    submitBid: async (_id, amount) => { assert.ok(now < 10_000); bids.push(amount); serverBid = amount; await zeroAck.promise; },
+    submitWord: async (_id, word) => { words.push(word); current = { ...current, myRack: rack("DOG"), score: 5, myBalance: 105 }; controller.refresh(); } });
+  t.after(() => controller.stop());
+  controller.refresh(); await flush();
+  current = { ...current, estimatedPrice: 4 }; controller.refresh(); await flush();
+  assert.deepEqual(bids, [0n]); assert.deepEqual(words, []);
+  zeroAck.resolve(undefined); await flush();
+  assert.deepEqual(words, ["CAT"]); assert.equal(serverBid, 0n); assert.deepEqual(bids, [0n]);
+  now = 3000; current = { ...current, auctionId: 3n, closesAtMs: 10_000 }; controller.refresh(); await flush();
+  assert.deepEqual(bids, [0n, 12n], "new positives still require a live monotonic anchor and margin");
+});
+
+test("a missing cached auction preserves unknown or known exposure until the same Open row returns", async t => {
+  for (const known of [false, true]) {
+    const bidExposure = new BidExposureLedger();
+    if (!known) bidExposure.markUnknown([1n]);
+    let current: MatchSnapshot = known ? snapshot() : { ...snapshot(), auctionId: null, closesAtMs: null };
+    let cashout = !known;
+    const zeroAck = deferred<unknown>();
+    const bids: bigint[] = [];
+    const words: string[] = [];
+    const controller = new BotController({ bidExposure, read: () => [current], now: () => 1000,
+      evaluate: async () => ({ bid: 99, word: cashout ? "CAT" : null }),
+      submitBid: async (_id, amount) => { bids.push(amount); if (amount === 0n) await zeroAck.promise; },
+      submitWord: async (_id, word) => { words.push(word); } });
+    t.after(() => controller.stop());
+    controller.refresh(); await flush();
+    if (known) {
+      cashout = true; current = { ...current, auctionId: null, closesAtMs: null }; controller.refresh(); await flush();
+    }
+    assert.equal(bidExposure.size, 1); assert.deepEqual(words, []);
+    assert.deepEqual(bids, known ? [99n] : []);
+    current = { ...current, auctionId: 2n, closesAtMs: known ? 10_000 : null }; controller.refresh(); await flush();
+    assert.deepEqual(bids, known ? [99n, 0n] : [0n]); assert.deepEqual(words, []);
+    zeroAck.resolve(undefined); await flush(); assert.deepEqual(words, ["CAT"]); assert.equal(bidExposure.size, 0);
+  }
+});
+
+test("a rejected uncalibrated recovery zero is never repeated across replay or disconnect", async t => {
+  const bidExposure = new BidExposureLedger(); bidExposure.markUnknown([1n]);
+  let current = { ...snapshot(), closesAtMs: null };
+  let online = true;
+  const bids: bigint[] = [];
+  const words: string[] = [];
+  const controller = new BotController({ bidExposure, read: () => online ? [current] : [], now: () => 2000,
+    evaluate: async () => ({ bid: 12, word: "CAT" }),
+    submitBid: async (_id, amount) => { bids.push(amount); throw new Error("replay closed in transit"); },
+    submitWord: async (_id, word) => { words.push(word); }, retryMs: 1 });
+  t.after(() => controller.stop());
+  controller.refresh(); await flush();
+  current = { ...current, estimatedPrice: 4 }; controller.refresh(); await flush();
+  online = false; controller.disconnected(); controller.refresh(); await flush();
+  online = true; controller.refresh(); await flush();
+  await new Promise(resolve => setTimeout(resolve, 15)); await flush();
+  assert.deepEqual(bids, [0n]); assert.deepEqual(words, []); assert.equal(bidExposure.size, 1);
+  current = { ...current, auctionId: 3n }; controller.refresh(); await flush();
+  assert.deepEqual(words, ["CAT"], "authoritative auction advance releases uncertain old exposure");
+  assert.equal(bidExposure.size, 0); assert.deepEqual(bids, [0n]);
+});
+
+test("known recovery cancellation retries only with a calibrated150ms margin", async t => {
+  for (const remaining of [900, 100, 0]) {
+    const bidExposure = new BidExposureLedger();
+    let now = 1000;
+    let current = { ...snapshot(), closesAtMs: 2000 };
+    let cashout = false;
+    const bids: bigint[] = [];
+    const words: string[] = [];
+    const controller = new BotController({ bidExposure, read: () => [current], now: () => now, retryMs: 1,
+      evaluate: async () => ({ bid: 99, word: cashout ? "CAT" : null }),
+      submitBid: (_id, amount) => { bids.push(amount); if (bids.length === 2) throw new Error("cancel failed synchronously"); return Promise.resolve(); },
+      submitWord: async (_id, word) => { words.push(word); } });
+    t.after(() => controller.stop());
+    controller.refresh(); await flush(); controller.disconnected();
+    cashout = true; now = 2000 - remaining; controller.refresh(); await flush();
+    await new Promise(resolve => setTimeout(resolve, 15));
+    current = { ...current, estimatedPrice: 4 }; controller.refresh(); await flush();
+    assert.deepEqual(bids, remaining > 150 ? [99n, 0n, 0n] : remaining > 0 ? [99n, 0n] : [99n]);
+    assert.deepEqual(words, remaining > 150 ? ["CAT"] : []);
+    assert.equal(bidExposure.size, remaining > 150 ? 0 : 1);
+  }
+});
+
+test("final bag0 cashout does not wait for an unknown-bid cancellation acknowledgement", async t => {
+  const bidExposure = new BidExposureLedger(); bidExposure.markUnknown([1n]);
+  const current = { ...snapshot(), bagTotal: 0, closesAtMs: null };
+  const bids: bigint[] = [];
+  const words: string[] = [];
+  const controller = new BotController({ bidExposure, read: () => [current], now: () => 2000,
+    evaluate: async () => ({ bid: 0, word: "CAT" }),
+    submitBid: async (_id, amount) => { bids.push(amount); await new Promise<void>(() => {}); },
+    submitWord: async (_id, word) => { words.push(word); } });
+  t.after(() => controller.stop());
+  controller.refresh(); await flush(); assert.deepEqual(bids, [0n]); assert.deepEqual(words, ["CAT"]);
+});
+
+test("auction advance and the committed running set clean exposure without conflating bigint IDs", async t => {
+  const bidExposure = new BidExposureLedger();
+  const oldAuction = 9007199254740992n;
+  let current = { ...snapshot(), auctionId: oldAuction };
+  let proposed = 99;
+  const bids: { id: bigint; amount: bigint }[] = [];
+  const controller = new BotController({ bidExposure, read: () => [current], now: () => 1000,
+    evaluate: async () => ({ bid: proposed, word: null }),
+    submitBid: async (id, amount) => { bids.push({ id, amount }); }, submitWord: async () => {} });
+  t.after(() => controller.stop());
+  controller.refresh(); await flush(); assert.equal(bidExposure.size, 1);
+  controller.disconnected(); proposed = 0; current = { ...current, auctionId: oldAuction + 1n };
+  controller.refresh(); await flush(); assert.equal(bidExposure.size, 0);
+  assert.deepEqual(bids, [{ id: oldAuction, amount: 99n }], "never cancel a different auction");
+  proposed = 5; current = { ...current, estimatedPrice: 4 }; controller.refresh(); await flush();
+  assert.equal(bidExposure.size, 1);
+  bidExposure.retainRunning(new Set()); assert.equal(bidExposure.size, 0, "main supplies authoritative match-end cleanup");
+});
+
+test("an obsolete zero acknowledgement cannot erase a newer positive exposure", async t => {
+  const bidExposure = new BidExposureLedger();
+  let current = snapshot();
+  let proposed = 99;
+  const oldZeroAck = deferred<unknown>();
+  const bids: bigint[] = [];
+  let oldZeroSent = false;
+  const controller = new BotController({ bidExposure, read: () => [current], now: () => 1000,
+    evaluate: async () => ({ bid: proposed, word: null }),
+    submitBid: async (_id, amount) => {
+      bids.push(amount);
+      if (amount === 0n && !oldZeroSent) { oldZeroSent = true; await oldZeroAck.promise; }
+    }, submitWord: async () => {} });
+  t.after(() => controller.stop());
+  controller.refresh(); await flush(); controller.disconnected(); proposed = 1;
+  controller.refresh(); await flush(); assert.deepEqual(bids, [99n, 0n]);
+  controller.disconnected(); controller.refresh(); await flush();
+  assert.deepEqual(bids, [99n, 0n, 0n, 1n]);
+  oldZeroAck.resolve(undefined); await flush(); assert.equal(bidExposure.size, 1);
+  proposed = 0; controller.disconnected(); controller.refresh(); await flush();
+  assert.deepEqual(bids, [99n, 0n, 0n, 1n, 0n]); assert.equal(bidExposure.size, 0);
 });
 
 test("finite integer budget bounds apply before sending a bid", async t => {

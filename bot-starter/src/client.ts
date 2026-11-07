@@ -149,6 +149,70 @@ interface MatchActions {
   retry?: ReturnType<typeof setTimeout>;
 }
 
+interface BidExposure {
+  matchId: bigint;
+  auctionId: bigint | undefined;
+  recovering: boolean;
+  cancelAttempted: boolean;
+}
+
+/** Main-owned, memory-only knowledge of bids that may still exist on the server. */
+export class BidExposureLedger {
+  private readonly entries = new Map<bigint, BidExposure>();
+
+  get size(): number { return this.entries.size; }
+
+  private put(exposure: BidExposure): BidExposure {
+    // A bot cannot enter two matches at once. Bound even malformed input,
+    // without silently evicting an outstanding financial exposure.
+    if (!this.entries.has(exposure.matchId) && this.entries.size >= 32) throw new Error("Too many matches in bid recovery");
+    this.entries.set(exposure.matchId, exposure);
+    return exposure;
+  }
+
+  /** Called once per process, after the initial own-running set is committed. */
+  markUnknown(matchIds: Iterable<bigint>): void {
+    for (const matchId of matchIds) if (!this.entries.has(matchId)) {
+      this.put({ matchId, auctionId: undefined, recovering: true, cancelAttempted: false });
+    }
+  }
+
+  /** Absence during a partial/offline replay must never call this cleanup. */
+  retainRunning(matchIds: ReadonlySet<bigint>): void {
+    for (const id of this.entries.keys()) if (!matchIds.has(id)) this.entries.delete(id);
+  }
+
+  observe(snapshot: MatchSnapshot): BidExposure | undefined {
+    const exposure = this.entries.get(snapshot.matchId);
+    if (!exposure) return undefined;
+    if (snapshot.auctionId === null) {
+      // This means no cached Open row, not proof that a private bid expired.
+      exposure.recovering = true;
+      return exposure;
+    }
+    if (exposure.auctionId === undefined) exposure.auctionId = snapshot.auctionId;
+    if (exposure.auctionId !== snapshot.auctionId) {
+      this.entries.delete(snapshot.matchId); // A different committed current auction supersedes it.
+      return undefined;
+    }
+    return exposure;
+  }
+
+  positive(matchId: bigint, auctionId: bigint): BidExposure {
+    return this.put({ matchId, auctionId, recovering: false, cancelAttempted: false });
+  }
+
+  disconnected(): void {
+    for (const exposure of this.entries.values()) exposure.recovering = true;
+  }
+
+  acknowledgeZero(exposure: BidExposure | undefined): void {
+    // Object identity is the request's generation token. An obsolete ACK may
+    // never erase an exposure created by a newer positive request.
+    if (exposure && this.entries.get(exposure.matchId) === exposure) this.entries.delete(exposure.matchId);
+  }
+}
+
 export interface ControllerOptions {
   read: () => MatchSnapshot[];
   evaluate: (snapshot: MatchSnapshot) => Promise<Decision | null>;
@@ -158,6 +222,7 @@ export interface ControllerOptions {
   now?: () => number;
   retryMs?: number;
   diagnostic?: (stage: string, snapshot: MatchSnapshot, detail: string) => void;
+  bidExposure?: BidExposureLedger;
 }
 
 export class BotController {
@@ -166,9 +231,11 @@ export class BotController {
   private epoch = 0;
   private stopped = false;
   private readonly now: () => number;
+  private readonly bidExposure: BidExposureLedger;
 
   constructor(private readonly options: ControllerOptions) {
     this.now = options.now ?? (() => performance.now());
+    this.bidExposure = options.bidExposure ?? new BidExposureLedger();
   }
 
   stats(matchId: bigint): MatchMetrics | undefined {
@@ -187,6 +254,7 @@ export class BotController {
 
   disconnected(): void {
     this.epoch++;
+    this.bidExposure.disconnected();
     for (const state of this.matches.values()) if (state.retry) clearTimeout(state.retry);
     this.matches.clear();
   }
@@ -223,6 +291,10 @@ export class BotController {
     for (const snapshot of snapshots) {
       const state = this.matches.get(snapshot.matchId) ?? { metrics: matchMetrics() };
       this.matches.set(snapshot.matchId, state);
+      const exposure = this.bidExposure.observe(snapshot);
+      // Recovery must not wait behind a strategy computation. Final-tile
+      // cashout still runs immediately below; currency has no terminal value.
+      if (exposure?.recovering && snapshot.bagTotal > 0) this.bid(snapshot, state, 0);
       if (state.word?.acknowledged && state.word.rack !== rackKey(snapshot.myRack)) {
         state.word = undefined;
         state.requested = undefined;
@@ -266,6 +338,10 @@ export class BotController {
   }
 
   private act(snapshot: MatchSnapshot, state: MatchActions, decision: Decision | null): void {
+    if (this.bidExposure.observe(snapshot)?.recovering && snapshot.bagTotal > 0) {
+      this.bid(snapshot, state, 0);
+      return; // Await zero ACK or authoritative auction advance before cashout.
+    }
     const planned = decision ? decision.word : cachedWord(snapshot, state.plan ?? []);
     const word = planned && canSpell(planned, snapshot.myRack) ? planned : null;
     if (state.word || word) {
@@ -286,14 +362,19 @@ export class BotController {
     const amount = Math.max(0, Math.min(Math.floor(proposed), Math.floor(snapshot.myBalance)));
     if (state.word && amount > 0) { this.bid(snapshot, state, 0); return; }
     const prior = state.bid?.auctionId === snapshot.auctionId ? state.bid : undefined;
-    if (amount === 0 && !prior?.needsCancellation && !(prior?.pending && (prior.desired ?? 0) > 0)) {
+    const exposure = this.bidExposure.observe(snapshot);
+    if (amount === 0 && !exposure && !prior?.needsCancellation && !(prior?.pending && (prior.desired ?? 0) > 0)) {
       this.options.diagnostic?.("guard", snapshot, "zero strategy bid without a prior positive bid"); return;
     }
-    if (snapshot.closesAtMs === null) {
+    // One best-effort recovery zero may precede clock calibration. The server
+    // validates its deadline and can reject it if the replay closes in transit.
+    // No positive bid or subsequent uncalibrated cancellation gets this exception.
+    const initialRecoveryZero = amount === 0 && exposure?.recovering && !exposure.cancelAttempted;
+    if (snapshot.closesAtMs === null && !initialRecoveryZero) {
       state.metrics.uncalibratedSkips++;
       this.options.diagnostic?.("guard", snapshot, "awaiting a live server clock anchor"); return;
     }
-    const remaining = snapshot.closesAtMs - this.now();
+    const remaining = snapshot.closesAtMs === null ? Infinity : snapshot.closesAtMs - this.now();
     if (remaining <= 0) {
       state.metrics.deadlineSkips++;
       this.options.diagnostic?.("guard", snapshot, "auction deadline passed"); return;
@@ -309,7 +390,7 @@ export class BotController {
     }
     // First zero retractions reduce exposure and may use the final 150 ms.
     // A failed cancellation can retry only with the usual safety margin.
-    if (remaining <= 150 && (amount > 0 || prior?.cancelAttempted)) {
+    if (remaining <= 150 && (amount > 0 || prior?.cancelAttempted || exposure?.cancelAttempted)) {
       state.metrics.deadlineSkips++;
       this.options.diagnostic?.("guard", snapshot, `deadline remainingMs=${remaining}`); return;
     }
@@ -318,12 +399,23 @@ export class BotController {
       needsCancellation: amount > 0 || prior?.needsCancellation === true, cancelAttempted: amount === 0 };
     this.options.diagnostic?.("guard", snapshot, `sending amount=${amount}`);
     state.bid = bid;
+    // Record before sending: a missing/rejected local ACK does not prove that
+    // the positive bid failed to commit on the server.
+    const sentExposure = amount > 0 ? this.bidExposure.positive(snapshot.matchId, snapshot.auctionId) : exposure;
+    if (amount === 0 && sentExposure) sentExposure.cancelAttempted = true;
     const epoch = this.epoch;
-    void this.options.submitBid(snapshot.auctionId, BigInt(amount)).then(() => {
+    // Recovery can run directly from reconcile, so synchronous transport
+    // failures must enter the same retry path as rejected reducer promises.
+    // Invoke immediately to preserve zero-before-word ordering on the socket.
+    let request: Promise<unknown>;
+    try { request = this.options.submitBid(snapshot.auctionId, BigInt(amount)); }
+    catch (error) { request = Promise.reject(error); }
+    void request.then(() => {
       if (epoch !== this.epoch || state.bid !== bid) return;
       bid.pending = false;
       bid.acknowledged = true;
       bid.needsCancellation = amount > 0;
+      if (amount === 0) this.bidExposure.acknowledgeZero(sentExposure);
       state.metrics.acceptedBids++;
       this.options.report?.(`bid ${amount} accepted for auction ${bid.auctionId}`);
       const fresh = this.current(snapshot.matchId);
@@ -350,7 +442,10 @@ export class BotController {
     const pending: WordPending = { rack: rackKey(snapshot.myRack), acknowledged: false };
     state.word = pending;
     const epoch = this.epoch;
-    void this.options.submitWord(snapshot.matchId, word).then(() => {
+    let request: Promise<unknown>;
+    try { request = this.options.submitWord(snapshot.matchId, word); }
+    catch (error) { request = Promise.reject(error); }
+    void request.then(() => {
       if (epoch !== this.epoch || state.word !== pending) return;
       pending.acknowledged = true;
       state.metrics.acceptedWords++;

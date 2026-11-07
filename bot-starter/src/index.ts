@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { monitorEventLoopDelay } from "node:perf_hooks";
 import type { Identity } from "spacetimedb";
 import { DbConnection, tables, type SubscriptionHandle } from "./module_bindings/index.js";
-import { AuctionClock, BotController, estimatePrice, indexRows, parseTournamentId, type MatchSnapshot } from "./client.js";
+import { AuctionClock, BidExposureLedger, BotController, estimatePrice, indexRows, parseTournamentId, type MatchSnapshot } from "./client.js";
 import { StrategyWorker } from "./worker-client.js";
 
 const HOST = process.env.STDB_HOST ?? "https://maincloud.spacetimedb.com";
@@ -27,6 +27,8 @@ async function main(): Promise<void> {
   const worker = new StrategyWorker(process.env.BOT_DICTIONARY);
   await worker.start(); // Missing/malformed dictionaries stop before any network activity.
   const auctionClock = new AuctionClock(); // Preserved across reconnects in this process.
+  const bidExposure = new BidExposureLedger(); // Also survives full controller replacement.
+  let recoveryInitialized = false;
   const loopDelay = monitorEventLoopDelay({ resolution: 20 });
   loopDelay.enable();
   let connection: DbConnection | undefined;
@@ -165,7 +167,7 @@ async function main(): Promise<void> {
     controller = new BotController({ read: snapshots, evaluate: s => worker.evaluate(s),
       submitBid: (auctionId, amount) => c.reducers.submitBid({ auctionId, amount }),
       submitWord: (matchId, word) => c.reducers.submitWord({ matchId, word }), report: log,
-      diagnostic: DEBUG ? diagnostic : undefined });
+      diagnostic: DEBUG ? diagnostic : undefined, bidExposure });
 
     function tournament(): void {
       if (tournamentId === undefined || myBotId === undefined) return;
@@ -208,6 +210,11 @@ async function main(): Promise<void> {
     function reconcile(): void {
       if (stopped || connection !== c || !online || !baseReady || !ownReady || myBotId === undefined) return;
       const running = new Set([...c.db.matchParticipant.iter()].filter(p => p.botId === myBotId && matchStates.rows.get(p.matchId)?.status.tag === "Running").map(p => p.matchId));
+      // Only this fully committed own-running set proves a match has ended.
+      // Cold startup may resume a private bid from a previous process; seed
+      // that uncertainty once, never for newly joined matches or reconnects.
+      bidExposure.retainRunning(running);
+      if (!recoveryInitialized) { bidExposure.markUnknown(running); recoveryInitialized = true; }
       for (const [id, sub] of matchSubscriptions) if (!running.has(id)) {
         const metrics = controller?.stats(id);
         const latest = worker.stats();
