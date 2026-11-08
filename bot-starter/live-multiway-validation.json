@@ -1,0 +1,368 @@
+{
+  "generatedAt": "2026-11-08T02:27:04.406Z",
+  "botId": 164,
+  "phase": "multiway-release-check",
+  "sourceCommit": "58786de5d77e04d3709dfcac18ec28e6734a3764",
+  "policy": "Capital-v1 / N=2 Vickrey face-weight0.3 / N>=3 Vickrey face-weight0.1; worker wordFirst,95ms cooperative budget and bounded preprocessing",
+  "firstIntervalPolicy": "Exclude the first post-restart metric interval as potentially partial; all subsequent intervals count.",
+  "fullMatches": 5,
+  "meanScore": 79.4,
+  "meanPlace": 3,
+  "winRate": 0,
+  "metricsCoverage": {
+    "instrumentedMatches": 5,
+    "totalFullMatches": 5,
+    "missingControllerMatchIds": []
+  },
+  "totalsCoverage": "Controller totals and maximum round trip cover instrumented matches only. Missing telemetry is unknown, never zero errors. Scores include all completed observed matches.",
+  "totals": {
+    "evaluations": 356,
+    "fallbacks": 0,
+    "staleResults": 0,
+    "acceptedBids": 332,
+    "rejectedBids": 0,
+    "deadlineSkips": 0,
+    "uncalibratedSkips": 0,
+    "acceptedWords": 16,
+    "rejectedWords": 0
+  },
+  "workerTimeouts": 0,
+  "decisionRoundTripMaxMs": 95.72599999999511,
+  "matches": [
+    {
+      "matchId": "45771",
+      "participantCount": 6,
+      "score": 75,
+      "balance": 14,
+      "place": 3,
+      "excludedFromFullSoak": true,
+      "words": [
+        {
+          "word": "REHOBOAM",
+          "reward": 45
+        },
+        {
+          "word": "AMORINO",
+          "reward": 27
+        },
+        {
+          "word": "ALE",
+          "reward": 3
+        }
+      ],
+      "health": {
+        "matchId": "45771",
+        "controller": {
+          "evaluations": 71,
+          "fallbacks": 0,
+          "staleResults": 0,
+          "acceptedBids": 65,
+          "rejectedBids": 0,
+          "deadlineSkips": 0,
+          "uncalibratedSkips": 1,
+          "acceptedWords": 3,
+          "rejectedWords": 0,
+          "roundTripTotalMs": 766.6702000000305,
+          "roundTripMaxMs": 39.60529999999926,
+          "computeTotalMs": 741.6459999999761
+        },
+        "worker": {
+          "requested": 71,
+          "completed": 71,
+          "activeTimeouts": 0,
+          "queuedTimeouts": 0,
+          "superseded": 0,
+          "starts": 0,
+          "errors": 0,
+          "roundTripTotalMs": 763.6011999999919,
+          "computeTotalMs": 741.6459999999761
+        },
+        "eventLoopDelayMs": {
+          "mean": 27.30912637412716,
+          "p95": 32.587775,
+          "max": 77.135871
+        }
+      }
+    },
+    {
+      "matchId": "45784",
+      "participantCount": 6,
+      "score": 63,
+      "balance": 6,
+      "place": 5,
+      "excludedFromFullSoak": false,
+      "words": [
+        {
+          "word": "WOOLIER",
+          "reward": 30
+        },
+        {
+          "word": "VAUNTY",
+          "reward": 30
+        },
+        {
+          "word": "GO",
+          "reward": 3
+        }
+      ],
+      "health": {
+        "matchId": "45784",
+        "controller": {
+          "evaluations": 71,
+          "fallbacks": 0,
+          "staleResults": 0,
+          "acceptedBids": 66,
+          "rejectedBids": 0,
+          "deadlineSkips": 0,
+          "uncalibratedSkips": 0,
+          "acceptedWords": 3,
+          "rejectedWords": 0,
+          "roundTripTotalMs": 351.80229999999574,
+          "roundTripMaxMs": 46.332299999994575,
+          "computeTotalMs": 331.52050000011513
+        },
+        "worker": {
+          "requested": 71,
+          "completed": 71,
+          "activeTimeouts": 0,
+          "queuedTimeouts": 0,
+          "superseded": 0,
+          "starts": 0,
+          "errors": 0,
+          "roundTripTotalMs": 349.7299000001076,
+          "computeTotalMs": 331.52050000011513
+        },
+        "eventLoopDelayMs": {
+          "mean": 27.523742852904817,
+          "p95": 32.538623,
+          "max": 36.274175
+        }
+      }
+    },
+    {
+      "matchId": "45797",
+      "participantCount": 6,
+      "score": 81,
+      "balance": 14,
+      "place": 2,
+      "excludedFromFullSoak": false,
+      "words": [
+        {
+          "word": "JAUNTED",
+          "reward": 45
+        },
+        {
+          "word": "REMORID",
+          "reward": 30
+        },
+        {
+          "word": "AEON",
+          "reward": 6
+        }
+      ],
+      "health": {
+        "matchId": "45797",
+        "controller": {
+          "evaluations": 71,
+          "fallbacks": 0,
+          "staleResults": 0,
+          "acceptedBids": 66,
+          "rejectedBids": 0,
+          "deadlineSkips": 0,
+          "uncalibratedSkips": 0,
+          "acceptedWords": 3,
+          "rejectedWords": 0,
+          "roundTripTotalMs": 423.36310000001686,
+          "roundTripMaxMs": 47.186599999986356,
+          "computeTotalMs": 394.15419999996084
+        },
+        "worker": {
+          "requested": 71,
+          "completed": 71,
+          "activeTimeouts": 0,
+          "queuedTimeouts": 0,
+          "superseded": 0,
+          "starts": 0,
+          "errors": 0,
+          "roundTripTotalMs": 420.37249999993946,
+          "computeTotalMs": 394.15419999996084
+        },
+        "eventLoopDelayMs": {
+          "mean": 27.317488314450866,
+          "p95": 33.538047,
+          "max": 42.500095
+        }
+      }
+    },
+    {
+      "matchId": "45810",
+      "participantCount": 6,
+      "score": 115,
+      "balance": 10,
+      "place": 2,
+      "excludedFromFullSoak": false,
+      "words": [
+        {
+          "word": "RACEMIZES",
+          "reward": 66
+        },
+        {
+          "word": "AMIABLE",
+          "reward": 33
+        },
+        {
+          "word": "NOVEL",
+          "reward": 16
+        }
+      ],
+      "health": {
+        "matchId": "45810",
+        "controller": {
+          "evaluations": 71,
+          "fallbacks": 0,
+          "staleResults": 0,
+          "acceptedBids": 67,
+          "rejectedBids": 0,
+          "deadlineSkips": 0,
+          "uncalibratedSkips": 0,
+          "acceptedWords": 3,
+          "rejectedWords": 0,
+          "roundTripTotalMs": 540.8406000003743,
+          "roundTripMaxMs": 95.72599999999511,
+          "computeTotalMs": 513.7541999998502
+        },
+        "worker": {
+          "requested": 71,
+          "completed": 71,
+          "activeTimeouts": 0,
+          "queuedTimeouts": 0,
+          "superseded": 0,
+          "starts": 0,
+          "errors": 0,
+          "roundTripTotalMs": 537.8446999999578,
+          "computeTotalMs": 513.7541999998502
+        },
+        "eventLoopDelayMs": {
+          "mean": 25.42510845231072,
+          "p95": 33.554431,
+          "max": 39.682047
+        }
+      }
+    },
+    {
+      "matchId": "45823",
+      "participantCount": 6,
+      "score": 69,
+      "balance": 7,
+      "place": 3,
+      "excludedFromFullSoak": false,
+      "words": [
+        {
+          "word": "AUTOMEN",
+          "reward": 27
+        },
+        {
+          "word": "NAVETTE",
+          "reward": 30
+        },
+        {
+          "word": "ABET",
+          "reward": 9
+        },
+        {
+          "word": "AG",
+          "reward": 3
+        }
+      ],
+      "health": {
+        "matchId": "45823",
+        "controller": {
+          "evaluations": 72,
+          "fallbacks": 0,
+          "staleResults": 0,
+          "acceptedBids": 67,
+          "rejectedBids": 0,
+          "deadlineSkips": 0,
+          "uncalibratedSkips": 0,
+          "acceptedWords": 4,
+          "rejectedWords": 0,
+          "roundTripTotalMs": 940.7533000000403,
+          "roundTripMaxMs": 61.12810000003083,
+          "computeTotalMs": 910.413499999966
+        },
+        "worker": {
+          "requested": 72,
+          "completed": 72,
+          "activeTimeouts": 0,
+          "queuedTimeouts": 0,
+          "superseded": 0,
+          "starts": 0,
+          "errors": 0,
+          "roundTripTotalMs": 937.1905000003171,
+          "computeTotalMs": 910.413499999966
+        },
+        "eventLoopDelayMs": {
+          "mean": 26.018176667826086,
+          "p95": 33.538047,
+          "max": 41.648127
+        }
+      }
+    },
+    {
+      "matchId": "45836",
+      "participantCount": 6,
+      "score": 69,
+      "balance": 7,
+      "place": 3,
+      "excludedFromFullSoak": false,
+      "words": [
+        {
+          "word": "GONADIC",
+          "reward": 33
+        },
+        {
+          "word": "DEPUTY",
+          "reward": 30
+        },
+        {
+          "word": "LINO",
+          "reward": 6
+        }
+      ],
+      "health": {
+        "matchId": "45836",
+        "controller": {
+          "evaluations": 71,
+          "fallbacks": 0,
+          "staleResults": 0,
+          "acceptedBids": 66,
+          "rejectedBids": 0,
+          "deadlineSkips": 0,
+          "uncalibratedSkips": 0,
+          "acceptedWords": 3,
+          "rejectedWords": 0,
+          "roundTripTotalMs": 813.4708000000683,
+          "roundTripMaxMs": 39.12239999999292,
+          "computeTotalMs": 782.1327000000747
+        },
+        "worker": {
+          "requested": 71,
+          "completed": 71,
+          "activeTimeouts": 0,
+          "queuedTimeouts": 0,
+          "superseded": 0,
+          "starts": 0,
+          "errors": 0,
+          "roundTripTotalMs": 809.9585000003572,
+          "computeTotalMs": 782.1327000000747
+        },
+        "eventLoopDelayMs": {
+          "mean": 26.18951308708912,
+          "p95": 33.652735,
+          "max": 78.708735
+        }
+      }
+    }
+  ],
+  "limitation": "Observational live opponents vary; this proves operation, not causal score improvement or a tournament win."
+}

@@ -1,0 +1,56 @@
+{
+  "validatedAtUtc": "2026-11-08T02:27:51.6493599Z",
+  "status": "Validated current bidding refinement",
+  "runtimeCommit": "58786de5d77e04d3709dfcac18ec28e6734a3764",
+  "profile": {
+    "capitalAllowance": true,
+    "headsUpFaceBidWeight": 0.3,
+    "multiwayFaceBidWeight": 0.1,
+    "wordFirst": true,
+    "cooperativeComputeMs": 95,
+    "workerResponseMs": 150
+  },
+  "build": {
+    "sessionId": 13354,
+    "exitCode": 0,
+    "testsPassed": 75
+  },
+  "native": {
+    "sessionId": 16261,
+    "exitCode": 0,
+    "report": "multiway-native-validation.json",
+    "responses": 12,
+    "timeouts": 0,
+    "errors": 0,
+    "maxRoundTripMs": 42.309400000000096
+  },
+  "modeledComparison": {
+    "pairs": 36,
+    "controlCrowns": 11,
+    "candidateCrowns": 20,
+    "pairedExactP": 0.0245208740234375,
+    "allLockedChecksPassed": true,
+    "gate": "benchmark-full-format-confirmation-03-gate.json",
+    "scope": "Fixed modeled roster; no guarantee for live field"
+  },
+  "live": {
+    "hostSessionId": 8189,
+    "report": "live-multiway-validation.json",
+    "completeMatches": 5,
+    "instrumentedMatches": 5,
+    "evaluations": 356,
+    "acceptedBids": 332,
+    "acceptedWords": 16,
+    "workerTimeouts": 0,
+    "errorsOrSkips": 0,
+    "maxRoundTripMs": 95.72599999999511,
+    "firstIntervalExcluded": true
+  },
+  "review": "Independent same-family pre/post-apply review clear; actual4files match B02 proposal",
+  "pressurePriorityCorrectionIncluded": false,
+  "pressureValidation18Executed": false,
+  "userRequestedPauseAfterThisRelease": true,
+  "tournamentRegistrationOrHandIn": false,
+  "tournamentSubmissionHold": true,
+  "productionPromotionAuthorized": true
+}

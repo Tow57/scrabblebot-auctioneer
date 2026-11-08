@@ -51,13 +51,13 @@ If registration is not yet open, wait for the organizer to open it and restart w
 - Auction deadlines use a monotonic clock calibrated from fresh live auction events, so laptop/server wall-clock differences cannot suppress bids. A cold process may wait for the next auction to calibrate; reconnects retain the existing calibration.
 - A memory-only ledger preserves possible bids across reconnects. Cold recovery may send one zero cancellation before clock calibration; the server can reject it if the auction closes in transit. Purchases still require calibration and the 150 ms margin. Normal cashout waits for recovery acknowledgment or auction advance; final-tile cashout has priority.
 - The tournament worker enables the tested capital allowance so useful letters receive some buying power from the initial bank. `BOT_CAPITAL_ALLOWANCE=0` selects the previous bidding policy for comparisons.
-- Two-player Vickrey matches additionally favor useful high-value letters with the validated 0.3 face-weight adjustment. This adjustment changes the final bid only; scoring, cashout rules and terminal guards are shared with the core. `BOT_HEADS_UP_FACE_WEIGHT=0` disables it; values must be finite from 0 to 0.5. `BOT_CAPITAL_ALLOWANCE=0` disables both bid adjustments. Larger tables and FirstPrice use the existing bid policy.
+- Vickrey matches favor useful high-value letters with separately validated face weights: **0.3 for two players** and **0.1 for three or more players**. The adjustment applies only to a positive base bid with more than one tile remaining; it stays capped at balance. FirstPrice and terminal guards retain the existing policy. `BOT_HEADS_UP_FACE_WEIGHT=0` or `BOT_MULTIWAY_FACE_WEIGHT=0` disables the corresponding adjustment; configured values must be finite from 0 to 0.5. `BOT_CAPITAL_ALLOWANCE=0` disables capital allowance and both face adjustments. Library weights still default to zero; the worker enables the confirmed settings.
 
 The current server discards unsold tiles and randomizes tied bids. Opponents' starting racks are private, and live top bids are unavailable to bots. Some older guide text describes these differently.
 
 ## Validation
 
-Timing-core source `e564082` builds and passes **70 bot tests**. Its native stress check returned 12/12 legal responses without timeouts or worker errors. The earlier word-first source `f1c68e2` also passed its 63 tests from a clean archived Windows checkout containing spaces and `#`. See `VALIDATION.md` for the limits of each result.
+Multiway source `58786de` builds and passes **75 bot tests**. Its native stress check returned 12/12 legal responses without timeouts or worker errors. A fresh 36-pair modeled-tournament comparison passed its locked checks, with 20 crowns versus 11 for the control. These results do not guarantee wins against the live field. Earlier archive/path checks and the exact scope of each result are in `VALIDATION.md`.
 
 ```powershell
 npm run build
