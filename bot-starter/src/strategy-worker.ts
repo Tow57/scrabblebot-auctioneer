@@ -3,6 +3,7 @@ import { performance } from "node:perf_hooks";
 import { StrategyEngine } from "./strategy.js";
 import { loadDictionary } from "./dictionary.js";
 import type { MatchSnapshot } from "./client.js";
+import { createCopiedPolicy } from "./copied-lala/adapter.js";
 
 if (!parentPort) throw new Error("Strategy worker requires a parent port");
 const configuredWeight = process.env.BOT_HEADS_UP_FACE_WEIGHT;
@@ -18,7 +19,11 @@ if (!Number.isFinite(multiwayFaceBidWeight) || multiwayFaceBidWeight < 0 || mult
   throw new Error("BOT_MULTIWAY_FACE_WEIGHT must be a finite number between 0 and 0.5");
 }
 const capitalAllowance = process.env.BOT_CAPITAL_ALLOWANCE !== "0";
-const engine = new StrategyEngine(loadDictionary(workerData?.dictionaryPath), {
+const words = loadDictionary(workerData?.dictionaryPath);
+const copiedMode = process.env.BOT_COPIED_POLICY;
+if (copiedMode !== undefined && copiedMode !== "" && copiedMode !== "lala") throw new Error("BOT_COPIED_POLICY must be lala or unset");
+const copied = copiedMode === "lala" ? createCopiedPolicy(words) : undefined;
+const engine = new StrategyEngine(words, {
   capitalAllowance,
   headsUpFaceBidWeight: capitalAllowance ? headsUpFaceBidWeight : 0,
   multiwayFaceBidWeight: capitalAllowance ? multiwayFaceBidWeight : 0,
@@ -27,7 +32,13 @@ const engine = new StrategyEngine(loadDictionary(workerData?.dictionaryPath), {
 parentPort.on("message", (request: { id: number; snapshot: MatchSnapshot }) => {
   try {
     const s = request.snapshot;
-    const decision = engine.decide({
+    const decision = copied ? (() => {
+      if (!s.letter || s.auctionId === null) return { bid: 0, word: null, plan: [], elapsedMs: 0, policy: "Copied-Lala-v2.7.5" };
+      if (!s.copiedLala) throw new Error("Copied Lala public history is incomplete");
+      const output = copied.decide({ ...s, auctionId: s.auctionId, ...s.copiedLala });
+      if (output.elapsedMs > 95) throw new Error("Copied Lala exceeded the95ms response compute limit");
+      return { ...output, policy: "Copied-Lala-v2.7.5" };
+    })() : engine.decide({
       myRack: s.myRack,
       myBalance: s.myBalance,
       letter: s.letter,

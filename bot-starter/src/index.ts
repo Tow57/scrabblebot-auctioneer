@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { monitorEventLoopDelay } from "node:perf_hooks";
 import type { Identity } from "spacetimedb";
 import { DbConnection, tables, type SubscriptionHandle } from "./module_bindings/index.js";
-import { AuctionClock, BidExposureLedger, BotController, estimatePrice, indexRows, parseTournamentId, type MatchSnapshot } from "./client.js";
+import { AuctionClock, BidExposureLedger, BotController, estimatePrice, indexRows, parseTournamentId, reconstructInitialRack, type MatchSnapshot } from "./client.js";
 import { StrategyWorker } from "./worker-client.js";
 
 const HOST = process.env.STDB_HOST ?? "https://maincloud.spacetimedb.com";
@@ -158,6 +158,26 @@ async function main(): Promise<void> {
           closesAtMs: open ? auctionClock.deadlineFor(Number(open.closesAt.microsSinceUnixEpoch / 1000n)) : null,
           estimatedPrice: estimatePrice(prices),
         };
+        if (process.env.BOT_COPIED_POLICY === "lala" && open) {
+          const observedAuctions = [...c.db.auctionResult.iter()].filter(x => x.matchId === match.id)
+            .map(x => ({ auctionId: x.auctionId, letter: x.letter, winnerBotId: x.winnerBotId ?? null, paid: Number(x.paid), closedAtMicros: x.closedAt.microsSinceUnixEpoch }));
+          const plays = [...c.db.wordPlay.iter()].filter(x => x.matchId === match.id)
+            .map(x => ({ botId: x.botId, word: x.word, playedAtMicros: x.playedAt.microsSinceUnixEpoch }));
+          const initialOwnRack = reconstructInitialRack(myBotId, rack, observedAuctions, plays);
+          const expectedResults = 98 - 5 * participants.length - (match.bagTotal + 1);
+          // A complete scoped subscription plus conservation protects replay and
+          // cold mid-match startup. Never substitute today's rack for the deal.
+          const historyValid = observedAuctions.length === expectedResults
+            && observedAuctions.every(x => x.auctionId !== open.id && x.closedAtMicros <= open.opensAt.microsSinceUnixEpoch);
+          if (initialOwnRack && historyValid) {
+            snapshot.copiedLala = { ownBotId: myBotId, initialOwnRack,
+              participants: participants.map(x => ({ botId: x.botId, balance: Number(x.balance), score: Number(x.score) })),
+              observedAuctions, plays };
+          }
+          // Include every public opponent update in worker staleness checks.
+          // Words committed during this auction are valid after its open time.
+          snapshot.copiedLalaRevision = `${participants.map(x => `${x.botId}:${x.balance}:${x.score}`).join(",")}/${observedAuctions.map(x => `${x.auctionId}:${x.letter}:${x.winnerBotId}:${x.paid}:${x.closedAtMicros}`).join(",")}/${plays.map(x => `${x.botId}:${x.word}:${x.playedAtMicros}`).join(",")}/${historyValid && initialOwnRack ? "ready" : "incomplete"}`;
+        }
         result.push(snapshot);
         diagnostic("snapshot", snapshot, "committed subscription cache");
       }

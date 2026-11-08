@@ -10,10 +10,11 @@ Use Node.js 24 and PowerShell. From this directory:
 
 ```powershell
 ./Start-Bot.ps1 -Check
+$env:BOT_COPIED_POLICY = 'lala'
 ./Start-Bot.ps1 -BotName auctioneer
 ```
 
-The launch script prompts for your team bot token with hidden input, then the client saves it to the ignored `.token-auctioneer` file. Never paste credentials into chat, commit them, or include them in a source archive. `BotName` is a local token-file alias; it does not choose or rename the remote bot. Confirm the remote bot ID printed after connection.
+The launch script prompts for your team bot token with hidden input, then the client saves it to the ignored `.token-auctioneer` file. Never paste credentials into chat, commit them, or include them in a source archive. `BotName` is a local token-file alias; it does not choose or rename the remote bot. Confirm the remote bot ID printed after connection. `BOT_COPIED_POLICY=lala` selects the copied Lala strategy described in [COPIED-LALA.md](COPIED-LALA.md); leaving it unset selects v1.6.
 
 Keep the terminal open, the laptop plugged in, and the network connected. The launch script prevents system sleep while running and restores normal behavior when it exits. `-AllowSleep` opts out. Use only one process for this bot. Ctrl+C stops it.
 
@@ -35,11 +36,13 @@ The launch script installs the locked dependencies when missing and verifies esb
 ./Start-Bot.ps1 -BotName auctioneer -TournamentId 123
 ```
 
-Replace `123` with the confirmed upcoming ID. Never assume an old or ended tournament is the correct event. Tournament mode registers promptly using the bot credential, verifies entry, continues any existing practice match, and stays out of new practice lobbies. The server waits for registered entrants' practice matches before starting round one; registering promptly avoids missing a cutoff while waiting locally. Keep it running through the finals; registration does not run the bot for you. Freeze code at least 90 minutes before the confirmed start.
+Replace `123` with the confirmed upcoming ID. The November 7 event uses **ID 2**; Tow57-Auctioneer (164) is registered as entry 113. Tournament mode registers using the bot credential, verifies entry, continues any existing practice match, and stays out of new practice lobbies. The server waits for registered entrants' practice matches before starting round one. Keep it running through the finals; registration does not run the bot for you. The owner set 10:40 PM Central as tonight's hard readiness deadline; contestants must attend ECSW 1.315 in person for the 10:45 PM start.
 
 If registration is not yet open, wait for the organizer to open it and restart with the correct ID. Check registration at https://scrabblebot.spacetimedb.com/tournament. An offline registered bot still gets seated and misses its auctions.
 
 ## Strategy and timing
+
+The following describes the original v1.6 policy. The copied Lala mode uses its unchanged fitted leave values, completion model and auction parameters in all formats and table sizes; it retains our SDK connection, rack validation, serialized submissions and worker watchdog. Its strength comparison covers six-player Vickrey tables only. Two-player and first-price native cases establish legality and timing, not comparative strength. See [COPIED-LALA.md](COPIED-LALA.md).
 
 - Canonical anagram signatures and a trie enumerate legal words with repeated letters.
 - A greedy legal partition seeds memoized search for the best combined word reward, including unused tiles. Search uses a cooperative 95 ms deadline and a 10,000-state limit. Preprocessing also checks the deadline; interruption returns a completed legal single word or partial partition with `exact=false`. The 5 ms reserve sits below the measured 100 ms validation limit; scheduling and garbage collection can still cause overshoot.

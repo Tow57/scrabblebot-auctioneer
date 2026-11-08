@@ -12,6 +12,28 @@ export interface MatchSnapshot {
   /** Auction deadline in this process's monotonic clock domain; null until calibrated. */
   closesAtMs: number | null;
   estimatedPrice: number;
+  copiedLala?: CopiedLalaPublicContext;
+  copiedLalaRevision?: string;
+}
+
+export interface CopiedLalaPublicContext {
+  ownBotId: bigint;
+  initialOwnRack: Map<string, number>;
+  participants: { botId: bigint; balance: number; score: number }[];
+  observedAuctions: { auctionId: bigint; letter: string; winnerBotId: bigint | null; paid: number; closedAtMicros: bigint }[];
+  plays: { botId: bigint; word: string; playedAtMicros: bigint }[];
+}
+
+/** Conservation reconstructs our private initial five from committed own data. */
+export function reconstructInitialRack(ownBotId: bigint, current: Map<string, number>, auctions: CopiedLalaPublicContext["observedAuctions"], plays: CopiedLalaPublicContext["plays"]): Map<string, number> | null {
+  const result = new Map(current);
+  for (const auction of auctions) if (auction.winnerBotId === ownBotId) result.set(auction.letter, (result.get(auction.letter) ?? 0) - 1);
+  for (const play of plays) if (play.botId === ownBotId) for (const letter of play.word) result.set(letter, (result.get(letter) ?? 0) + 1);
+  for (const [letter, n] of result) {
+    if (!/^[A-Z]$/.test(letter) || !Number.isSafeInteger(n) || n < 0) return null;
+    if (n === 0) result.delete(letter);
+  }
+  return [...result.values()].reduce((sum, n) => sum + n, 0) === 5 ? result : null;
 }
 
 export interface Decision {
@@ -21,6 +43,7 @@ export interface Decision {
   elapsedMs?: number;
   roundTripMs?: number;
   queuedMs?: number;
+  policy?: string;
 }
 
 interface RowEventSource<Row> {
@@ -104,7 +127,7 @@ export function rackKey(rack: Map<string, number>): string {
 }
 
 export function snapshotKey(s: MatchSnapshot): string {
-  return `${s.matchId}/${s.auctionId}/${s.letter}/${s.myBalance}/${s.score}/${s.bagTotal}/${s.participantCount}/${s.auctionType}/${s.closesAtMs}/${s.estimatedPrice}/${rackKey(s.myRack)}`;
+  return `${s.matchId}/${s.auctionId}/${s.letter}/${s.myBalance}/${s.score}/${s.bagTotal}/${s.participantCount}/${s.auctionType}/${s.closesAtMs}/${s.estimatedPrice}/${rackKey(s.myRack)}/${s.copiedLalaRevision ?? ""}`;
 }
 
 export function estimatePrice(prices: number[]): number {

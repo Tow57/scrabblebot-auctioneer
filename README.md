@@ -1,12 +1,13 @@
 # Tow57 Auctioneer
 
-This tournament entry is an external TypeScript bot for the organizer's ScrabbleBot auction game. It uses bounded word-partition optimization, completion-aware bids, budget pacing, early liquidation, and a reconnecting client with scoped subscriptions.
+This tournament entry is an external TypeScript bot for the organizer's ScrabbleBot auction game. It includes our v1.6 rack optimizer and an opt-in copy of the MIT-licensed Lala v2.7.5 strategy, integrated with our reconnecting client and scoped subscriptions. See [strategy provenance and validation limits](bot-starter/COPIED-LALA.md).
 
 Start here: **[Windows launch and account guide](bot-starter/README.md)**. The organizer's game server is already hosted; the bot runs on your machine.
 
 ```powershell
 cd bot-starter
 ./Start-Bot.ps1 -Check
+$env:BOT_COPIED_POLICY = 'lala'
 ./Start-Bot.ps1 -BotName auctioneer
 ```
 
@@ -68,7 +69,7 @@ schedule them. Bots that finish a match just call `join_lobby()` again.
   length multiplier (1.0× ≤3 letters → 3.0× ≥7 letters). Reward goes into
   both `balance` (spendable) and `score` (ranking).
 - **Letters:** standard 98-tile Scrabble bag (no blanks). Match ends when the
-  bag empties. Tiles nobody bids on go back to the bag.
+  bag empties. The current implementation discards tiles nobody bids on.
 - **Visibility:** `Holding` and `BagLetter` are private. Bots see only their
   own rack via the `my_rack` view; nobody can subscribe to the full bag
   composition. The spectator reconstructs opponents' racks from public

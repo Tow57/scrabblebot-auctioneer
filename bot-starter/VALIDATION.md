@@ -1,5 +1,13 @@
 # Validation record — November 7, 2026
 
+## Late copied-strategy release
+
+The owner authorized a late comparison and deployment of a copied public strategy. The selected source is MIT-licensed [Lala v2.7.5](https://github.com/dhruv-1100/lala-scrabblebot/tree/a7433c7b191c30f146f4a4d593ab845d996e50da), with unchanged parameters and an optional early return after its first selected word. Enable it with `BOT_COPIED_POLICY=lala`; unset preserves the v1.6 strategy. Attribution and limits are in [COPIED-LALA.md](COPIED-LALA.md); results and the complete copied runtime closure are in [copied-lala-validation.json](copied-lala-validation.json).
+
+This release builds, passes 78 tests, and passes 12 native cases under the unchanged 95 ms compute rejection / 150 ms response watchdog (maximum 92.8631 / 94.9487 ms). The original copy failed one dense40 native case; revision02 preserves the effective first action and avoids later hypothetical work. Failed and corrected evidence remain preserved locally. The new performance revision repeated the same ten fixed six-player Vickrey scenarios, scoring 80.5 versus v1.6's 74.7, with four wins versus two. This is a quick comparison, not unseen tournament or 2300-strength proof. Independent same-family review checked all 22 copied runtime files against the qualified source and staged Git bytes.
+
+Two full live practice matches completed (47309, 47328), followed by a controlled stop/restart during 47346. The restarted client verified tournament2 entry113, resumed accepted bids and words, completed 47346, and stayed out of new practice lobbies. All three observed intervals had zero worker errors, timeouts, fallbacks, stale results and rejected actions. Deadline skips were 1, 2 and 1; cold calibration skips were 1, 0 and 4. These are recorded, not counted as a pass of the earlier five-consecutive-zero-skip gate. This is the subsequently authorized late quick-screen release, not qualification of the earlier pressure-only candidate, whose 18-pair run timed out incomplete and was never deployed. Heads-up and first-price comparative strength remain unmeasured.
+
 ## Verified foundation
 
 - Official server source and generated bindings pinned to `b5ccb36aa238ad16692f8d6af54da15ef9f11324`; SDK 2.12.0. No game module changes or publication.
@@ -126,11 +134,11 @@ The eight-sample lookahead experiment scored **341.5** versus the core's **336**
 
 ## Tournament and source release
 
-The user confirmed **November 7, 2026, 10:45 PM America/Chicago**, giving a latest code freeze of **9:15 PM**. Their supplied organizer announcement specifies **ECSW 1.315**, connection before 10:45 PM, and submission of a public GitHub repository. The announcement does not supply a tournament ID, separate registration cutoff, or repository submission destination. The service currently exposes only the old ended tournament ID 1. This bot is **not registered** for tonight. The owner has explicitly put tournament registration and all tournament submissions on hold until further instruction; finding a valid upcoming ID does not release that hold. Practice, offline testing, and read-only monitoring continue.
+The organizer's November 7 announcement confirms **10:45 PM America/Chicago**, **ECSW 1.315**, connection before the start, a public GitHub repository, and in-person attendance. The owner subsequently authorized registration for the newly opened **tournament 2** and set **10:40 PM** as the hard readiness deadline. **Tow57-Auctioneer (bot 164) is registered as entry 113**, verified from its authenticated client and the public tournament table. The public repository is https://github.com/Tow57/scrabblebot-auctioneer. No separate repository field or hand-in destination has been identified; registration and public source do not establish organizer receipt or physical attendance.
 
 The owner clarified that ScrabbleBot is a separate side event from Breakwater and its Devpost submission. This repository is for the bot alone; no Devpost entry or tournament repository hand-in has been made for it.
 
-Tournament mode registers promptly when a valid upcoming ID is configured, continues any existing practice match, and never joins another practice lobby. This deliberately improves the earlier planned sequence: the actual server accepts busy entrants and waits for their practice matches before starting round one. A proposed client-side delay was rejected during review because registration could close before the practice match ends. A live upcoming-event registration has not yet been possible.
+Tournament mode registers promptly when a valid upcoming ID is configured, continues any existing practice match, and never joins another practice lobby. The actual server accepts busy entrants and waits for their practice matches before starting round one. The live tournament-2 launch verified entry 113 and completed its existing practice match 47073 before waiting for the tournament.
 
 Do not use old ID 1 as a registration default. The source archive and Git commits exclude local credentials and dependencies. The public release repository is `Tow57/scrabblebot-auctioneer`; account credentials and CLI authentication are outside that repository.
 
@@ -144,6 +152,6 @@ The reconnect refinement received another independent same-family review. It cau
 
 The word-first worker change received a same-family review of the actual controller callers, opt-in default and legacy helper contract, with no outstanding P1/P2 findings. Its full bot suite passed 63 tests. This does not establish whole-match cache parity or a strict 100 ms wall-clock bound.
 
-Live network observations and offline timings do not prove every future request will meet a deadline or predict tournament wins. The upcoming event ID, cutoff, live registration confirmation, and organizer's repository-submission channel remain unverified. The locked upstream server test dependencies are retained; no development HTTP server is started by these checks.
+Live network observations and offline timings do not prove every future request will meet a deadline or predict tournament wins. Tournament 2 and registration are verified; a separate registration cutoff and repository-submission channel remain unconfirmed. The locked upstream server test dependencies are retained; no development HTTP server is started by these checks.
 
 Fresh bot installation reports one low-severity [esbuild Windows development-server advisory](https://github.com/advisories/GHSA-g7r4-m6w7-qqqr). The supported bot commands use TypeScript transformation and start no esbuild HTTP development server. The requested locked dependency tree is retained.

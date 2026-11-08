@@ -1,0 +1,312 @@
+{
+  "createdAtUtc": "2026-11-08T04:33:31.649Z",
+  "release": "strategy-v1.7",
+  "policy": "Lala v2.7.5 with optional firstWordOnly enabled",
+  "source": {
+    "repository": "https://github.com/dhruv-1100/lala-scrabblebot",
+    "commit": "a7433c7b191c30f146f4a4d593ab845d996e50da",
+    "license": "MIT; original license retained",
+    "parameters": "TUNED unchanged",
+    "ourClient": "Existing scoped SDK2.12/reconnect/ACK+rack serialization/150ms response watchdog"
+  },
+  "build": {
+    "command": "npm run build",
+    "exitCode": 0
+  },
+  "tests": {
+    "command": "npm test",
+    "passed": 78,
+    "failed": 0
+  },
+  "native": {
+    "cases": 12,
+    "passed": 12,
+    "failed": 0,
+    "sourceUnchanged": true,
+    "computeLimitMs": 95,
+    "responseLimitMs": 150,
+    "maxComputeMs": 92.86310000000049,
+    "maxRoundTripMs": 94.94870000000083,
+    "timeouts": 0,
+    "errors": 0
+  },
+  "comparison": {
+    "pairs": 10,
+    "seedOffsets": [
+      1700,
+      1709
+    ],
+    "seats": "i modulo6",
+    "executionOrder": "alternating AB/BA",
+    "roster": [
+      "frozen-v1",
+      "frozen-v1",
+      "frozen-v1",
+      "premium-floor",
+      "linear-face"
+    ],
+    "format": "six-player Vickrey, actual reducers, external own credentials and public history only",
+    "control": {
+      "matches": 10,
+      "meanScore": 74.7,
+      "meanPlace": 2.9,
+      "wins": 2,
+      "decisionBudgetOverruns": 0,
+      "actualWorkerCompute95Overruns": 0,
+      "maxDecisionMs": 91.1414999999979,
+      "p95DecisionMs": 39.57039999999688
+    },
+    "candidate": {
+      "matches": 10,
+      "meanScore": 80.5,
+      "meanPlace": 2.8,
+      "wins": 4,
+      "decisionBudgetOverruns": 0,
+      "actualWorkerCompute95Overruns": 0,
+      "maxDecisionMs": 19.677999999999884,
+      "p95DecisionMs": 7.195299999999406
+    },
+    "checks": {
+      "meanScoreNotLower": true,
+      "meanPlaceNotWorse": true,
+      "winsNotLower": true,
+      "zeroCopiedComputeOverruns": true,
+      "actualReducerLegality": true,
+      "sourceAndPairIntegrity": true
+    },
+    "completed": true,
+    "sourcePinsUnchanged": true,
+    "ownedCleanup": true,
+    "scope": "Same ten scenarios as revision01; verifies implementation performance correction, not new unseen strength evidence. actualWorkerCompute95Overruns in raw screen is an in-process wall-time count; native timings are separate."
+  },
+  "priorFailure": {
+    "revision": "copied01",
+    "nativePassed": 11,
+    "nativeFailed": 1,
+    "case": "dense40",
+    "roundTripMs": 135.2426000000014,
+    "error": "Generic worker error, consistent with postcompute95ms rejection",
+    "preserved": true
+  },
+  "parity": {
+    "fixtures": 12,
+    "normalFirstWordAndEffectiveBidPassed": true,
+    "fullControllerEquivalence": false,
+    "limitation": "Shorter cached word plan can reduce later cashout opportunities when subsequent worker jobs fail."
+  },
+  "review": {
+    "provenance": "Independent same-family agent",
+    "outstandingP1P2": 0,
+    "stagedRuntimeHashesMatched": 22
+  },
+  "live": {
+    "completePracticeMetrics": [
+      {
+        "matchId": "47309",
+        "controller": {
+          "evaluations": 88,
+          "fallbacks": 0,
+          "staleResults": 0,
+          "acceptedBids": 66,
+          "rejectedBids": 0,
+          "deadlineSkips": 1,
+          "uncalibratedSkips": 1,
+          "acceptedWords": 3,
+          "rejectedWords": 0,
+          "roundTripTotalMs": 618.3526999999676,
+          "roundTripMaxMs": 15.785600000002887,
+          "computeTotalMs": 567.5707000000484
+        },
+        "worker": {
+          "requested": 88,
+          "completed": 88,
+          "activeTimeouts": 0,
+          "queuedTimeouts": 0,
+          "superseded": 0,
+          "starts": 0,
+          "errors": 0,
+          "roundTripTotalMs": 613.1788000000324,
+          "computeTotalMs": 567.5707000000484
+        },
+        "eventLoopDelayMs": {
+          "mean": 27.650391137084238,
+          "p95": 32.129023,
+          "max": 123.469823
+        }
+      },
+      {
+        "matchId": "47328",
+        "controller": {
+          "evaluations": 85,
+          "fallbacks": 0,
+          "staleResults": 0,
+          "acceptedBids": 67,
+          "rejectedBids": 0,
+          "deadlineSkips": 2,
+          "uncalibratedSkips": 0,
+          "acceptedWords": 3,
+          "rejectedWords": 0,
+          "roundTripTotalMs": 339.7737000001507,
+          "roundTripMaxMs": 13.209799999996903,
+          "computeTotalMs": 296.3666999998968
+        },
+        "worker": {
+          "requested": 85,
+          "completed": 85,
+          "activeTimeouts": 0,
+          "queuedTimeouts": 0,
+          "superseded": 0,
+          "starts": 0,
+          "errors": 0,
+          "roundTripTotalMs": 335.96009999998205,
+          "computeTotalMs": 296.3666999998968
+        },
+        "eventLoopDelayMs": {
+          "mean": 27.18563230298616,
+          "p95": 32.456703,
+          "max": 84.541439
+        }
+      }
+    ],
+    "resumedMatchMetrics": [
+      {
+        "matchId": "47346",
+        "controller": {
+          "evaluations": 54,
+          "fallbacks": 0,
+          "staleResults": 0,
+          "acceptedBids": 41,
+          "rejectedBids": 0,
+          "deadlineSkips": 1,
+          "uncalibratedSkips": 4,
+          "acceptedWords": 3,
+          "rejectedWords": 0,
+          "roundTripTotalMs": 301.89750000002095,
+          "roundTripMaxMs": 32.79179999999997,
+          "computeTotalMs": 265.50930000000926
+        },
+        "worker": {
+          "requested": 54,
+          "completed": 54,
+          "activeTimeouts": 0,
+          "queuedTimeouts": 0,
+          "superseded": 0,
+          "starts": 0,
+          "errors": 0,
+          "roundTripTotalMs": 297.78939999996555,
+          "computeTotalMs": 265.50930000000926
+        },
+        "eventLoopDelayMs": {
+          "mean": 25.08479942600897,
+          "p95": 33.439743,
+          "max": 174.981119
+        }
+      }
+    ],
+    "restart": {
+      "botId": 164,
+      "tournamentId": 2,
+      "entryId": 113,
+      "authenticatedEntryVerified": true,
+      "acceptedActionAfterRestart": true
+    },
+    "strictFiveCleanMatchGatePassed": false,
+    "scope": "Late authorized quick-screen release, not the earlier pressure-only plan qualification. Two full practice matches observed before controlled restart; all deadline/calibration skips retained in these metrics. The initial portion of the resumed match is not in the new process metrics."
+  },
+  "releaseRuntimeClosure": [
+    {
+      "path": "bot-starter/src/index.ts",
+      "sha256": "258084a53f0d5e4ed13a407dfbbdfeff66b54a8fbfd01d0637a29417d793a046"
+    },
+    {
+      "path": "bot-starter/src/client.ts",
+      "sha256": "6ffd23b250e402c3488736ccde516d06d0e8b145dc4a4dd3e250a1f31eed843b"
+    },
+    {
+      "path": "bot-starter/src/strategy-worker.ts",
+      "sha256": "4832430f150ccf9cbd624039e1a270fc0c01827d06a8cd6442b54a5ab4bb19b3"
+    },
+    {
+      "path": "bot-starter/src/copied-lala-integration.test.ts",
+      "sha256": "4f892d0ecfeed367710364a26d71a3f64c868b0b82eafc12be9aeefb1442ac9b"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/adapter.ts",
+      "sha256": "f7ac684423c4db9e0d5c28f7e277202293f0e065f340fc10eef4ade269ae39e0"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/LICENSE",
+      "sha256": "b2d05d20a9872c330c3f37c582a349b15de18111169b9bc825f2fe04608e1d1b"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/wordlist.txt",
+      "sha256": "b819e7b67f8f2c80640ae76f0edbe59a4a1befb6de0f348463642ad49bdd2ad3"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/engine/dict.ts",
+      "sha256": "34cc781e096c5925813c2a4d0fec012ef606a36d31e87de35eb6bfb65e1c0586"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/engine/letters.ts",
+      "sha256": "89664fefa78d33b508d36463c89f38289e04d9bf903f8a421f108cb4ff56756a"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/engine/rng.ts",
+      "sha256": "fed939ee75955d389c5bb082832fbd30c6e5c9adf50709f6ba93559934d56eb6"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/engine/tracker.ts",
+      "sha256": "b8456aac15b83f05c2a4020ab9a54fc11e2105ac5b07ab3e886cec52d2888908"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/engine/words.ts",
+      "sha256": "866c6e2de8151496687a98ddc5de710fdb0b7d702c1c738dbb5744e693a9a9c9"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/sim/agents.ts",
+      "sha256": "d601f11c0ab5fbb02afda26cbf1cc3a37d77f960fba5d1676938116d8aa85535"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/sim/types.ts",
+      "sha256": "0ba85f3c355b02ff989591538a7dda33307718772dad7dea8417ad4cca7cca4f"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/strategy/lala.ts",
+      "sha256": "da0fed4814e44597f596cf9b1fd7712c5b37ff567116c5054b9c666d838c7523"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/strategy/leave-table-live.json",
+      "sha256": "41f1b13f06df4e6748aec4d9e6601c1a986be095e5a2cd1598474256faa8c3cd"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/strategy/leave-table.json",
+      "sha256": "b92ea433f9630bb4b19dc217c073d5cce15fb4b3ef8eebb715d7a77c0e02beca"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/strategy/params.ts",
+      "sha256": "0dd886cbb8d917ea288b9e2c2b5438ad78798ef45351f9f01d56cdbebbf22ef5"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/strategy/phase-prices-recent.json",
+      "sha256": "339ba97bcc5fa73442b2ae55f537646ff049b5f3c7b9e62973c1b357fa117e02"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/strategy/phase-prices.json",
+      "sha256": "111f2805f2bc314d20c43f781212bfcf99720e814e6c8322a573303ee8fdb3a0"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/strategy/tables.ts",
+      "sha256": "38233c99e55f6d9e1557c8b9a215ada0840f2194dcf27f67eda055cb140f3896"
+    },
+    {
+      "path": "bot-starter/src/copied-lala/strategy/value.ts",
+      "sha256": "85c6c46ac555f8aae25c090601bf6b3017f36694e4b9b191d7ea5a84ecb6b139"
+    }
+  ],
+  "limitations": [
+    "No 2300 rating or superiority to the live leaders established.",
+    "Comparative strength measured only at six-player Vickrey tables; heads-up/first-price native checks prove legality and timing, not comparative strength.",
+    "95ms is a postcompute rejection for copied engine;150ms native watchdog is the hard response safeguard.",
+    "Tournament entry and public source are verified separately; organizer receipt and in-person attendance cannot be inferred."
+  ]
+}
