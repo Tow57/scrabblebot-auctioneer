@@ -74,7 +74,7 @@ Remove-Item Env:BOT_BENCHMARK, Env:BOT_BENCHMARK_SEEDS, Env:BOT_BENCHMARK_REPORT
 
 This command reruns the historical core comparison using the actual in-memory server reducers and six external-bot credentials. It compares fixed paired seeds and rotating candidate seats against the original starter policies under the same reliable driver. The separate full-format experiment uses the current production word-first profile. Paired seeds are reproducible, but do not guarantee identical tile streams when bid patterns change RNG consumption. Offline results do not establish network reliability.
 
-See `VALIDATION.md` for executed results and remaining live checks. Optional lookahead failed its 5% score/placement/deadline gate and is absent from production. The old multiway raw-score holdout remains failed. A separate 36-pair actual-format comparison is in progress and has authorized no multiway promotion.
+See `VALIDATION.md` for executed results and their limits. Optional lookahead failed its 5% score/placement/deadline gate and is absent from production. The old multiway raw-score holdout remains failed. The separate 36-pair actual-format confirmation completed with all locked checks passing: 20 candidate crowns versus 11 control crowns, with no candidate decisions over 100 ms. Its multiway bidding refinement is included in `strategy-v1.6`, which passed 75 tests, 12 native stress cases and five consecutive full live practice matches. These results describe the tested scenarios and do not guarantee wins against the tournament field.
 
 ## Source release
 
