@@ -17,11 +17,11 @@ const rack = (letters: string) => {
   return counts;
 };
 async function withPolicyEnvironment(
-  settings: { weight?: string; capital?: string }, run: () => Promise<void>,
+  settings: { weight?: string; multiway?: string; capital?: string }, run: () => Promise<void>,
 ): Promise<void> {
-  const names = ["BOT_HEADS_UP_FACE_WEIGHT", "BOT_CAPITAL_ALLOWANCE"] as const;
+  const names = ["BOT_HEADS_UP_FACE_WEIGHT", "BOT_MULTIWAY_FACE_WEIGHT", "BOT_CAPITAL_ALLOWANCE"] as const;
   const previous = names.map(name => process.env[name]);
-  for (const [index, value] of [settings.weight, settings.capital].entries()) {
+  for (const [index, value] of [settings.weight, settings.multiway, settings.capital].entries()) {
     if (value === undefined) delete process.env[names[index]];
     else process.env[names[index]] = value;
   }
@@ -79,10 +79,11 @@ test("hard job deadline returns fallback instead of blocking the parent", async 
   assert.ok(performance.now() - started < 100, "parent did not promptly receive the timeout");
 });
 
-test("native worker defaults to the confirmed heads-up formula and preserves other formats", async t => {
+test("native worker uses separate heads-up and multiway defaults with format and terminal guards", async t => {
   await withPolicyEnvironment({}, async () => {
     const worker = new StrategyWorker();
     const original = new StrategyEngine(dictionary(), { capitalAllowance: true });
+    const configured = new StrategyEngine(dictionary(), { capitalAllowance: true, headsUpFaceBidWeight: 0.3, multiwayFaceBidWeight: 0.1, wordFirst: true });
     try {
       await worker.start();
       const latencies: number[] = [];
@@ -110,7 +111,7 @@ test("native worker defaults to the confirmed heads-up formula and preserves oth
         const base = original.decide(current);
         const decision = await worker.evaluate(current);
         assert.ok(decision);
-        assert.equal(decision.bid, base.word ? 0 : base.bid, "worker bids zero for a selected cashout word");
+        assert.equal(decision.bid, configured.decide(current).bid, "worker uses the separate multiway default and keeps terminal/FirstPrice guards");
         assert.equal(decision.word, base.word);
       }
       assert.equal(worker.stats().activeTimeouts, 0);
@@ -125,7 +126,8 @@ test("worker weight opt-out, valid override, and capital-policy opt-out retain t
       const worker = new StrategyWorker();
       const capitalAllowance = settings.capital !== "0";
       const expected = new StrategyEngine(dictionary(), {
-        capitalAllowance, headsUpFaceBidWeight: capitalAllowance ? Number(settings.weight) : 0, wordFirst: true,
+        capitalAllowance, headsUpFaceBidWeight: capitalAllowance ? Number(settings.weight) : 0,
+        multiwayFaceBidWeight: capitalAllowance ? 0.1 : 0, wordFirst: true,
       });
       try {
         await worker.start();
@@ -143,6 +145,51 @@ test("invalid heads-up weights reject native worker startup with an actionable m
     await withPolicyEnvironment({ weight }, async () => {
       const worker = new StrategyWorker();
       try { await assert.rejects(worker.start(), /BOT_HEADS_UP_FACE_WEIGHT.*finite number between 0 and 0.5/); }
+      finally { worker.stop(); }
+    });
+  }
+});
+
+test("native worker multiway default, opt-out, override and capital opt-out preserve bigint IDs and guarded formats", async () => {
+  for (const settings of [{}, { multiway: "0" }, { multiway: "0.5" }, { weight: "0.5", multiway: "0.5", capital: "0" }]) {
+    await withPolicyEnvironment(settings, async () => {
+      const worker = new StrategyWorker();
+      const capitalAllowance = settings.capital !== "0";
+      const expected = new StrategyEngine(dictionary(), {
+        capitalAllowance, headsUpFaceBidWeight: capitalAllowance ? Number(settings.weight ?? "0.3") : 0,
+        multiwayFaceBidWeight: capitalAllowance ? Number(settings.multiway ?? "0.1") : 0, wordFirst: true,
+      });
+      try {
+        await worker.start();
+        const cases = [
+          { participantCount: 2, auctionType: "Vickrey" as const, bagTotal: 60 },
+          { participantCount: 3, auctionType: "Vickrey" as const, bagTotal: 60 },
+          { participantCount: 6, auctionType: "Vickrey" as const, bagTotal: 60 },
+          { participantCount: 6, auctionType: "FirstPrice" as const, bagTotal: 60 },
+          { participantCount: 6, auctionType: "Vickrey" as const, bagTotal: 1 },
+          { participantCount: 6, auctionType: "Vickrey" as const, bagTotal: 0 },
+        ];
+        for (const [i, extra] of cases.entries()) {
+          const current = { ...snapshot(), auctionId: snapshot().auctionId! + BigInt(i), myRack: rack("UA"), letter: "Q", myBalance: 100, ...extra };
+          const decision = await worker.evaluate(current);
+          assert.ok(decision, "each response must match its bigint match/auction IDs and arrive within the existing worker budget");
+          assert.equal(decision.bid, expected.decide(current).bid);
+          assert.ok(Number.isInteger(decision.bid) && decision.bid >= 0 && decision.bid <= current.myBalance);
+        }
+        const cashout = { ...snapshot(), auctionId: 9007199254741009n, participantCount: 6 };
+        const word = await worker.evaluate(cashout);
+        assert.ok(word?.word); assert.equal(word.bid, 0);
+        assert.equal(worker.stats().activeTimeouts, 0);
+      } finally { worker.stop(); }
+    });
+  }
+});
+
+test("invalid multiway weights fail native startup before any gameplay", async () => {
+  for (const multiway of ["-0.01", "0.5001", "NaN", "Infinity", "", "not-a-number"]) {
+    await withPolicyEnvironment({ multiway }, async () => {
+      const worker = new StrategyWorker();
+      try { await assert.rejects(worker.start(), /BOT_MULTIWAY_FACE_WEIGHT.*finite number between 0 and 0.5/); }
       finally { worker.stop(); }
     });
   }

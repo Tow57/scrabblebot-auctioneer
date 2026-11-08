@@ -204,6 +204,78 @@ test("heads-up weighting retains affordability, one-point bids, no-junk gating, 
   }
 });
 
+test("multiway face weight implements the locked B transform only on eligible bids", () => {
+  const index = new DictionaryIndex(["AT", "QAT", "CAT", "HAT", "KITE", "QUA", "READING"]);
+  const common = { capitalAllowance: true, headsUpFaceBidWeight: 0.3, wordFirst: true };
+  const stable = ({ elapsedMs: _elapsedMs, ...decision }: StrategyDecision) => decision;
+  for (const participantCount of [1, 2, 3, 4, 5, 6, NaN]) {
+    for (const auctionType of ["Vickrey", "FirstPrice"] as const) for (const bagTotal of [60, 1, 0]) {
+      const snapshot = context("AT", { letter: "Q", participantCount, auctionType, bagTotal, estimatedPrice: 8 });
+      const base = new StrategyEngine(index, common).decide(snapshot);
+      const actual = new StrategyEngine(index, { ...common, multiwayFaceBidWeight: 0.1 }).decide(snapshot);
+      const eligible = participantCount >= 3 && auctionType === "Vickrey" && bagTotal > 1 && base.bid > 0;
+      const expected = eligible ? Math.min(100, Math.ceil(base.bid * 1.9)) : base.bid;
+      assert.deepEqual(stable(actual), { ...stable(base), bid: expected });
+      assert.deepEqual(stable(new StrategyEngine(index, { ...common, multiwayFaceBidWeight: 0 }).decide(snapshot)), stable(base));
+    }
+  }
+  const snapshot = context("AT", { letter: "Q", participantCount: 6, bagTotal: 60, estimatedPrice: 8 });
+  assert.equal(new StrategyEngine(index, common).decide(snapshot).bid, 20);
+  assert.equal(new StrategyEngine(index, { ...common, multiwayFaceBidWeight: 0.1 }).decide(snapshot).bid, 38);
+  const helper = { ...snapshot, dictionary: ["AT", "QAT"] };
+  assert.equal(decideBid(helper), 13, "legacy bid-only helper keeps its original zero-weight default");
+  for (const bagTotal of [1, 0]) {
+    const terminal = context("ITE", { letter: "K", participantCount: 6, bagTotal });
+    const decision = new StrategyEngine(index, { ...common, multiwayFaceBidWeight: 0.1 }).decide(terminal);
+    assert.equal(decision.word, null);
+    assert.equal(decision.bid, bagTotal === 1 ? 100 : 0, "last usable purchase and final unplayable tile retain their prior behavior");
+  }
+});
+
+test("multiway weights retain affordability, no-value and word-first guards and reject invalid options", () => {
+  const index = new DictionaryIndex(["AT", "QAT", "CAT", "READING"]);
+  const base = { capitalAllowance: true, headsUpFaceBidWeight: 0.3, wordFirst: true };
+  for (const myBalance of [100, 2.9, 0, -1, NaN]) {
+    const snapshot = context("AT", { letter: "Q", participantCount: 6, bagTotal: 60, estimatedPrice: 8, myBalance });
+    const decision = new StrategyEngine(index, { ...base, multiwayFaceBidWeight: 0.5 }).decide(snapshot);
+    const balance = Number.isFinite(myBalance) ? Math.max(0, Math.floor(myBalance)) : 0;
+    assert.ok(Number.isInteger(decision.bid) && decision.bid >= 0 && decision.bid <= balance);
+  }
+  const weighted = new StrategyEngine(index, { ...base, multiwayFaceBidWeight: 0.5 });
+  for (const letter of ["Z", "?", "q"]) assert.equal(weighted.decide(context("A", { letter, participantCount: 6 })).bid, 0);
+  const onePoint = context("CT", { letter: "A", participantCount: 6 });
+  assert.equal(weighted.decide(onePoint).bid, new StrategyEngine(index, base).decide(onePoint).bid);
+  const word = weighted.decide(context("READINGAT", { letter: "Q", participantCount: 6, bagTotal: 60 }));
+  assert.equal(word.word, "READING"); assert.equal(word.bid, 0);
+  for (const weight of [-1, -0.01, 0.5001, NaN, Infinity, -Infinity]) {
+    assert.throws(() => new StrategyEngine(index, { multiwayFaceBidWeight: weight }), /Multiway face bid weight.*finite number between 0 and 0.5/);
+  }
+});
+
+test("multiway transform adds no optimizer or completion calls and preserves word-first work avoidance", () => {
+  const index = new DictionaryIndex(["AT", "QAT", "READING"]);
+  function measure(weight: number, letters: string) {
+    const engine = new StrategyEngine(index, { capitalAllowance: true, headsUpFaceBidWeight: 0.3, multiwayFaceBidWeight: weight, wordFirst: true });
+    const optimize = engine.optimizer.optimize.bind(engine.optimizer), completion = index.completionValue;
+    let calls = 0, states = 0, completions = 0;
+    engine.optimizer.optimize = (...args) => { const result = optimize(...args); calls++; states += result.states; assert.equal(result.exact, true); return result; };
+    index.completionValue = (...args) => { completions++; return completion.apply(index, args); };
+    const snapshot = context(letters, { letter: "Q", participantCount: 6, bagTotal: 60, estimatedPrice: 8 });
+    const before = [...snapshot.myRack];
+    try {
+      const decision = engine.decide(snapshot);
+      assert.deepEqual([...snapshot.myRack], before);
+      return { decision, calls, states, completions };
+    } finally { index.completionValue = completion; }
+  }
+  const base = measure(0, "AT"), boosted = measure(0.1, "AT");
+  assert.equal(base.calls, 2); assert.equal(base.completions, 1);
+  assert.equal(boosted.calls, base.calls); assert.equal(boosted.states, base.states); assert.equal(boosted.completions, base.completions);
+  assert.deepEqual(boosted.decision.plan, base.decision.plan); assert.equal(boosted.decision.cashout, base.decision.cashout);
+  const cashout = measure(0.1, "READINGAT");
+  assert.equal(cashout.decision.bid, 0); assert.equal(cashout.calls, 1); assert.equal(cashout.completions, 0);
+});
+
 test("extra search progress without the offered tile never triggers a terminal all-in", () => {
   const engine = new StrategyEngine(["AXE", "AX", "EL"]);
   let calls = 0;

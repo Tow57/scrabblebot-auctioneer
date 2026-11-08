@@ -11,10 +11,17 @@ const headsUpFaceBidWeight = configuredWeight === undefined ? 0.3
 if (!Number.isFinite(headsUpFaceBidWeight) || headsUpFaceBidWeight < 0 || headsUpFaceBidWeight > 0.5) {
   throw new Error("BOT_HEADS_UP_FACE_WEIGHT must be a finite number between 0 and 0.5");
 }
+const configuredMultiwayWeight = process.env.BOT_MULTIWAY_FACE_WEIGHT;
+const multiwayFaceBidWeight = configuredMultiwayWeight === undefined ? 0.1
+  : configuredMultiwayWeight.trim() === "" ? NaN : Number(configuredMultiwayWeight);
+if (!Number.isFinite(multiwayFaceBidWeight) || multiwayFaceBidWeight < 0 || multiwayFaceBidWeight > 0.5) {
+  throw new Error("BOT_MULTIWAY_FACE_WEIGHT must be a finite number between 0 and 0.5");
+}
 const capitalAllowance = process.env.BOT_CAPITAL_ALLOWANCE !== "0";
 const engine = new StrategyEngine(loadDictionary(workerData?.dictionaryPath), {
   capitalAllowance,
   headsUpFaceBidWeight: capitalAllowance ? headsUpFaceBidWeight : 0,
+  multiwayFaceBidWeight: capitalAllowance ? multiwayFaceBidWeight : 0,
   wordFirst: true,
 });
 parentPort.on("message", (request: { id: number; snapshot: MatchSnapshot }) => {

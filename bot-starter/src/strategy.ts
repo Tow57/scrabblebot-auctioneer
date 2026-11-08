@@ -47,6 +47,8 @@ export interface StrategyOptions {
   capitalAllowance?: boolean;
   /** Only two-player Vickrey matches; zero preserves the original policy. */
   headsUpFaceBidWeight?: number;
+  /** Only tables with at least three participants in Vickrey matches. Default zero. */
+  multiwayFaceBidWeight?: number;
   /** Opt-in for drivers that cash the selected word before placing a new bid. */
   wordFirst?: boolean;
 }
@@ -56,6 +58,7 @@ export class StrategyEngine {
   readonly dictionary: DictionaryIndex;
   readonly optimizer: RackOptimizer;
   private readonly headsUpFaceBidWeight: number;
+  private readonly multiwayFaceBidWeight: number;
 
   constructor(words: readonly string[] | DictionaryIndex, private readonly options: StrategyOptions = {}) {
     const weight = options.headsUpFaceBidWeight ?? 0;
@@ -63,6 +66,11 @@ export class StrategyEngine {
       throw new Error("Heads-up face bid weight must be a finite number between 0 and 0.5");
     }
     this.headsUpFaceBidWeight = weight;
+    const multiwayWeight = options.multiwayFaceBidWeight ?? 0;
+    if (!Number.isFinite(multiwayWeight) || multiwayWeight < 0 || multiwayWeight > 0.5) {
+      throw new Error("Multiway face bid weight must be a finite number between 0 and 0.5");
+    }
+    this.multiwayFaceBidWeight = multiwayWeight;
     this.dictionary = words instanceof DictionaryIndex ? words : new DictionaryIndex(words);
     this.optimizer = new RackOptimizer(this.dictionary);
   }
@@ -123,6 +131,10 @@ export class StrategyEngine {
     if (this.headsUpFaceBidWeight > 0 && ctx.participantCount === 2 && ctx.auctionType === "Vickrey"
       && bagTotal > 1 && bid > 0 && /^[A-Z]$/.test(ctx.letter)) {
       bid = Math.min(balance, Math.ceil(bid * (1 + this.headsUpFaceBidWeight * (LETTER_VALUE[ctx.letter] - 1))));
+    }
+    if (this.multiwayFaceBidWeight > 0 && ctx.participantCount >= 3 && ctx.auctionType === "Vickrey"
+      && bagTotal > 1 && bid > 0 && /^[A-Z]$/.test(ctx.letter)) {
+      bid = Math.min(balance, Math.ceil(bid * (1 + this.multiwayFaceBidWeight * (LETTER_VALUE[ctx.letter] - 1))));
     }
     return { bid, word, plan, cashout: current.score, exact: current.exact, elapsedMs: performance.now() - start };
   }
