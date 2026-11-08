@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "status": "qualified-for-confirmation-03",
+  "generatedAt": "2026-11-08T01:09:23.404Z",
+  "productionCommit": "e564082f7248f14cec4562495d0d88c552125265",
+  "profile": {
+    "capitalAllowance": true,
+    "headsUpFaceBidWeight": 0.3,
+    "wordFirst": true,
+    "multiwayFaceBidWeight": 0,
+    "computeBudgetMs": 95,
+    "workerResponseBudgetMs": 150
+  },
+  "sourceHashes": {
+    "tournament-format-benchmark.test.ts": "54fdcd9cc48f433ec17e2615d67fac8dd652b887b1f9b62811fe644b62e3e268",
+    "harness.ts": "a6d9c937d480b3f23dc14ed486688c6d2e11459dc0cb7fc6e750c1eed3eee3b2",
+    "fixtures/v1/strategy.ts": "42c7a7ce4b4e98ff2ed0fd718141ae1581c26c090302774972553dcf0fe21735",
+    "fixtures/v1/dictionary.ts": "0c7cc180a3e75b44d5d67d1debbcd92026f16045b541494a281fce8caf1b36f6",
+    "fixtures/v1/optimizer.ts": "fa516d58a7621f798a9315267138133b1568e2d26d1229332a9728d80cacb6f2",
+    "fixtures/opponent-policies.ts": "8e1ca664c507888016788f533dae44f1e9645c4a9f635b2bbe9733270eabe53e",
+    "fixtures/public-opponent-policies.ts": "fedf0fb5ae264a7970231502ccecd8589b8252b0373ddfc80fca93f8c12d1bd6",
+    "fixtures/face-bid-ablation.ts": "8f2abfe10314a16697bceab0cdf3b104641869e5eca83ee607b9c32dcb0606d9",
+    "../index.ts": "be9469999604a1aa07ba0bfbfee2748d541058dbdb7eeb72f1bc9fd2eae95629",
+    "../schema.ts": "67aa898efa43351fc0f19669e21ded132387d560f66e437305c09e7bc11d9334",
+    "../game.ts": "bf851825e9852289c836de33fc61543aa14be6c4b6e5e86abecfe5562413e184",
+    "../tournament.ts": "e82e5c2b108cab3acbcd50d74b6f12491d1bb82759997fd0e618b80f6edc06f6",
+    "../letters.ts": "102784fcfe2ce0fca2daa9d9e93ed93ebd4157f4b30b663128fa52cf27fcd630",
+    "../dictionary.ts": "316c509912dc45b75da83fe22c4e816231745f41790a734ea1edec38ab84b654",
+    "../text.ts": "7fee61325305530ace42fb7e5d5e376cf6141ec20bc3ccce8d7ae53832c8cffe",
+    "../identity.ts": "b8cd91e1d06ec4bf4e43d64d050c82accc9d7d9240cd4c8380f9a65a6606b494",
+    "../ratings.ts": "2ef90f86befede99444063702298763d6782bdee9ca8d460e06adf059ca43cf2",
+    "../libm.ts": "d1c77660e22b9ef82f92ad873bdab8de1954f3552f2b1a6ab403d3cf1b17a1bd",
+    "../lobby.ts": "7c3e5b0575c8ca6be810a990acdca99f4cf1c73dc9549eb45a16eb7570484b95",
+    "../../wordlist.txt": "b819e7b67f8f2c80640ae76f0edbe59a4a1befb6de0f348463642ad49bdd2ad3",
+    "../../package.json": "cd270bd6dc294cf5bb30849e74a31bda0063a8f5abdf5af712fb72758746c8e6",
+    "../../package-lock.json": "f337cb3dd7022613d8acf29c8da2bc01ba3028271fcc64603eddbfb79113f7f8",
+    "../../tsconfig.json": "04c211f300d2acea97ce7166e480cc23fffc5f7190b02b217ba02050473b26d0",
+    "../../vitest.config.ts": "fd9e8c0225d08888765a8b34a35dc5a99a5d26da7d5cbeac995a6d00d286d8a2",
+    "../../../bot-starter/src/strategy.ts": "df8977b3e714e8ea531bdded50fa6231a1a594c7029326b81dc4b029e07c2eb7",
+    "../../../bot-starter/src/dictionary.ts": "afa202c8045018c9b13b85d483bd713f6cc83470991e1330e9c2ea928e815248",
+    "../../../bot-starter/src/optimizer.ts": "ec0bc8fc703fae02f817d9ccbe80bcc4ddc052179cdf514ff03c5faf410af7b3",
+    "../../../bot-starter/src/strategy-worker.ts": "a054f5268a94f238f8e7ed14ea0b706d40d985c6a841b12466ab27dbbbe2c7f2"
+  },
+  "build": {
+    "exitCode": 0,
+    "sessionId": 44376
+  },
+  "fullBotTests": {
+    "exitCode": 0,
+    "passed": 70,
+    "sessionId": 44376
+  },
+  "focusedProof": {
+    "exitCode": 0,
+    "passed": 9,
+    "receiptPath": "C:\\Users\\lucas\\Documents\\Codex\\2026-11-07\\what\\work\\refinement\\preprocessing-budget-prototype-02\\proposal-receipt.json",
+    "portableRegressionsPassed": 7
+  },
+  "native": {
+    "reportPath": "C:\\Users\\lucas\\Documents\\Codex\\2026-11-07\\what\\work\\refinement\\native-rack-stress-timing-core-01.json",
+    "reportSha256": "143170f29bb4ca40b70e838cb61c5decbb50bfb7c28395922c807d13e18e73b2",
+    "responses": 12,
+    "timeouts": 0,
+    "errors": 0,
+    "responseBudgetMs": 150,
+    "sessionId": 8386
+  },
+  "independentReview": {
+    "clear": true,
+    "reviewer": "starter_audit",
+    "family": "Separate agent in the same model family; not an independent model-family evaluation"
+  },
+  "live": {
+    "sessionId": 13730,
+    "status": "Practice soak beginning; not a prerequisite or completed-live claim"
+  },
+  "limitations": "Correctness/native qualification for the common timing base only. Interrupted plans may differ. No absolute physical100ms guarantee or strength promotion. Failed02 remains failed; fresh03 actual100ms guard unchanged.",
+  "tournamentSubmissionHold": true
+}

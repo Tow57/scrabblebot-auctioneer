@@ -1,0 +1,1595 @@
+{
+  "generatedAt": "2026-11-08T01:00:59.286Z",
+  "experiment": "full-format-confirmation-02",
+  "purpose": "Post-run descriptive stage diagnosis after the locked evaluator; no parameter proposal, tuning or promotion.",
+  "completion": {
+    "terminal": {
+      "startedAt": "2026-11-07T23:49:20.249Z",
+      "endedAt": "2026-11-08T00:59:42.860Z",
+      "exitCode": 0,
+      "signal": null,
+      "cleanPass": true
+    },
+    "pairs": 36,
+    "reportSha256": "c64438949a86f1a1d36e6118e21a569b525d369c36d28567de50db52dd9bed7b",
+    "manifestSha256": "696765cf17e83662df68b61e95a364653ef2cc5ea0cbc65be98a2dc08d4901dd",
+    "gateSha256": "2e67b828289b8bc2d15ca51a81e9848b3e5de53f6ceea2b83c8b63ace56b3d14"
+  },
+  "lockedGate": {
+    "checks": {
+      "crownRateIncreased": true,
+      "exactPairedCrownP": true,
+      "observedTopCutNoWorse": true,
+      "observedMeanSwissRankNoWorse": true,
+      "zeroCandidateBudgetOverruns": false,
+      "cleanRunnerExit": true
+    },
+    "pairedCrowns": {
+      "improved": 14,
+      "regressed": 3,
+      "discordant": 17,
+      "oneSidedExactP": 0.0063629150390625
+    },
+    "qualifiedForMultiwayIntegration": false,
+    "productionPromotionAuthorized": false,
+    "scope": "Fixed roster actual-format confirmation only. Prior combined-score gate remains failed; deployment also requires independent production/native/live validation."
+  },
+  "outcomes": {
+    "A": {
+      "tournaments": 36,
+      "qualifications": 19,
+      "topCutRate": 0.5277777777777778,
+      "crowns": 9,
+      "crownRate": 0.25,
+      "meanSwissRank": 6.138888888888889,
+      "meanSwissPoints": 16.333333333333332,
+      "meanSwissScore": 326.1666666666667,
+      "meanTournamentScore": 754,
+      "meanDerivedOverallPlace": 5.75,
+      "outcomes": {
+        "Swiss-cut": 17,
+        "Crowned": 9,
+        "Final-runner-up": 1,
+        "Eliminated-Bracket-N3": 5,
+        "Eliminated-Bracket-N5": 3,
+        "Eliminated-Bracket-N6": 1
+      }
+    },
+    "B": {
+      "tournaments": 36,
+      "qualifications": 31,
+      "topCutRate": 0.8611111111111112,
+      "crowns": 20,
+      "crownRate": 0.5555555555555556,
+      "meanSwissRank": 3.4444444444444446,
+      "meanSwissPoints": 18.583333333333332,
+      "meanSwissScore": 333.19444444444446,
+      "meanTournamentScore": 1230.25,
+      "meanDerivedOverallPlace": 3.111111111111111,
+      "outcomes": {
+        "Eliminated-Bracket-N6": 3,
+        "Eliminated-Bracket-N5": 2,
+        "Crowned": 20,
+        "Eliminated-Bracket-N3": 1,
+        "Swiss-cut": 5,
+        "Eliminated-Bracket-N4": 3,
+        "Final-runner-up": 2
+      }
+    },
+    "qualificationDiscordance": {
+      "BOnly": 12,
+      "AOnly": 0,
+      "both": 19,
+      "neither": 5
+    },
+    "crownDiscordance": {
+      "BOnly": 14,
+      "AOnly": 3,
+      "both": 6,
+      "neither": 13
+    }
+  },
+  "measuredByActualStage": {
+    "Swiss-N6": {
+      "A": {
+        "reachedTournaments": 36,
+        "reachRateOfAll36": 1,
+        "advancedToNextStage": 19,
+        "advancementRateConditionalOnReaching": 0.5277777777777778,
+        "crownsAmongReached": 9,
+        "measuredMatches": 144,
+        "meanScore": 81.54166666666667,
+        "meanSharedPlace": 2.9166666666666665,
+        "sharedFirstMatchRate": 0.2569444444444444,
+        "meanEndBalance": 9.86111111111111,
+        "meanSpent": 171.68055555555554,
+        "meanWordCount": 3.5902777777777777,
+        "firstCashoutObservedMatches": 144,
+        "meanFirstCashoutSecondsConditionalOnCashout": 19.368055555555557,
+        "noCashoutMatches": 0,
+        "timing": {
+          "recordedMatchRows": 144,
+          "decisions": 10309,
+          "decisionBudgetOverruns": 0,
+          "maxDecisionMs": 82.78260000003502
+        }
+      },
+      "B": {
+        "reachedTournaments": 36,
+        "reachRateOfAll36": 1,
+        "advancedToNextStage": 31,
+        "advancementRateConditionalOnReaching": 0.8611111111111112,
+        "crownsAmongReached": 20,
+        "measuredMatches": 144,
+        "meanScore": 83.29861111111111,
+        "meanSharedPlace": 2.3541666666666665,
+        "sharedFirstMatchRate": 0.3333333333333333,
+        "meanEndBalance": 8.51388888888889,
+        "meanSpent": 174.78472222222223,
+        "meanWordCount": 3.5,
+        "firstCashoutObservedMatches": 144,
+        "meanFirstCashoutSecondsConditionalOnCashout": 19.694444444444443,
+        "noCashoutMatches": 0,
+        "timing": {
+          "recordedMatchRows": 144,
+          "decisions": 10296,
+          "decisionBudgetOverruns": 4,
+          "maxDecisionMs": 100.11840000003576
+        }
+      }
+    },
+    "Bracket-N6": {
+      "A": {
+        "reachedTournaments": 19,
+        "reachRateOfAll36": 0.5277777777777778,
+        "advancedToNextStage": 18,
+        "advancementRateConditionalOnReaching": 0.9473684210526315,
+        "crownsAmongReached": 9,
+        "measuredMatches": 19,
+        "meanScore": 76.52631578947368,
+        "meanSharedPlace": 3.0526315789473686,
+        "sharedFirstMatchRate": 0.2631578947368421,
+        "meanEndBalance": 13.947368421052632,
+        "meanSpent": 162.57894736842104,
+        "meanWordCount": 3.1052631578947367,
+        "firstCashoutObservedMatches": 19,
+        "meanFirstCashoutSecondsConditionalOnCashout": 18.42105263157895,
+        "noCashoutMatches": 0,
+        "timing": {
+          "recordedMatchRows": 19,
+          "decisions": 1351,
+          "decisionBudgetOverruns": 0,
+          "maxDecisionMs": 90.01539999991655
+        }
+      },
+      "B": {
+        "reachedTournaments": 31,
+        "reachRateOfAll36": 0.8611111111111112,
+        "advancedToNextStage": 28,
+        "advancementRateConditionalOnReaching": 0.9032258064516129,
+        "crownsAmongReached": 20,
+        "measuredMatches": 31,
+        "meanScore": 81.54838709677419,
+        "meanSharedPlace": 2.6774193548387095,
+        "sharedFirstMatchRate": 0.41935483870967744,
+        "meanEndBalance": 10.870967741935484,
+        "meanSpent": 170.67741935483872,
+        "meanWordCount": 3.129032258064516,
+        "firstCashoutObservedMatches": 31,
+        "meanFirstCashoutSecondsConditionalOnCashout": 17.225806451612904,
+        "noCashoutMatches": 0,
+        "timing": {
+          "recordedMatchRows": 31,
+          "decisions": 2205,
+          "decisionBudgetOverruns": 1,
+          "maxDecisionMs": 100.75840000016615
+        }
+      }
+    },
+    "Bracket-N5": {
+      "A": {
+        "reachedTournaments": 18,
+        "reachRateOfAll36": 0.5,
+        "advancedToNextStage": 15,
+        "advancementRateConditionalOnReaching": 0.8333333333333334,
+        "crownsAmongReached": 9,
+        "measuredMatches": 18,
+        "meanScore": 93.72222222222223,
+        "meanSharedPlace": 2.6666666666666665,
+        "sharedFirstMatchRate": 0.3333333333333333,
+        "meanEndBalance": 10.666666666666666,
+        "meanSpent": 183.05555555555554,
+        "meanWordCount": 3.6666666666666665,
+        "firstCashoutObservedMatches": 18,
+        "meanFirstCashoutSecondsConditionalOnCashout": 18.444444444444443,
+        "noCashoutMatches": 0,
+        "timing": {
+          "recordedMatchRows": 18,
+          "decisions": 1380,
+          "decisionBudgetOverruns": 1,
+          "maxDecisionMs": 100.05380000034347
+        }
+      },
+      "B": {
+        "reachedTournaments": 28,
+        "reachRateOfAll36": 0.7777777777777778,
+        "advancedToNextStage": 26,
+        "advancementRateConditionalOnReaching": 0.9285714285714286,
+        "crownsAmongReached": 20,
+        "measuredMatches": 28,
+        "meanScore": 100.10714285714286,
+        "meanSharedPlace": 2.142857142857143,
+        "sharedFirstMatchRate": 0.39285714285714285,
+        "meanEndBalance": 7.678571428571429,
+        "meanSpent": 192.42857142857142,
+        "meanWordCount": 3.8214285714285716,
+        "firstCashoutObservedMatches": 28,
+        "meanFirstCashoutSecondsConditionalOnCashout": 13.142857142857142,
+        "noCashoutMatches": 0,
+        "timing": {
+          "recordedMatchRows": 28,
+          "decisions": 2151,
+          "decisionBudgetOverruns": 7,
+          "maxDecisionMs": 100.75009999983013
+        }
+      }
+    },
+    "Bracket-N4": {
+      "A": {
+        "reachedTournaments": 15,
+        "reachRateOfAll36": 0.4166666666666667,
+        "advancedToNextStage": 15,
+        "advancementRateConditionalOnReaching": 1,
+        "crownsAmongReached": 9,
+        "measuredMatches": 15,
+        "meanScore": 122,
+        "meanSharedPlace": 1.9333333333333333,
+        "sharedFirstMatchRate": 0.3333333333333333,
+        "meanEndBalance": 11.266666666666667,
+        "meanSpent": 210.73333333333332,
+        "meanWordCount": 4.4,
+        "firstCashoutObservedMatches": 15,
+        "meanFirstCashoutSecondsConditionalOnCashout": 15.733333333333333,
+        "noCashoutMatches": 0,
+        "timing": {
+          "recordedMatchRows": 15,
+          "decisions": 1236,
+          "decisionBudgetOverruns": 0,
+          "maxDecisionMs": 61.29949999996461
+        }
+      },
+      "B": {
+        "reachedTournaments": 26,
+        "reachRateOfAll36": 0.7222222222222222,
+        "advancedToNextStage": 23,
+        "advancementRateConditionalOnReaching": 0.8846153846153846,
+        "crownsAmongReached": 20,
+        "measuredMatches": 26,
+        "meanScore": 121.88461538461539,
+        "meanSharedPlace": 2.0384615384615383,
+        "sharedFirstMatchRate": 0.5,
+        "meanEndBalance": 6.615384615384615,
+        "meanSpent": 215.26923076923077,
+        "meanWordCount": 4.538461538461538,
+        "firstCashoutObservedMatches": 26,
+        "meanFirstCashoutSecondsConditionalOnCashout": 14.23076923076923,
+        "noCashoutMatches": 0,
+        "timing": {
+          "recordedMatchRows": 26,
+          "decisions": 2146,
+          "decisionBudgetOverruns": 0,
+          "maxDecisionMs": 76.64119999948889
+        }
+      }
+    },
+    "Bracket-N3": {
+      "A": {
+        "reachedTournaments": 15,
+        "reachRateOfAll36": 0.4166666666666667,
+        "advancedToNextStage": 10,
+        "advancementRateConditionalOnReaching": 0.6666666666666666,
+        "crownsAmongReached": 9,
+        "measuredMatches": 15,
+        "meanScore": 132.2,
+        "meanSharedPlace": 2.2,
+        "sharedFirstMatchRate": 0.13333333333333333,
+        "meanEndBalance": 6.866666666666666,
+        "meanSpent": 225.33333333333334,
+        "meanWordCount": 5.4,
+        "firstCashoutObservedMatches": 15,
+        "meanFirstCashoutSecondsConditionalOnCashout": 12.733333333333333,
+        "noCashoutMatches": 0,
+        "timing": {
+          "recordedMatchRows": 15,
+          "decisions": 1326,
+          "decisionBudgetOverruns": 0,
+          "maxDecisionMs": 73.94499999983236
+        }
+      },
+      "B": {
+        "reachedTournaments": 23,
+        "reachRateOfAll36": 0.6388888888888888,
+        "advancedToNextStage": 22,
+        "advancementRateConditionalOnReaching": 0.9565217391304348,
+        "crownsAmongReached": 20,
+        "measuredMatches": 23,
+        "meanScore": 183.08695652173913,
+        "meanSharedPlace": 1.391304347826087,
+        "sharedFirstMatchRate": 0.6521739130434783,
+        "meanEndBalance": 5.260869565217392,
+        "meanSpent": 277.82608695652175,
+        "meanWordCount": 6.217391304347826,
+        "firstCashoutObservedMatches": 23,
+        "meanFirstCashoutSecondsConditionalOnCashout": 9.695652173913043,
+        "noCashoutMatches": 0,
+        "timing": {
+          "recordedMatchRows": 23,
+          "decisions": 2052,
+          "decisionBudgetOverruns": 0,
+          "maxDecisionMs": 91.66929999995045
+        }
+      }
+    },
+    "Final-N2": {
+      "A": {
+        "reachedTournaments": 10,
+        "reachRateOfAll36": 0.2777777777777778,
+        "advancedToNextStage": null,
+        "advancementRateConditionalOnReaching": null,
+        "crownsAmongReached": 9,
+        "measuredMatches": 30,
+        "meanScore": 281.6,
+        "meanSharedPlace": 1.1666666666666667,
+        "sharedFirstMatchRate": 0.8333333333333334,
+        "meanEndBalance": 12.466666666666667,
+        "meanSpent": 369.1333333333333,
+        "meanWordCount": 9.6,
+        "firstCashoutObservedMatches": 30,
+        "meanFirstCashoutSecondsConditionalOnCashout": 7.266666666666667,
+        "noCashoutMatches": 0,
+        "timing": {
+          "recordedMatchRows": 30,
+          "decisions": 2928,
+          "decisionBudgetOverruns": 1,
+          "maxDecisionMs": 100.2139999999199
+        }
+      },
+      "B": {
+        "reachedTournaments": 22,
+        "reachRateOfAll36": 0.6111111111111112,
+        "advancedToNextStage": null,
+        "advancementRateConditionalOnReaching": null,
+        "crownsAmongReached": 20,
+        "measuredMatches": 66,
+        "meanScore": 296.7121212121212,
+        "meanSharedPlace": 1.1666666666666667,
+        "sharedFirstMatchRate": 0.8333333333333334,
+        "meanEndBalance": 11.287878787878787,
+        "meanSpent": 385.42424242424244,
+        "meanWordCount": 9.56060606060606,
+        "firstCashoutObservedMatches": 66,
+        "meanFirstCashoutSecondsConditionalOnCashout": 6.666666666666667,
+        "noCashoutMatches": 0,
+        "timing": {
+          "recordedMatchRows": 66,
+          "decisions": 6439,
+          "decisionBudgetOverruns": 0,
+          "maxDecisionMs": 97.47059999988414
+        }
+      }
+    }
+  },
+  "actualEliminationOrCrown": {
+    "A": {
+      "Swiss-cut": {
+        "tournaments": 17,
+        "seeds": [
+          7929001,
+          7944839,
+          7968596,
+          7984434,
+          8000272,
+          8008191,
+          8039867,
+          8047786,
+          8055705,
+          8071543,
+          8095300,
+          8103219,
+          8111138,
+          8134895,
+          8158652,
+          8166571,
+          8174490
+        ],
+        "serverFinalFinishPositions": {
+          "null": 17
+        },
+        "meanSwissRank": 9.411764705882353,
+        "meanFinalAggregateScoreIfRecorded": null,
+        "lastMeasuredMatch": {
+          "measuredMatches": 17,
+          "meanScore": 66.3529411764706,
+          "meanSharedPlace": 3.8823529411764706,
+          "sharedFirstMatchRate": 0.058823529411764705,
+          "meanEndBalance": 8.470588235294118,
+          "meanSpent": 157.88235294117646,
+          "meanWordCount": 3.588235294117647,
+          "firstCashoutObservedMatches": 17,
+          "meanFirstCashoutSecondsConditionalOnCashout": 16.705882352941178,
+          "noCashoutMatches": 0,
+          "timing": {
+            "recordedMatchRows": 17,
+            "decisions": 1217,
+            "decisionBudgetOverruns": 0,
+            "maxDecisionMs": 54.26240000000689
+          }
+        }
+      },
+      "Crowned": {
+        "tournaments": 9,
+        "seeds": [
+          7936920,
+          7952758,
+          7960677,
+          8024029,
+          8063624,
+          8087381,
+          8119057,
+          8150733,
+          8206166
+        ],
+        "serverFinalFinishPositions": {
+          "1": 9
+        },
+        "meanSwissRank": 3.4444444444444446,
+        "meanFinalAggregateScoreIfRecorded": 877.1111111111111,
+        "lastMeasuredMatch": {
+          "measuredMatches": 9,
+          "meanScore": 283.8888888888889,
+          "meanSharedPlace": 1.1111111111111112,
+          "sharedFirstMatchRate": 0.8888888888888888,
+          "meanEndBalance": 13.88888888888889,
+          "meanSpent": 370,
+          "meanWordCount": 9.555555555555555,
+          "firstCashoutObservedMatches": 9,
+          "meanFirstCashoutSecondsConditionalOnCashout": 8.222222222222221,
+          "noCashoutMatches": 0,
+          "timing": {
+            "recordedMatchRows": 9,
+            "decisions": 878,
+            "decisionBudgetOverruns": 1,
+            "maxDecisionMs": 100.2139999999199
+          }
+        }
+      },
+      "Final-runner-up": {
+        "tournaments": 1,
+        "seeds": [
+          7976515
+        ],
+        "serverFinalFinishPositions": {
+          "2": 1
+        },
+        "meanSwissRank": 1,
+        "meanFinalAggregateScoreIfRecorded": 554,
+        "lastMeasuredMatch": {
+          "measuredMatches": 1,
+          "meanScore": 133,
+          "meanSharedPlace": 2,
+          "sharedFirstMatchRate": 0,
+          "meanEndBalance": 4,
+          "meanSpent": 229,
+          "meanWordCount": 6,
+          "firstCashoutObservedMatches": 1,
+          "meanFirstCashoutSecondsConditionalOnCashout": 9,
+          "noCashoutMatches": 0,
+          "timing": {
+            "recordedMatchRows": 1,
+            "decisions": 94,
+            "decisionBudgetOverruns": 0,
+            "maxDecisionMs": 33.703900000080466
+          }
+        }
+      },
+      "Eliminated-Bracket-N3": {
+        "tournaments": 5,
+        "seeds": [
+          7992353,
+          8126976,
+          8142814,
+          8182409,
+          8190328
+        ],
+        "serverFinalFinishPositions": {
+          "3": 5
+        },
+        "meanSwissRank": 2.8,
+        "meanFinalAggregateScoreIfRecorded": null,
+        "lastMeasuredMatch": {
+          "measuredMatches": 5,
+          "meanScore": 105,
+          "meanSharedPlace": 3,
+          "sharedFirstMatchRate": 0,
+          "meanEndBalance": 6.6,
+          "meanSpent": 198.4,
+          "meanWordCount": 5,
+          "firstCashoutObservedMatches": 5,
+          "meanFirstCashoutSecondsConditionalOnCashout": 14,
+          "noCashoutMatches": 0,
+          "timing": {
+            "recordedMatchRows": 5,
+            "decisions": 440,
+            "decisionBudgetOverruns": 0,
+            "maxDecisionMs": 73.94499999983236
+          }
+        }
+      },
+      "Eliminated-Bracket-N5": {
+        "tournaments": 3,
+        "seeds": [
+          8016110,
+          8079462,
+          8198247
+        ],
+        "serverFinalFinishPositions": {
+          "5": 3
+        },
+        "meanSwissRank": 4,
+        "meanFinalAggregateScoreIfRecorded": null,
+        "lastMeasuredMatch": {
+          "measuredMatches": 3,
+          "meanScore": 56.333333333333336,
+          "meanSharedPlace": 5,
+          "sharedFirstMatchRate": 0,
+          "meanEndBalance": 9,
+          "meanSpent": 147.33333333333334,
+          "meanWordCount": 3.6666666666666665,
+          "firstCashoutObservedMatches": 3,
+          "meanFirstCashoutSecondsConditionalOnCashout": 20,
+          "noCashoutMatches": 0,
+          "timing": {
+            "recordedMatchRows": 3,
+            "decisions": 230,
+            "decisionBudgetOverruns": 0,
+            "maxDecisionMs": 38.166699999943376
+          }
+        }
+      },
+      "Eliminated-Bracket-N6": {
+        "tournaments": 1,
+        "seeds": [
+          8031948
+        ],
+        "serverFinalFinishPositions": {
+          "6": 1
+        },
+        "meanSwissRank": 3,
+        "meanFinalAggregateScoreIfRecorded": null,
+        "lastMeasuredMatch": {
+          "measuredMatches": 1,
+          "meanScore": 59,
+          "meanSharedPlace": 6,
+          "sharedFirstMatchRate": 0,
+          "meanEndBalance": 6,
+          "meanSpent": 153,
+          "meanWordCount": 4,
+          "firstCashoutObservedMatches": 1,
+          "meanFirstCashoutSecondsConditionalOnCashout": 9,
+          "noCashoutMatches": 0,
+          "timing": {
+            "recordedMatchRows": 1,
+            "decisions": 72,
+            "decisionBudgetOverruns": 0,
+            "maxDecisionMs": 35.0382999998983
+          }
+        }
+      }
+    },
+    "B": {
+      "Eliminated-Bracket-N6": {
+        "tournaments": 3,
+        "seeds": [
+          7929001,
+          8103219,
+          8134895
+        ],
+        "serverFinalFinishPositions": {
+          "6": 3
+        },
+        "meanSwissRank": 2,
+        "meanFinalAggregateScoreIfRecorded": null,
+        "lastMeasuredMatch": {
+          "measuredMatches": 3,
+          "meanScore": 53.666666666666664,
+          "meanSharedPlace": 6,
+          "sharedFirstMatchRate": 0,
+          "meanEndBalance": 10,
+          "meanSpent": 143.66666666666666,
+          "meanWordCount": 2.6666666666666665,
+          "firstCashoutObservedMatches": 3,
+          "meanFirstCashoutSecondsConditionalOnCashout": 6,
+          "noCashoutMatches": 0,
+          "timing": {
+            "recordedMatchRows": 3,
+            "decisions": 212,
+            "decisionBudgetOverruns": 0,
+            "maxDecisionMs": 39.75869999999122
+          }
+        }
+      },
+      "Eliminated-Bracket-N5": {
+        "tournaments": 2,
+        "seeds": [
+          7936920,
+          7976515
+        ],
+        "serverFinalFinishPositions": {
+          "5": 2
+        },
+        "meanSwissRank": 1.5,
+        "meanFinalAggregateScoreIfRecorded": null,
+        "lastMeasuredMatch": {
+          "measuredMatches": 2,
+          "meanScore": 63.5,
+          "meanSharedPlace": 5,
+          "sharedFirstMatchRate": 0,
+          "meanEndBalance": 5.5,
+          "meanSpent": 158,
+          "meanWordCount": 3,
+          "firstCashoutObservedMatches": 2,
+          "meanFirstCashoutSecondsConditionalOnCashout": 10,
+          "noCashoutMatches": 0,
+          "timing": {
+            "recordedMatchRows": 2,
+            "decisions": 152,
+            "decisionBudgetOverruns": 0,
+            "maxDecisionMs": 34.81160000001546
+          }
+        }
+      },
+      "Crowned": {
+        "tournaments": 20,
+        "seeds": [
+          7944839,
+          7952758,
+          7968596,
+          7992353,
+          8000272,
+          8016110,
+          8024029,
+          8031948,
+          8063624,
+          8071543,
+          8087381,
+          8095300,
+          8111138,
+          8119057,
+          8126976,
+          8142814,
+          8158652,
+          8182409,
+          8190328,
+          8206166
+        ],
+        "serverFinalFinishPositions": {
+          "1": 20
+        },
+        "meanSwissRank": 2.85,
+        "meanFinalAggregateScoreIfRecorded": 928.2,
+        "lastMeasuredMatch": {
+          "measuredMatches": 20,
+          "meanScore": 291,
+          "meanSharedPlace": 1.2,
+          "sharedFirstMatchRate": 0.8,
+          "meanEndBalance": 8.5,
+          "meanSpent": 382.5,
+          "meanWordCount": 9.65,
+          "firstCashoutObservedMatches": 20,
+          "meanFirstCashoutSecondsConditionalOnCashout": 6,
+          "noCashoutMatches": 0,
+          "timing": {
+            "recordedMatchRows": 20,
+            "decisions": 1953,
+            "decisionBudgetOverruns": 0,
+            "maxDecisionMs": 90.59699999983422
+          }
+        }
+      },
+      "Eliminated-Bracket-N3": {
+        "tournaments": 1,
+        "seeds": [
+          7960677
+        ],
+        "serverFinalFinishPositions": {
+          "3": 1
+        },
+        "meanSwissRank": 1,
+        "meanFinalAggregateScoreIfRecorded": null,
+        "lastMeasuredMatch": {
+          "measuredMatches": 1,
+          "meanScore": 129,
+          "meanSharedPlace": 3,
+          "sharedFirstMatchRate": 0,
+          "meanEndBalance": 6,
+          "meanSpent": 223,
+          "meanWordCount": 6,
+          "firstCashoutObservedMatches": 1,
+          "meanFirstCashoutSecondsConditionalOnCashout": 4,
+          "noCashoutMatches": 0,
+          "timing": {
+            "recordedMatchRows": 1,
+            "decisions": 89,
+            "decisionBudgetOverruns": 0,
+            "maxDecisionMs": 42.04390000004787
+          }
+        }
+      },
+      "Swiss-cut": {
+        "tournaments": 5,
+        "seeds": [
+          7984434,
+          8008191,
+          8047786,
+          8055705,
+          8174490
+        ],
+        "serverFinalFinishPositions": {
+          "null": 5
+        },
+        "meanSwissRank": 9,
+        "meanFinalAggregateScoreIfRecorded": null,
+        "lastMeasuredMatch": {
+          "measuredMatches": 5,
+          "meanScore": 68.4,
+          "meanSharedPlace": 4,
+          "sharedFirstMatchRate": 0,
+          "meanEndBalance": 5.6,
+          "meanSpent": 162.8,
+          "meanWordCount": 3.6,
+          "firstCashoutObservedMatches": 5,
+          "meanFirstCashoutSecondsConditionalOnCashout": 25.6,
+          "noCashoutMatches": 0,
+          "timing": {
+            "recordedMatchRows": 5,
+            "decisions": 358,
+            "decisionBudgetOverruns": 0,
+            "maxDecisionMs": 67.20169999962673
+          }
+        }
+      },
+      "Eliminated-Bracket-N4": {
+        "tournaments": 3,
+        "seeds": [
+          8039867,
+          8079462,
+          8150733
+        ],
+        "serverFinalFinishPositions": {
+          "4": 3
+        },
+        "meanSwissRank": 2,
+        "meanFinalAggregateScoreIfRecorded": null,
+        "lastMeasuredMatch": {
+          "measuredMatches": 3,
+          "meanScore": 83.33333333333333,
+          "meanSharedPlace": 4,
+          "sharedFirstMatchRate": 0,
+          "meanEndBalance": 9.333333333333334,
+          "meanSpent": 174,
+          "meanWordCount": 4,
+          "firstCashoutObservedMatches": 3,
+          "meanFirstCashoutSecondsConditionalOnCashout": 17,
+          "noCashoutMatches": 0,
+          "timing": {
+            "recordedMatchRows": 3,
+            "decisions": 246,
+            "decisionBudgetOverruns": 0,
+            "maxDecisionMs": 59.41459999978542
+          }
+        }
+      },
+      "Final-runner-up": {
+        "tournaments": 2,
+        "seeds": [
+          8166571,
+          8198247
+        ],
+        "serverFinalFinishPositions": {
+          "2": 2
+        },
+        "meanSwissRank": 3,
+        "meanFinalAggregateScoreIfRecorded": 509.5,
+        "lastMeasuredMatch": {
+          "measuredMatches": 2,
+          "meanScore": 211.5,
+          "meanSharedPlace": 1,
+          "sharedFirstMatchRate": 1,
+          "meanEndBalance": 1.5,
+          "meanSpent": 310,
+          "meanWordCount": 9.5,
+          "firstCashoutObservedMatches": 2,
+          "meanFirstCashoutSecondsConditionalOnCashout": 10.5,
+          "noCashoutMatches": 0,
+          "timing": {
+            "recordedMatchRows": 2,
+            "decisions": 195,
+            "decisionBudgetOverruns": 0,
+            "maxDecisionMs": 82.08169999998063
+          }
+        }
+      }
+    }
+  },
+  "finalOpponentKind": {
+    "A": {
+      "linear-face": {
+        "finalsAppearances": 6,
+        "crowns": 5,
+        "crownRateConditionalOnThisFinalOpponent": 0.8333333333333334,
+        "meanThreeGameScore": 717.1666666666666,
+        "meanThreeGameScoreMargin": 92,
+        "seeds": [
+          7936920,
+          7952758,
+          7960677,
+          7976515,
+          8150733,
+          8206166
+        ]
+      },
+      "v1": {
+        "finalsAppearances": 4,
+        "crowns": 4,
+        "crownRateConditionalOnThisFinalOpponent": 1,
+        "meanThreeGameScore": 1036.25,
+        "meanThreeGameScoreMargin": 659.75,
+        "seeds": [
+          8024029,
+          8063624,
+          8087381,
+          8119057
+        ]
+      }
+    },
+    "B": {
+      "v1": {
+        "finalsAppearances": 11,
+        "crowns": 11,
+        "crownRateConditionalOnThisFinalOpponent": 1,
+        "meanThreeGameScore": 1031.2727272727273,
+        "meanThreeGameScoreMargin": 651.2727272727273,
+        "seeds": [
+          7944839,
+          7968596,
+          7992353,
+          8000272,
+          8024029,
+          8063624,
+          8071543,
+          8087381,
+          8095300,
+          8158652,
+          8206166
+        ]
+      },
+      "linear-face": {
+        "finalsAppearances": 11,
+        "crowns": 9,
+        "crownRateConditionalOnThisFinalOpponent": 0.8181818181818182,
+        "meanThreeGameScore": 749,
+        "meanThreeGameScoreMargin": 147.72727272727272,
+        "seeds": [
+          7952758,
+          8016110,
+          8031948,
+          8111138,
+          8119057,
+          8126976,
+          8142814,
+          8166571,
+          8182409,
+          8190328,
+          8198247
+        ]
+      }
+    }
+  },
+  "fieldsAvailable": {
+    "score": {
+      "recordedMeasuredMatchRows": 559,
+      "totalMeasuredMatchRows": 559
+    },
+    "place": {
+      "recordedMeasuredMatchRows": 559,
+      "totalMeasuredMatchRows": 559
+    },
+    "balance": {
+      "recordedMeasuredMatchRows": 559,
+      "totalMeasuredMatchRows": 559
+    },
+    "spent": {
+      "recordedMeasuredMatchRows": 559,
+      "totalMeasuredMatchRows": 559
+    },
+    "wordCount": {
+      "recordedMeasuredMatchRows": 559,
+      "totalMeasuredMatchRows": 559
+    },
+    "firstCashoutSeconds": {
+      "recordedMeasuredMatchRows": 559,
+      "totalMeasuredMatchRows": 559
+    },
+    "timing": {
+      "recordedMeasuredMatchRows": 559,
+      "totalMeasuredMatchRows": 559
+    },
+    "rackFaceValue": {
+      "recorded": false,
+      "reason": "Frozen format fixture serializes no rack counts/remaining face value. No rack value is inferred from score, balance or spending."
+    },
+    "purchaseFaceComposition": {
+      "recorded": false,
+      "reason": "This report has match-level paid totals, not measured per-auction purchase/letter traces."
+    }
+  },
+  "seedOutcomes": [
+    {
+      "seed": 7929001,
+      "position": 0,
+      "A": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 10,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Eliminated-Bracket-N6",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 2,
+        "finalOpponentKind": null
+      }
+    },
+    {
+      "seed": 7936920,
+      "position": 1,
+      "A": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 6,
+        "finalOpponentKind": "linear-face"
+      },
+      "B": {
+        "outcome": "Eliminated-Bracket-N5",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 1,
+        "finalOpponentKind": null
+      }
+    },
+    {
+      "seed": 7944839,
+      "position": 2,
+      "A": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 8,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 5,
+        "finalOpponentKind": "v1"
+      }
+    },
+    {
+      "seed": 7952758,
+      "position": 3,
+      "A": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 6,
+        "finalOpponentKind": "linear-face"
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 4,
+        "finalOpponentKind": "linear-face"
+      }
+    },
+    {
+      "seed": 7960677,
+      "position": 4,
+      "A": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 2,
+        "finalOpponentKind": "linear-face"
+      },
+      "B": {
+        "outcome": "Eliminated-Bracket-N3",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 1,
+        "finalOpponentKind": null
+      }
+    },
+    {
+      "seed": 7968596,
+      "position": 5,
+      "A": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 11,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 2,
+        "finalOpponentKind": "v1"
+      }
+    },
+    {
+      "seed": 7976515,
+      "position": 6,
+      "A": {
+        "outcome": "Final-runner-up",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 1,
+        "finalOpponentKind": "linear-face"
+      },
+      "B": {
+        "outcome": "Eliminated-Bracket-N5",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 2,
+        "finalOpponentKind": null
+      }
+    },
+    {
+      "seed": 7984434,
+      "position": 7,
+      "A": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 7,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 9,
+        "finalOpponentKind": null
+      }
+    },
+    {
+      "seed": 7992353,
+      "position": 8,
+      "A": {
+        "outcome": "Eliminated-Bracket-N3",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 6,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 1,
+        "finalOpponentKind": "v1"
+      }
+    },
+    {
+      "seed": 8000272,
+      "position": 9,
+      "A": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 10,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 6,
+        "finalOpponentKind": "v1"
+      }
+    },
+    {
+      "seed": 8008191,
+      "position": 10,
+      "A": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 10,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 10,
+        "finalOpponentKind": null
+      }
+    },
+    {
+      "seed": 8016110,
+      "position": 11,
+      "A": {
+        "outcome": "Eliminated-Bracket-N5",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 4,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 3,
+        "finalOpponentKind": "linear-face"
+      }
+    },
+    {
+      "seed": 8024029,
+      "position": 12,
+      "A": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 2,
+        "finalOpponentKind": "v1"
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 1,
+        "finalOpponentKind": "v1"
+      }
+    },
+    {
+      "seed": 8031948,
+      "position": 13,
+      "A": {
+        "outcome": "Eliminated-Bracket-N6",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 3,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 3,
+        "finalOpponentKind": "linear-face"
+      }
+    },
+    {
+      "seed": 8039867,
+      "position": 14,
+      "A": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 12,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Eliminated-Bracket-N4",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 4,
+        "finalOpponentKind": null
+      }
+    },
+    {
+      "seed": 8047786,
+      "position": 15,
+      "A": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 10,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 10,
+        "finalOpponentKind": null
+      }
+    },
+    {
+      "seed": 8055705,
+      "position": 16,
+      "A": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 12,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 7,
+        "finalOpponentKind": null
+      }
+    },
+    {
+      "seed": 8063624,
+      "position": 17,
+      "A": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 2,
+        "finalOpponentKind": "v1"
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 4,
+        "finalOpponentKind": "v1"
+      }
+    },
+    {
+      "seed": 8071543,
+      "position": 0,
+      "A": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 11,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 5,
+        "finalOpponentKind": "v1"
+      }
+    },
+    {
+      "seed": 8079462,
+      "position": 1,
+      "A": {
+        "outcome": "Eliminated-Bracket-N5",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 5,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Eliminated-Bracket-N4",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 1,
+        "finalOpponentKind": null
+      }
+    },
+    {
+      "seed": 8087381,
+      "position": 2,
+      "A": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 4,
+        "finalOpponentKind": "v1"
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 2,
+        "finalOpponentKind": "v1"
+      }
+    },
+    {
+      "seed": 8095300,
+      "position": 3,
+      "A": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 9,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 1,
+        "finalOpponentKind": "v1"
+      }
+    },
+    {
+      "seed": 8103219,
+      "position": 4,
+      "A": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 8,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Eliminated-Bracket-N6",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 3,
+        "finalOpponentKind": null
+      }
+    },
+    {
+      "seed": 8111138,
+      "position": 5,
+      "A": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 8,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 2,
+        "finalOpponentKind": "linear-face"
+      }
+    },
+    {
+      "seed": 8119057,
+      "position": 6,
+      "A": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 3,
+        "finalOpponentKind": "v1"
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 2,
+        "finalOpponentKind": "linear-face"
+      }
+    },
+    {
+      "seed": 8126976,
+      "position": 7,
+      "A": {
+        "outcome": "Eliminated-Bracket-N3",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 1,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 2,
+        "finalOpponentKind": "linear-face"
+      }
+    },
+    {
+      "seed": 8134895,
+      "position": 8,
+      "A": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 7,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Eliminated-Bracket-N6",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 1,
+        "finalOpponentKind": null
+      }
+    },
+    {
+      "seed": 8142814,
+      "position": 9,
+      "A": {
+        "outcome": "Eliminated-Bracket-N3",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 1,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 5,
+        "finalOpponentKind": "linear-face"
+      }
+    },
+    {
+      "seed": 8150733,
+      "position": 10,
+      "A": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 5,
+        "finalOpponentKind": "linear-face"
+      },
+      "B": {
+        "outcome": "Eliminated-Bracket-N4",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 1,
+        "finalOpponentKind": null
+      }
+    },
+    {
+      "seed": 8158652,
+      "position": 11,
+      "A": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 8,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 2,
+        "finalOpponentKind": "v1"
+      }
+    },
+    {
+      "seed": 8166571,
+      "position": 12,
+      "A": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 11,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Final-runner-up",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 3,
+        "finalOpponentKind": "linear-face"
+      }
+    },
+    {
+      "seed": 8174490,
+      "position": 13,
+      "A": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 8,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Swiss-cut",
+        "qualified": false,
+        "crowned": false,
+        "swissRank": 9,
+        "finalOpponentKind": null
+      }
+    },
+    {
+      "seed": 8182409,
+      "position": 14,
+      "A": {
+        "outcome": "Eliminated-Bracket-N3",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 3,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 1,
+        "finalOpponentKind": "linear-face"
+      }
+    },
+    {
+      "seed": 8190328,
+      "position": 15,
+      "A": {
+        "outcome": "Eliminated-Bracket-N3",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 3,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 4,
+        "finalOpponentKind": "linear-face"
+      }
+    },
+    {
+      "seed": 8198247,
+      "position": 16,
+      "A": {
+        "outcome": "Eliminated-Bracket-N5",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 3,
+        "finalOpponentKind": null
+      },
+      "B": {
+        "outcome": "Final-runner-up",
+        "qualified": true,
+        "crowned": false,
+        "swissRank": 3,
+        "finalOpponentKind": "linear-face"
+      }
+    },
+    {
+      "seed": 8206166,
+      "position": 17,
+      "A": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 1,
+        "finalOpponentKind": "linear-face"
+      },
+      "B": {
+        "outcome": "Crowned",
+        "qualified": true,
+        "crowned": true,
+        "swissRank": 2,
+        "finalOpponentKind": "v1"
+      }
+    }
+  ],
+  "interpretation": [
+    "The paired tournament seed remains the independent comparison unit, n36. Stage match means are descriptive, not new independent observations or new hypothesis tests.",
+    "Bracket advance is determined by later participation, not shared match place. Actual elimination stage comes from the last bracket participated in only after excluding Swiss-cut/final/crown outcomes.",
+    "Bracket/final and opponent-kind summaries condition on reaching those stages. A/B reach different subsets, so subgroup differences are not paired causal effects.",
+    "Final game shared wins differ from the actual three-game aggregate crown. Final margins are reconstructed only from recorded finalist aggregates.",
+    "Balances are final per-match currency, not terminal score. Remaining rack face value is unavailable.",
+    "No thresholds are recomputed or relaxed; the locked gate and earlier failed raw-score gate are unchanged. Unknown-field generalization and native/network performance remain outside this diagnosis."
+  ],
+  "productionPromotionAuthorized": false
+}

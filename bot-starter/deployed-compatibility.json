@@ -1,5 +1,5 @@
 {
-  "checkedAtUtc": "2026-11-07T23:57:23.406Z",
+  "checkedAtUtc": "2026-11-08T01:15:12.618Z",
   "method": {
     "command": "spacetimedb-cli.exe --root-dir <fresh-empty-task-local-root> describe scrabblebot --server https://maincloud.spacetimedb.com --anonymous --no-config --json",
     "access": "Anonymous public metadata; no credentials/config/token contents inspected; no reducer calls or mutations",
@@ -8,8 +8,8 @@
     "schemaSha256": "7e494370df82f4a63e5951cf485e82b05143a4ff637f7d46a18a0729ffe22bdd"
   },
   "source": {
-    "head": "f1c68e2c0b8d94e62def3d433a7207bf6c4008c3",
-    "tag": "strategy-v1.3-1-gf1c68e2",
+    "head": "e564082f7248f14cec4562495d0d88c552125265",
+    "tag": "runtime-v1.4-1-ge564082",
     "upstreamPin": "b5ccb36aa238ad16692f8d6af54da15ef9f11324",
     "sdkVersion": "2.12.0",
     "bindingGeneratorVersion": "2.12.0",
@@ -30,7 +30,7 @@
   },
   "deployed": {
     "serverVersion": null,
-    "serverVersionObservation": "Fresh describe metadata and anonymous /v1/ping expose no SpacetimeDB server binary version. The nginx proxy banner is not the server binary version.",
+    "serverVersionObservation": "Fresh describe metadata and anonymous /v1/ping expose no SpacetimeDB server binary version. A proxy banner is not the server binary version.",
     "reducersInspected": 27,
     "readableTablesAndViewsInspected": 30,
     "allGeneratedReducersCompatible": true,
@@ -256,14 +256,14 @@
     "No live behavior was inferred solely from this schema check."
   ],
   "refresh": {
-    "startedAtUtc": "2026-11-07T23:57:21.413Z",
-    "schemaFetchedAtUtc": "2026-11-07T23:57:22.051Z",
-    "finishedAtUtc": "2026-11-07T23:57:24.006Z",
-    "schemaPath": "C:/Users/lucas/Documents/Codex/2026-11-07/what/work/refinement/deployed-schema-refresh-20261107T235721Z.json",
-    "cliRoot": "C:/Users/lucas/Documents/Codex/2026-11-07/what/work/refinement/schema-refresh-cli-20261107T235721Z",
+    "startedAtUtc": "2026-11-08T01:15:11.109Z",
+    "schemaFetchedAtUtc": "2026-11-08T01:15:11.636Z",
+    "finishedAtUtc": "2026-11-08T01:15:13.409Z",
+    "schemaPath": "C:/Users/lucas/Documents/Codex/2026-11-07/what/work/refinement/deployed-schema-refresh-20261108T011440Z.json",
+    "cliRoot": "C:/Users/lucas/Documents/Codex/2026-11-07/what/work/refinement/schema-refresh-cli-20261108T011440Z",
     "cliArgs": [
       "--root-dir",
-      "C:/Users/lucas/Documents/Codex/2026-11-07/what/work/refinement/schema-refresh-cli-20261107T235721Z",
+      "C:/Users/lucas/Documents/Codex/2026-11-07/what/work/refinement/schema-refresh-cli-20261108T011440Z",
       "describe",
       "scrabblebot",
       "--server",
@@ -273,23 +273,41 @@
       "--json"
     ],
     "comparatorExitCode": 0,
-    "originalComparatorSha256": "022750b08ad360370b589d8a52731c2d4cc8779ec271eefb9e3979639e8e74a4",
-    "adapterPath": "C:/Users/lucas/Documents/Codex/2026-11-07/what/work/refinement/compare-deployed-schema-refresh-20261107T235721Z.mjs",
-    "scope": "Fresh anonymous describe metadata only, no credentials/private row data, no registration SQL, no regeneration, module publication, service changes or heavy tests. Only new timestamped work artifacts."
+    "originalAdapterSha256": "6971fd05c406106c08fb4a815a9a0c077d473614aeb151d4c1860676030c3a55",
+    "adapterPath": "C:/Users/lucas/Documents/Codex/2026-11-07/what/work/refinement/compare-deployed-schema-refresh-20261108T011440Z.mjs",
+    "scope": "Fresh anonymous describe metadata plus unauthenticated public GitHub/ping GET only. No credential/config/token contents read, private row data, registration queries/calls, regeneration, publication, source/evaluator changes, service actions or heavy tests. Only new timestamped work artifacts."
   },
   "upstream": {
-    "observedAtUtc": "2026-11-07T23:57:24.006Z",
+    "observedAtUtc": "2026-11-08T01:15:13.312Z",
+    "apiUrl": "https://api.github.com/repos/clockworklabs/scrabblebot/commits/main",
     "url": "https://github.com/clockworklabs/scrabblebot/commit/b5ccb36aa238ad16692f8d6af54da15ef9f11324",
-    "httpDate": "Sat, 07 Nov 2026 23:57:23 GMT",
+    "httpDate": "Sun, 08 Nov 2026 01:15:12 GMT",
     "head": "b5ccb36aa238ad16692f8d6af54da15ef9f11324",
     "pin": "b5ccb36aa238ad16692f8d6af54da15ef9f11324",
     "matchesPin": true,
     "commitDateUtc": "2026-10-25T06:48:29Z"
   },
+  "publicRepository": {
+    "observedAtUtc": "2026-11-08T01:15:13.227Z",
+    "apiUrl": "https://api.github.com/repos/Tow57/scrabblebot-auctioneer",
+    "url": "https://github.com/Tow57/scrabblebot-auctioneer",
+    "httpDate": "Sun, 08 Nov 2026 01:15:12 GMT",
+    "private": false,
+    "visibility": "public",
+    "defaultBranch": "main",
+    "head": "2d83b72a6bf1e8d38d4d2a78fc03950e90394b6f",
+    "headUrl": "https://github.com/Tow57/scrabblebot-auctioneer/commit/2d83b72a6bf1e8d38d4d2a78fc03950e90394b6f",
+    "headObservedAtUtc": "2026-11-08T01:15:13.409Z",
+    "headHttpDate": "Sun, 08 Nov 2026 01:15:12 GMT",
+    "localHead": "e564082f7248f14cec4562495d0d88c552125265",
+    "headMatchesLocal": false,
+    "distinction": "Public source availability is not tournament registration or formal repository submission. User submission hold remains active."
+  },
   "ping": {
     "status": 200,
-    "httpDate": "Sat, 07 Nov 2026 23:57:23 GMT",
+    "httpDate": "Sun, 08 Nov 2026 01:15:12 GMT",
     "serverHeader": "nginx/1.18.0 (Ubuntu)",
-    "versionHeaders": []
+    "versionHeaders": [],
+    "observedAtUtc": "2026-11-08T01:15:13.140Z"
   }
 }

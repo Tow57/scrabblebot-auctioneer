@@ -1,0 +1,76 @@
+{
+  "generatedAt": "2026-11-08T00:59:42.950Z",
+  "A": {
+    "tournaments": 36,
+    "topCutRate": 0.5277777777777778,
+    "crownRate": 0.25,
+    "meanSwissPoints": 16.333333333333332,
+    "meanSwissRank": 6.138888888888889,
+    "meanSwissScore": 326.1666666666667,
+    "meanSwissMatchPlace": 2.9166666666666665,
+    "meanDerivedOverallPlace": 5.75,
+    "meanTournamentScore": 754,
+    "finalsAppearances": 10,
+    "meanFinalAggregateScoreConditionalOnReachingFinal": 844.8,
+    "decisions": 18530,
+    "decisionBudgetOverruns": 2,
+    "decisionBudgetOverrunRate": 0.00010793308148947653,
+    "allEntrantDecisionBudgetOverruns": 10,
+    "maxDecisionMs": 100.2139999999199,
+    "winnerKinds": {
+      "linear-face": 21,
+      "candidate": 9,
+      "v1": 4,
+      "premium-floor": 2
+    },
+    "finalOpponentKinds": {
+      "linear-face": 6,
+      "v1": 4
+    }
+  },
+  "B": {
+    "tournaments": 36,
+    "topCutRate": 0.8611111111111112,
+    "crownRate": 0.5555555555555556,
+    "meanSwissPoints": 18.583333333333332,
+    "meanSwissRank": 3.4444444444444446,
+    "meanSwissScore": 333.19444444444446,
+    "meanSwissMatchPlace": 2.3541666666666665,
+    "meanDerivedOverallPlace": 3.111111111111111,
+    "meanTournamentScore": 1230.25,
+    "finalsAppearances": 22,
+    "meanFinalAggregateScoreConditionalOnReachingFinal": 890.1363636363636,
+    "decisions": 25289,
+    "decisionBudgetOverruns": 12,
+    "decisionBudgetOverrunRate": 0.0004745146110957333,
+    "allEntrantDecisionBudgetOverruns": 51,
+    "maxDecisionMs": 100.75840000016615,
+    "winnerKinds": {
+      "linear-face": 14,
+      "candidate": 20,
+      "v1": 1,
+      "premium-floor": 1
+    },
+    "finalOpponentKinds": {
+      "v1": 11,
+      "linear-face": 11
+    }
+  },
+  "pairedCrowns": {
+    "improved": 14,
+    "regressed": 3,
+    "discordant": 17,
+    "oneSidedExactP": 0.0063629150390625
+  },
+  "checks": {
+    "crownRateIncreased": true,
+    "exactPairedCrownP": true,
+    "observedTopCutNoWorse": true,
+    "observedMeanSwissRankNoWorse": true,
+    "zeroCandidateBudgetOverruns": false,
+    "cleanRunnerExit": true
+  },
+  "qualifiedForMultiwayIntegration": false,
+  "productionPromotionAuthorized": false,
+  "scope": "Fixed roster actual-format confirmation only. Prior combined-score gate remains failed; deployment also requires independent production/native/live validation."
+}

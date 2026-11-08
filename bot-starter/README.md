@@ -42,7 +42,7 @@ If registration is not yet open, wait for the organizer to open it and restart w
 ## Strategy and timing
 
 - Canonical anagram signatures and a trie enumerate legal words with repeated letters.
-- A greedy legal partition seeds memoized search for the best combined word reward, including unused tiles. Search uses a cooperative 100 ms deadline and a 10,000-state limit; interrupted results are approximate. Preparing playable entries can exceed the time target, so this is not a strict 100 ms wall-clock guarantee.
+- A greedy legal partition seeds memoized search for the best combined word reward, including unused tiles. Search uses a cooperative 95 ms deadline and a 10,000-state limit. Preprocessing also checks the deadline; interruption returns a completed legal single word or partial partition with `exact=false`. The 5 ms reserve sits below the measured 100 ms validation limit; scheduling and garbage collection can still cause overshoot.
 - Letter bids combine immediate rack cashout gain with value from words up to two letters short. Payment history sets budget pacing; first-price bids are shaded.
 - Seven-letter words cash immediately. Shorter words cash under liquidity/rack pressure and during the last four auction windows.
 - `bagTotal` excludes the currently offered tile. With zero remaining, the current auction is final and its tile cannot be used by an external client: bid zero and finish existing words before closure. With one remaining, the current auction is the last usable purchase.
@@ -57,7 +57,7 @@ The current server discards unsold tiles and randomizes tied bids. Opponents' st
 
 ## Validation
 
-Word-first source `f1c68e2` installed, built and passed **63 bot tests** from a clean archived checkout in a Windows path containing spaces and `#`. The native stress check returned 12/12 legal responses without timeouts or worker errors; details and timing limits are in `VALIDATION.md`.
+Timing-core source `e564082` builds and passes **70 bot tests**. Its native stress check returned 12/12 legal responses without timeouts or worker errors. The earlier word-first source `f1c68e2` also passed its 63 tests from a clean archived Windows checkout containing spaces and `#`. See `VALIDATION.md` for the limits of each result.
 
 ```powershell
 npm run build

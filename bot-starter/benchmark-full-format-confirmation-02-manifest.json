@@ -1,0 +1,319 @@
+{
+  "createdAt": "2026-11-07T23:45:55.176Z",
+  "experiment": "full-format-confirmation-02",
+  "rationale": "Fresh confirmation of actual tournament crown outcomes, separate from the earlier failed six-player combined raw-score gate; that gate remains failed.",
+  "supersedes": "Unexecuted01/01a manifests, evaluators and earlier fixture sources are retained. Both measured profiles now use the validated production wordFirst optimization rather than legacy frozen computation. The same36 fresh seeds, order and every statistical/runtime guard remain unchanged; word-first cache/timing effects are explicitly acknowledged. No confirmation data has been collected.",
+  "runnerSha256": "d87f04a433eceb3b090f9ccc47fe31a85ff4cdbd1e81e85589a1ffebbfccd46a",
+  "lockedDesign": {
+    "pairs": 36,
+    "seedOffset": 1000,
+    "executionOrder": "balanced",
+    "maximumP": 0.025
+  },
+  "pilotStatus": "Six exploratory pairs completed, but Vitest exited1 with an infrastructure RPC timeout. Pilot results are not a clean verification pass or production authorization. Old source/results/execution receipt retained.",
+  "A": "Current production engine: capitalAllowance=true, headsUpFaceBidWeight=0.3, wordFirst=true; no extra multiway premium",
+  "B": "Same production engine/options as A; only positive nonterminal N>=3 Vickrey bids receive the extra face0.1 multiplier",
+  "pairs": 36,
+  "seedOffset": 1000,
+  "seeds": [
+    7929001,
+    7936920,
+    7944839,
+    7952758,
+    7960677,
+    7968596,
+    7976515,
+    7984434,
+    7992353,
+    8000272,
+    8008191,
+    8016110,
+    8024029,
+    8031948,
+    8039867,
+    8047786,
+    8055705,
+    8063624,
+    8071543,
+    8079462,
+    8087381,
+    8095300,
+    8103219,
+    8111138,
+    8119057,
+    8126976,
+    8134895,
+    8142814,
+    8150733,
+    8158652,
+    8166571,
+    8174490,
+    8182409,
+    8190328,
+    8198247,
+    8206166
+  ],
+  "entrantPositions": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17
+  ],
+  "executionOrders": [
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "A"
+    ],
+    [
+      "A",
+      "B"
+    ]
+  ],
+  "roster": [
+    "v1",
+    "v1",
+    "v1",
+    "v1",
+    "v1",
+    "v1",
+    "premium-floor",
+    "premium-floor",
+    "linear-face",
+    "linear-face",
+    "market-v1",
+    "market-v1",
+    "market",
+    "market",
+    "starter",
+    "starter",
+    "starter"
+  ],
+  "entrants": 18,
+  "swissRounds": 4,
+  "tableSize": 6,
+  "topCut": 6,
+  "finalGames": 3,
+  "primary": {
+    "outcome": "Actual server crown",
+    "superiority": "B crown rate > A crown rate",
+    "test": "One-sided exact paired McNemar: P[Binomial(b+c,0.5)>=b], b=B-only crowns,c=A-only crowns",
+    "maximumP": 0.025
+  },
+  "descriptiveGuards": [
+    "Observed B top-cut rate >= A",
+    "Observed B mean Swiss rank <= A"
+  ],
+  "runtimeGuards": [
+    "Zero B synchronous decision calls over100ms",
+    "Clean runner exit0, no illegal actions/affordability/assertion/harness errors"
+  ],
+  "analysisUnit": "Complete paired tournament seed, n=36; every seed retained; no interim selection or optional stopping",
+  "limitations": "Fixed18-entrant archetype roster, not an unknown live field. Descriptive qualification/rank guards do not establish population noninferiority. No worker/network tests here.",
+  "integrationRequirements": "Passing permits independent production parity/native worker/build/live validation before any deployment; no automatic promotion.",
+  "sourceHashes": {
+    "tournament-format-benchmark.test.ts": "54fdcd9cc48f433ec17e2615d67fac8dd652b887b1f9b62811fe644b62e3e268",
+    "harness.ts": "a6d9c937d480b3f23dc14ed486688c6d2e11459dc0cb7fc6e750c1eed3eee3b2",
+    "fixtures/v1/strategy.ts": "42c7a7ce4b4e98ff2ed0fd718141ae1581c26c090302774972553dcf0fe21735",
+    "fixtures/v1/dictionary.ts": "0c7cc180a3e75b44d5d67d1debbcd92026f16045b541494a281fce8caf1b36f6",
+    "fixtures/v1/optimizer.ts": "fa516d58a7621f798a9315267138133b1568e2d26d1229332a9728d80cacb6f2",
+    "fixtures/opponent-policies.ts": "8e1ca664c507888016788f533dae44f1e9645c4a9f635b2bbe9733270eabe53e",
+    "fixtures/public-opponent-policies.ts": "fedf0fb5ae264a7970231502ccecd8589b8252b0373ddfc80fca93f8c12d1bd6",
+    "fixtures/face-bid-ablation.ts": "8f2abfe10314a16697bceab0cdf3b104641869e5eca83ee607b9c32dcb0606d9",
+    "../index.ts": "be9469999604a1aa07ba0bfbfee2748d541058dbdb7eeb72f1bc9fd2eae95629",
+    "../schema.ts": "67aa898efa43351fc0f19669e21ded132387d560f66e437305c09e7bc11d9334",
+    "../game.ts": "bf851825e9852289c836de33fc61543aa14be6c4b6e5e86abecfe5562413e184",
+    "../tournament.ts": "e82e5c2b108cab3acbcd50d74b6f12491d1bb82759997fd0e618b80f6edc06f6",
+    "../letters.ts": "102784fcfe2ce0fca2daa9d9e93ed93ebd4157f4b30b663128fa52cf27fcd630",
+    "../dictionary.ts": "316c509912dc45b75da83fe22c4e816231745f41790a734ea1edec38ab84b654",
+    "../text.ts": "7fee61325305530ace42fb7e5d5e376cf6141ec20bc3ccce8d7ae53832c8cffe",
+    "../identity.ts": "b8cd91e1d06ec4bf4e43d64d050c82accc9d7d9240cd4c8380f9a65a6606b494",
+    "../ratings.ts": "2ef90f86befede99444063702298763d6782bdee9ca8d460e06adf059ca43cf2",
+    "../libm.ts": "d1c77660e22b9ef82f92ad873bdab8de1954f3552f2b1a6ab403d3cf1b17a1bd",
+    "../lobby.ts": "7c3e5b0575c8ca6be810a990acdca99f4cf1c73dc9549eb45a16eb7570484b95",
+    "../../wordlist.txt": "b819e7b67f8f2c80640ae76f0edbe59a4a1befb6de0f348463642ad49bdd2ad3",
+    "../../package.json": "cd270bd6dc294cf5bb30849e74a31bda0063a8f5abdf5af712fb72758746c8e6",
+    "../../package-lock.json": "f337cb3dd7022613d8acf29c8da2bc01ba3028271fcc64603eddbfb79113f7f8",
+    "../../tsconfig.json": "04c211f300d2acea97ce7166e480cc23fffc5f7190b02b217ba02050473b26d0",
+    "../../vitest.config.ts": "fd9e8c0225d08888765a8b34a35dc5a99a5d26da7d5cbeac995a6d00d286d8a2",
+    "../../../bot-starter/src/strategy.ts": "c3fe93704617045e02ea59ec3e6f50c0707910bff5d66d76bf90f493b4965d3d",
+    "../../../bot-starter/src/dictionary.ts": "ab5831f9b83021524b22af876db2bd4c9c01e5f544ca1865911980775066ce23",
+    "../../../bot-starter/src/optimizer.ts": "fdb9391f88b7e79df188cb9b6034a27e34845e80c490be5ff54bb3be23aafc05",
+    "../../../bot-starter/src/strategy-worker.ts": "a054f5268a94f238f8e7ed14ea0b706d40d985c6a841b12466ab27dbbbe2c7f2"
+  },
+  "sourceFingerprintSha256": "224e2e694646f6283dd10d56b5b2685b29254df71b7eb4925794afda18d3bd50",
+  "reportPath": "C:\\Users\\lucas\\Documents\\Codex\\2026-11-07\\what\\work\\refinement\\full-format-confirmation-02.json",
+  "runtime": {
+    "node": "v24.19.0",
+    "platform": "win32",
+    "architecture": "x64"
+  },
+  "productionPromotionAuthorized": false
+}
