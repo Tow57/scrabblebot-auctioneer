@@ -114,9 +114,10 @@ export class DictionaryIndex {
     }
   }
 
-  playable(counts: TileCounts, deadlineMs = Infinity): { entries: DictionaryEntry[]; complete: boolean } {
+  playable(counts: TileCounts, deadlineMs = Infinity): { entries: DictionaryEntry[]; complete: boolean; best?: DictionaryEntry } {
     const remaining = counts.slice();
     const entries: DictionaryEntry[] = [];
+    let best: DictionaryEntry | undefined;
     let complete = true;
     let visits = 0;
     const walk = (node: TrieNode): void => {
@@ -125,7 +126,10 @@ export class DictionaryIndex {
         complete = false;
         return;
       }
-      if (node.entry) entries.push(node.entry);
+      if (node.entry) {
+        entries.push(node.entry);
+        if (!best || node.entry.score > best.score) best = node.entry;
+      }
       for (const [letter, child] of node.children) {
         if (remaining[letter] === 0) continue;
         remaining[letter]--;
@@ -135,7 +139,7 @@ export class DictionaryIndex {
       }
     };
     walk(this.root);
-    return { entries, complete };
+    return { entries, complete, best };
   }
 
   completionValue(counts: TileCounts, letter: number, maxMissing: number, deadlineMs = Infinity): number {

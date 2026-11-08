@@ -69,7 +69,8 @@ export class StrategyEngine {
 
   decide(ctx: StrategyContext): StrategyDecision {
     const start = performance.now();
-    const deadline = Math.min(start + 100, ctx.deadlineMs ?? Infinity);
+    // Reserve 5ms below the measured100ms compute guard; caller deadlines may be tighter.
+    const deadline = Math.min(start + 95, ctx.deadlineMs ?? Infinity);
     const counts = rackToCounts(ctx.myRack);
     const balance = Number.isFinite(ctx.myBalance) ? Math.max(0, Math.floor(ctx.myBalance)) : 0;
     const bagTotal = Number.isFinite(ctx.bagTotal) ? Math.max(0, Math.floor(ctx.bagTotal)) : 0;

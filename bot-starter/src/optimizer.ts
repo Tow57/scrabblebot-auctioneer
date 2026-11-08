@@ -25,15 +25,19 @@ const change = (entry: DictionaryEntry, counts: TileCounts, direction: number): 
   for (const [letter, count] of entry.tiles) counts[letter] += direction * count;
 };
 
-function greedy(entries: readonly DictionaryEntry[], counts: TileCounts): Solution {
+function greedy(entries: readonly DictionaryEntry[], counts: TileCounts,
+  check: (force?: boolean) => void, progress: (solution: Solution) => void): Solution {
   const remaining = counts.slice();
   const words: string[] = [];
   let score = 0;
   for (const entry of entries) {
+    check();
     while (fits(entry, remaining)) {
+      check(true);
       words.push(entry.word);
       score += entry.score;
       change(entry, remaining, -1);
+      progress({ score, words });
     }
   }
   return { score, words };
@@ -52,21 +56,47 @@ export class RackOptimizer {
     const rootKey = countsKey(counts);
     const cached = this.cache.get(rootKey);
     if (cached) return { score: cached.score, words: [...cached.words], exact: true, states: 0 };
-    const available = this.dictionary.playable(counts, budget.deadlineMs);
-    available.entries.sort((a, b) => b.score - a.score || a.word.localeCompare(b.word));
-    let incumbent = greedy(available.entries, counts);
-    if (!available.complete || performance.now() >= budget.deadlineMs || budget.states >= budget.maxStates) {
-      return { ...incumbent, exact: false, states: 0 };
+    if (performance.now() >= budget.deadlineMs) {
+      return { score: 0, words: [], exact: false, states: 0 };
     }
-    const groups = Array.from({ length: 26 }, () => [] as DictionaryEntry[]);
-    for (const entry of available.entries) for (const [letter] of entry.tiles) groups[letter].push(entry);
-    const remaining = counts.slice();
+    const available = this.dictionary.playable(counts, budget.deadlineMs);
+    const seed = available.best ?? available.entries[0];
+    let incumbent: Solution = seed ? { score: seed.score, words: [seed.word] } : EMPTY;
+    const approximate = (): CashoutPlan => ({ score: incumbent.score, words: [...incumbent.words],
+      exact: false, states: budget.states - startStates });
+    // A partial traversal has already spent its deadline. Retain its strongest
+    // completed single word instead of starting an unchecked sort/greedy pass.
+    if (!available.complete) return approximate();
     let iterations = 0;
-    const check = (): void => {
-      if (budget.states >= budget.maxStates || ((iterations++ & 31) === 0 && performance.now() >= budget.deadlineMs)) {
-        throw EXHAUSTED;
-      }
+    const checkTime = (force = false): void => {
+      if ((force || (iterations++ & 31) === 0) && performance.now() >= budget.deadlineMs) throw EXHAUSTED;
     };
+    const groups = Array.from({ length: 26 }, () => [] as DictionaryEntry[]);
+    try {
+      checkTime(true);
+      available.entries.sort((a, b) => { checkTime(); return b.score - a.score || a.word.localeCompare(b.word); });
+      checkTime(true);
+      incumbent = greedy(available.entries, counts, checkTime, solution => {
+        if (solution.score >= incumbent.score) incumbent = { score: solution.score, words: [...solution.words] };
+      });
+      checkTime(true);
+      // The DP state allowance does not count legal greedy construction. Keep
+      // its original fallback when states are exhausted but time remains.
+      if (budget.states >= budget.maxStates) return approximate();
+      for (const entry of available.entries) {
+        checkTime();
+        for (const [letter] of entry.tiles) groups[letter].push(entry);
+      }
+      checkTime(true);
+    } catch (error) {
+      if (error !== EXHAUSTED) throw error;
+      return approximate();
+    }
+    const check = (): void => {
+      if (budget.states >= budget.maxStates) throw EXHAUSTED;
+      checkTime();
+    };
+    const remaining = counts.slice();
     const upperBound = (): number => {
       let score = 0;
       for (let letter = 0; letter < 26; letter++) score += remaining[letter] * VALUES[letter] * 3;
