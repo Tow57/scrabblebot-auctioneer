@@ -36,7 +36,7 @@ The launch script installs the locked dependencies when missing and verifies esb
 ./Start-Bot.ps1 -BotName auctioneer -TournamentId 123
 ```
 
-Replace `123` with the confirmed upcoming ID. The November 7 event uses **ID 2**; Tow57-Auctioneer (164) is registered as entry 113. Tournament mode registers using the bot credential, verifies entry, continues any existing practice match, and stays out of new practice lobbies. The server waits for registered entrants' practice matches before starting round one. Keep it running through the finals; registration does not run the bot for you. The owner set 10:40 PM Central as tonight's hard readiness deadline; contestants must attend ECSW 1.315 in person for the 10:45 PM start.
+Replace `123` with the confirmed upcoming ID. The organizers replaced November 7 tournament2 with **ID 3** at approximately 10:47 PM Central; Tow57-Auctioneer (164) reconnected and registered as **entry 242**, verified at 10:58 PM. Tournament mode registers using the bot credential, verifies entry, continues any existing practice match, and stays out of new practice lobbies. The server waits for registered entrants' practice matches before starting round one. Keep it running through the finals; registration does not run the bot for you. The original announcement gave 10:45 PM in ECSW 1.315 and required in-person attendance. Always check the current organizer-provided ID, because a deleted tournament invalidates its old registration.
 
 If registration is not yet open, wait for the organizer to open it and restart with the correct ID. Check registration at https://scrabblebot.spacetimedb.com/tournament. An offline registered bot still gets seated and misses its auctions.
 

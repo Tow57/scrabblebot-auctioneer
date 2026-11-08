@@ -1,5 +1,9 @@
 # Validation record — November 7, 2026
 
+## Organizer event replacement
+
+At approximately 10:47 PM Central the organizers removed tournament2 and opened tournament3 (same four Swiss rounds, top cut6, six-player Vickrey settings). The old entry disappeared; the client stopped with the explicit tournament2-not-found error. After the user supplied the current website command, the unchanged strategy-v1.7 runtime reconnected with `TOURNAMENT_ID=3`. Its own credential registered bot164 as **entry242**, confirmed both in the authenticated client log and an independent anonymous server query at 10:58 PM. Server credential presence also confirmed connected. Earlier tournament2/entry113 observations below remain historical evidence, not the current entry. The strategy, source tag, archives and credentials were not changed.
+
 ## Late copied-strategy release
 
 The owner authorized a late comparison and deployment of a copied public strategy. The selected source is MIT-licensed [Lala v2.7.5](https://github.com/dhruv-1100/lala-scrabblebot/tree/a7433c7b191c30f146f4a4d593ab845d996e50da), with unchanged parameters and an optional early return after its first selected word. Enable it with `BOT_COPIED_POLICY=lala`; unset preserves the v1.6 strategy. Attribution and limits are in [COPIED-LALA.md](COPIED-LALA.md); results and the complete copied runtime closure are in [copied-lala-validation.json](copied-lala-validation.json).
